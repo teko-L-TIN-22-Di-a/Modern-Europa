@@ -1,7 +1,7 @@
 # Modern-Europa
 Benny Schärer | L-TIN-22-Di-a
 ## Abstrakt
-Für das OOP-Projekt wird ein Multiplayer Real-Time-Strategie-Spiel mit dem Name Modern-Europa entwickelt. In diesem EPIC wird der Umfang dieses Projektes beschrieben. Die vom Lehrer definierten Kriterien müssen dafür abgedeckt sein.
+Für das OOP-Projekt wird ein Multiplayer Real-Time-Strategie-Spiel mit dem Name Modern-Europa entwickelt. In diesem EPIC wird der Umfang dieses Projektes beschrieben. Ziel des Spiels ist es den Gegner Spieler mit Einheiten zu überrumpeln und seine Gebäude zu zerstören. Die vom Lehrer definierten Kriterien müssen dafür abgedeckt sein.
 ## Features
 -	Das Spiel kann per Peer to Peer über das Netzwerk mit mindestens einer anderen Person gespielt werden. Dabei übernimmt ein Spieler die Rolle des Servers.
 -	Das Spielfeld besteht aus einem Isometrischen Gitter.
