@@ -48,10 +48,6 @@ public class SwingTest {
 
                 graphics.drawImage(image, 0, 0, null);
 
-                var pos = frame.getMousePosition();
-                if(pos != null) {
-                    graphics.drawString("X: " + pos.x + ", Y: " + pos.y, 10, 10);
-                }
                 super.paint(g);
             }
         };
