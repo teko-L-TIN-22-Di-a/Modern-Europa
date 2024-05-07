@@ -8,6 +8,6 @@ Für das OOP-Projekt wird ein Multiplayer Real-Time-Strategie-Spiel mit dem Name
 -	Es gibt eine Einheit, die erstellt werden kann und sich mittels Pathfinding selbst über die Karte bewegt und dabei auf Hindernisse achtet.
 -	Es gibt ein Gebäude, das auf einen freien Platz gebaut werden kann.
 -	Mit einer Ressource kann der Spieler Gebäuden bauen und Einheiten erstellen.
--	Sobald ein Spieler keine Gebäude mehr besitzt, ist das Spiel beendet.
+-	Sobald ein Spieler keine Gebäude mehr besitzt, ist das Spiel beendet und es wird ein Spieler als Sieger deklariert.
 -	Der Spielfluss wird mit Log4J geloggt und unterstützt das Erkennen und Debuggen von Fehlern.
 -	Ressourcen werden zufällig auf der Spielkarte verteilt. (Optional* die ganze Spielkarte wird generiert.)
