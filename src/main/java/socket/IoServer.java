@@ -3,27 +3,31 @@ package socket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
+import rx.Subscription;
+import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.Map;
-import java.util.Queue;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class IoServer {
     protected static final Logger logger = LogManager.getLogger(IoServer.class);
 
+    private List<Subscription> subscriptions = new ArrayList<>();
+
     private final Map<String, IoSocket> clients = new ConcurrentHashMap<>();
     private final Thread connectionThread;
     private final Queue<Thread> listenThreads = new ConcurrentLinkedQueue<>();
     private ServerSocket serverSocket;
 
-    private PublishSubject<String> connect = PublishSubject.create();
-    private PublishSubject<String> disconnect = PublishSubject.create();
+    private PublishSubject<IoSocket> connect = PublishSubject.create();
+    private PublishSubject<IoSocket> disconnect = PublishSubject.create();
+    private PublishSubject<IoServerEventData> receive = PublishSubject.create();
+    private PublishSubject<IoServerEventData> send = PublishSubject.create();
 
     public IoServer() {
         connectionThread = new Thread(new Runnable() {
@@ -51,14 +55,15 @@ public class IoServer {
 
         while(!serverSocket.isClosed()) {
             try {
-                var socket = new IoSocket(serverSocket.accept());
+                var handler = new SocketHandler(serverSocket.accept());
                 var uuid = UUID.randomUUID().toString();
+                var socket = new IoSocket(handler);
 
-                clients.put(uuid, socket);
                 logger.info("New client connected <{}>", uuid);
-                logger.debug("{} -> {}", uuid, socket.getInetAddress());
+                logger.debug("{} -> {}", uuid, handler.getInetAddress());
 
-                connect.onNext(uuid);
+                bindSocket(socket);
+                clients.put(uuid, socket);
 
                 var listenerThread = createSocketListeningThread(uuid, socket);
                 listenThreads.add(listenerThread);
@@ -70,21 +75,50 @@ public class IoServer {
         }
     }
 
+    private void bindSocket(IoSocket socket){
+        subscriptions.addAll(Arrays.asList(
+                socket.BindConnect(x -> connect.onNext(socket)),
+                socket.BindDisconnect(x -> disconnect.onNext(socket)),
+                socket.BindReceive(data -> receive.onNext(new IoServerEventData(socket, data))),
+                socket.BindSend(data -> send.onNext(new IoServerEventData(socket, data)))
+        ));
+    }
+
     private Thread createSocketListeningThread(String uuid, IoSocket socket){
         return new Thread(() -> {
 
+            var handler = socket.getHandler();
+
+            handler.Connect();
+
             try{
-                while(socket.isConnected()){
-                    var data = socket.read();
+                while(handler.isConnected()){
+                    handler.read();
                 }
             }catch(Exception ex){
                 logger.error("Connection to Client <{}> abruptly lost.", uuid);
             }
 
             clients.remove(uuid);
-            disconnect.onNext(uuid);
+            handler.Disconnect();
 
         });
+    }
+
+    public Subscription BindConnect(Action1<IoSocket> action) {
+        return connect.subscribe(action);
+    }
+
+    public Subscription BindDisconnect(Action1<IoSocket> action) {
+        return disconnect.subscribe(action);
+    }
+
+    public Subscription BindReceive(Action1<IoServerEventData> action) {
+        return receive.subscribe(action);
+    }
+
+    public Subscription BindSend(Action1<IoServerEventData> action) {
+        return send.subscribe(action);
     }
 
 }

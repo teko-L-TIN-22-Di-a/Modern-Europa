@@ -13,6 +13,18 @@ public class ClientTest {
         System.out.println("Start");
 
         var server = new IoClient();
+
+        server.BindConnect(x -> {
+            System.out.println("Connected!");
+
+            server.BindReceive(message -> {
+               System.out.println("Received: " + message);
+
+               server.send("Response");
+
+            });
+        });
+
         try {
             server.connect("127.0.0.1");
         } catch (IOException e) {

@@ -62,6 +62,9 @@ public class Main {
 
         var btn = new JButton("Click Me");
         panel.add(btn);
+
+        var btn2 = new JButton("Click Me");
+        panel.add(btn2);
     }
 
 }

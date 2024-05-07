@@ -27,8 +27,17 @@ public class SocketHandler implements Closeable {
         outputStream = new DataOutputStream(socket.getOutputStream());
     }
 
-    public Subscription BindConnection(Action1) {
-        return connect.subscribe()
+    public void send(String data) throws IOException {
+        outputStream.writeUTF(data);
+        send.onNext(data);
+    }
+
+    public String getInetAddress() throws IOException {
+        return socket.getInetAddress().toString();
+    }
+
+    public boolean isConnected(){
+        return socket.isConnected();
     }
 
     public void Connect() {
@@ -45,17 +54,20 @@ public class SocketHandler implements Closeable {
         disconnect.onNext(null);
     }
 
-    public void send(String data) throws IOException {
-        outputStream.writeUTF(data);
-        send.onNext(data);
+    public Subscription BindConnect(Action1<Void> action) {
+        return connect.subscribe(action);
     }
 
-    public String getInetAddress() throws IOException {
-        return socket.getInetAddress().toString();
+    public Subscription BindDisconnect(Action1<Void> action) {
+        return disconnect.subscribe(action);
     }
 
-    public boolean isConnected(){
-        return socket.isConnected();
+    public Subscription BindReceive(Action1<String> action) {
+        return receive.subscribe(action);
+    }
+
+    public Subscription BindSend(Action1<String> action) {
+        return send.subscribe(action);
     }
 
     @Override
