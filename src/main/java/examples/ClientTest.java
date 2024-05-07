@@ -1,12 +1,8 @@
-package core;
+package examples;
 
 import socket.IoClient;
-import socket.IoServer;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.SocketException;
 
 public class ClientTest {
     public static void main(String[] args) {
@@ -14,10 +10,10 @@ public class ClientTest {
 
         var server = new IoClient();
 
-        server.BindConnect(x -> {
+        server.bindConnect(x -> {
             System.out.println("Connected!");
 
-            server.BindReceive(message -> {
+            server.bindReceive(message -> {
                System.out.println("Received: " + message);
 
                server.send("Response");

@@ -17,17 +17,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class IoServer {
     protected static final Logger logger = LogManager.getLogger(IoServer.class);
 
-    private List<Subscription> subscriptions = new ArrayList<>();
+    private final List<Subscription> subscriptions = new ArrayList<>();
 
+    private final PublishSubject<IoSocket> connect = PublishSubject.create();
+    private final PublishSubject<IoSocket> disconnect = PublishSubject.create();
+    private final PublishSubject<IoServerEventData> receive = PublishSubject.create();
+    private final PublishSubject<IoServerEventData> send = PublishSubject.create();
     private final Map<String, IoSocket> clients = new ConcurrentHashMap<>();
-    private final Thread connectionThread;
     private final Queue<Thread> listenThreads = new ConcurrentLinkedQueue<>();
-    private ServerSocket serverSocket;
+    private final Thread connectionThread;
 
-    private PublishSubject<IoSocket> connect = PublishSubject.create();
-    private PublishSubject<IoSocket> disconnect = PublishSubject.create();
-    private PublishSubject<IoServerEventData> receive = PublishSubject.create();
-    private PublishSubject<IoServerEventData> send = PublishSubject.create();
+    private ServerSocket serverSocket;
 
     public IoServer() {
         connectionThread = new Thread(new Runnable() {
@@ -77,10 +77,10 @@ public class IoServer {
 
     private void bindSocket(IoSocket socket){
         subscriptions.addAll(Arrays.asList(
-                socket.BindConnect(x -> connect.onNext(socket)),
-                socket.BindDisconnect(x -> disconnect.onNext(socket)),
-                socket.BindReceive(data -> receive.onNext(new IoServerEventData(socket, data))),
-                socket.BindSend(data -> send.onNext(new IoServerEventData(socket, data)))
+                socket.bindConnect(x -> connect.onNext(socket)),
+                socket.bindDisconnect(x -> disconnect.onNext(socket)),
+                socket.bindReceive(data -> receive.onNext(new IoServerEventData(socket, data))),
+                socket.bindSend(data -> send.onNext(new IoServerEventData(socket, data)))
         ));
     }
 
@@ -105,19 +105,19 @@ public class IoServer {
         });
     }
 
-    public Subscription BindConnect(Action1<IoSocket> action) {
+    public Subscription bindConnect(Action1<IoSocket> action) {
         return connect.subscribe(action);
     }
 
-    public Subscription BindDisconnect(Action1<IoSocket> action) {
+    public Subscription bindDisconnect(Action1<IoSocket> action) {
         return disconnect.subscribe(action);
     }
 
-    public Subscription BindReceive(Action1<IoServerEventData> action) {
+    public Subscription bindReceive(Action1<IoServerEventData> action) {
         return receive.subscribe(action);
     }
 
-    public Subscription BindSend(Action1<IoServerEventData> action) {
+    public Subscription bindSend(Action1<IoServerEventData> action) {
         return send.subscribe(action);
     }
 

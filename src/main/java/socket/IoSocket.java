@@ -12,39 +12,39 @@ import java.util.List;
 
 public class IoSocket implements Closeable {
 
+    private final List<Subscription> subscriptions = new ArrayList<>();
+
+    private final PublishSubject<Void> connect = PublishSubject.create();
+    private final PublishSubject<Void> disconnect = PublishSubject.create();
+    private final PublishSubject<String> receive = PublishSubject.create();
+    private final PublishSubject<String> send = PublishSubject.create();
+
     private SocketHandler socket;
-
-    private List<Subscription> subscriptions = new ArrayList<>();
-
-    private PublishSubject<Void> connect = PublishSubject.create();
-    private PublishSubject<Void> disconnect = PublishSubject.create();
-    private PublishSubject<String> receive = PublishSubject.create();
-    private PublishSubject<String> send = PublishSubject.create();
 
     public IoSocket(SocketHandler socketHandler) {
         socket = socketHandler;
 
         subscriptions.addAll(Arrays.asList(
-                socket.BindConnect(x -> connect.onNext(null)),
-                socket.BindDisconnect(x -> disconnect.onNext(null)),
-                socket.BindReceive(x -> receive.onNext(x)),
-                socket.BindSend(x -> send.onNext(x))
+                socket.bindConnect(x -> connect.onNext(null)),
+                socket.bindDisconnect(x -> disconnect.onNext(null)),
+                socket.bindReceive(receive::onNext),
+                socket.bindSend(send::onNext)
         ));
     }
 
-    public Subscription BindConnect(Action1<Void> action) {
+    public Subscription bindConnect(Action1<Void> action) {
         return connect.subscribe(action);
     }
 
-    public Subscription BindDisconnect(Action1<Void> action) {
+    public Subscription bindDisconnect(Action1<Void> action) {
         return disconnect.subscribe(action);
     }
 
-    public Subscription BindReceive(Action1<String> action) {
+    public Subscription bindReceive(Action1<String> action) {
         return receive.subscribe(action);
     }
 
-    public Subscription BindSend(Action1<String> action) {
+    public Subscription bindSend(Action1<String> action) {
         return send.subscribe(action);
     }
 

@@ -16,15 +16,15 @@ import java.util.List;
 public class IoClient {
     protected static final Logger logger = LogManager.getLogger(IoClient.class);
 
-    private List<Subscription> subscriptions = new ArrayList<>();
+    private final List<Subscription> subscriptions = new ArrayList<>();
 
-    private Thread listenThread;
+    private final PublishSubject<Void> connect = PublishSubject.create();
+    private final PublishSubject<Void> disconnect = PublishSubject.create();
+    private final PublishSubject<String> receive = PublishSubject.create();
+    private final PublishSubject<String> send = PublishSubject.create();
+    private final Thread listenThread;
+
     private IoSocket socket;
-
-    private PublishSubject<Void> connect = PublishSubject.create();
-    private PublishSubject<Void> disconnect = PublishSubject.create();
-    private PublishSubject<String> receive = PublishSubject.create();
-    private PublishSubject<String> send = PublishSubject.create();
 
     public IoClient() {
         listenThread = new Thread(this::listen);
@@ -64,6 +64,9 @@ public class IoClient {
         }catch (Exception ex) {
             logger.error("Connection to Server abruptly lost: {}", ex.getMessage());
         }
+
+        handler.Disconnect();
+
     }
 
     public void send(String message) {
@@ -77,26 +80,26 @@ public class IoClient {
     private void bindSocket(IoSocket socket){
         subscriptions.clear();
         subscriptions.addAll(Arrays.asList(
-                socket.BindConnect(x -> connect.onNext(null)),
-                socket.BindDisconnect(x -> disconnect.onNext(null)),
-                socket.BindReceive(data -> receive.onNext(data)),
-                socket.BindSend(data -> send.onNext(data))
+                socket.bindConnect(x -> connect.onNext(null)),
+                socket.bindDisconnect(x -> disconnect.onNext(null)),
+                socket.bindReceive(receive::onNext),
+                socket.bindSend(send::onNext)
         ));
     }
 
-    public Subscription BindConnect(Action1<Void> action) {
+    public Subscription bindConnect(Action1<Void> action) {
         return connect.subscribe(action);
     }
 
-    public Subscription BindDisconnect(Action1<Void> action) {
+    public Subscription bindDisconnect(Action1<Void> action) {
         return disconnect.subscribe(action);
     }
 
-    public Subscription BindReceive(Action1<String> action) {
+    public Subscription bindReceive(Action1<String> action) {
         return receive.subscribe(action);
     }
 
-    public Subscription BindSend(Action1<String> action) {
+    public Subscription bindSend(Action1<String> action) {
         return send.subscribe(action);
     }
 

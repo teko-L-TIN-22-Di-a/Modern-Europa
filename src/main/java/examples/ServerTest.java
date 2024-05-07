@@ -1,4 +1,4 @@
-package core;
+package examples;
 
 import socket.IoServer;
 
@@ -10,10 +10,10 @@ public class ServerTest {
 
         var server = new IoServer();
 
-        server.BindConnect(socket -> {
+        server.bindConnect(socket -> {
            System.out.println("New connection");
 
-           socket.BindReceive(message -> {
+           socket.bindReceive(message -> {
               System.out.println("Received: " + message);
            });
 

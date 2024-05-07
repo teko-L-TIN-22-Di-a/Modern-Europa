@@ -54,19 +54,19 @@ public class SocketHandler implements Closeable {
         disconnect.onNext(null);
     }
 
-    public Subscription BindConnect(Action1<Void> action) {
+    public Subscription bindConnect(Action1<Void> action) {
         return connect.subscribe(action);
     }
 
-    public Subscription BindDisconnect(Action1<Void> action) {
+    public Subscription bindDisconnect(Action1<Void> action) {
         return disconnect.subscribe(action);
     }
 
-    public Subscription BindReceive(Action1<String> action) {
+    public Subscription bindReceive(Action1<String> action) {
         return receive.subscribe(action);
     }
 
-    public Subscription BindSend(Action1<String> action) {
+    public Subscription bindSend(Action1<String> action) {
         return send.subscribe(action);
     }
 
