@@ -6,7 +6,7 @@ public abstract class Controller {
 
     public abstract void init(EngineContext context);
 
-    public abstract void run();
+    public abstract void run() throws Exception;
 
     public abstract void cleanup();
 

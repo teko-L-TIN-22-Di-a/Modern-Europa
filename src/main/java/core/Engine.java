@@ -5,12 +5,13 @@ import org.apache.logging.log4j.Logger;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
-import socket.IoServer;
+
+import java.util.HashMap;
 
 public class Engine implements ControllerSwitcher, EngineEventHooks {
     protected static final Logger logger = LogManager.getLogger(Engine.class);
 
-    private final PublishSubject<Void> controllerSwitch = PublishSubject.create();
+    private final PublishSubject<Void> initController = PublishSubject.create();
     private Controller currentController;
     private EngineContext context;
     private boolean isRunning = true;
@@ -28,7 +29,7 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
         switchTo(builder.bootController);
     }
 
-    public void run() {
+    public void run() throws Exception {
         while(isRunning) {
             currentController.run();
         }
@@ -36,21 +37,26 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
 
     @Override
     public void switchTo(Controller controller) {
-        logger.debug("Switching to controller <{}>", controller.getClass().getName());
+        switchTo(controller, Parameters.Empty);
+    }
 
-        controllerSwitch.onNext(null);
+    @Override
+    public void switchTo(Controller controller, Parameters parameters) {
+        logger.debug("Switching to controller <{}>", controller.getClass().getName());
 
         if(currentController != null) {
             currentController.cleanup();
         }
 
-        controller.init(context);
         currentController = controller;
+        initController.onNext(null);
+        controller.init(context);
+        logger.debug("Controller <{}> initialised", controller.getClass().getName());
     }
 
     @Override
-    public Subscription bindSwitchController(Action1<Void> action) {
-        return controllerSwitch.subscribe(action);
+    public Subscription bindInitController(Action1<Void> action) {
+        return initController.subscribe(action);
     }
 
     public static class Builder {

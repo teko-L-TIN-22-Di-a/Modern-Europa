@@ -1,11 +1,10 @@
-package socket;
+package core.networking;
 
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
 import java.io.*;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

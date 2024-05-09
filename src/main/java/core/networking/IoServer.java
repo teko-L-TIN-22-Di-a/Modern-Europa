@@ -1,12 +1,10 @@
-package socket;
+package core.networking;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
-import rx.subjects.Subject;
 
 import java.io.IOException;
 import java.net.ServerSocket;

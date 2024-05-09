@@ -1,4 +1,4 @@
-package socket;
+package core.networking;
 
 import rx.Subscription;
 import rx.functions.Action1;

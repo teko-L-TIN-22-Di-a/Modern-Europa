@@ -1,4 +1,4 @@
-package socket;
+package core.networking;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

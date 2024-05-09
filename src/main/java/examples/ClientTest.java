@@ -1,6 +1,6 @@
 package examples;
 
-import socket.IoClient;
+import core.networking.IoClient;
 
 import java.io.IOException;
 
