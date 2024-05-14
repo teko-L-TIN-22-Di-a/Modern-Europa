@@ -22,6 +22,7 @@ public class RenderCanvas extends JPanel{
             // down to the child components.
             var g2d = (Graphics2D) g.create();
             step.render(g2d);
+            g2d.dispose();
         }
         super.paint(g);
     }

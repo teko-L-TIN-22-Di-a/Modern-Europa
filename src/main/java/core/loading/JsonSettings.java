@@ -28,13 +28,12 @@ public class JsonSettings implements Settings {
     }
 
     public void load() {
-        Path path = Path.of(filePath);
-        if(!Files.exists(path)) {
+        if(!Files.exists(Path.of(filePath))) {
             return;
         }
 
         try {
-            var json = Files.readString(path);
+            var json = Files.readString(Path.of(filePath));
 
             var typeToken = new TypeToken<Map<String, Object>>() {};
             settingsMap = gson.fromJson(json, typeToken.getType());

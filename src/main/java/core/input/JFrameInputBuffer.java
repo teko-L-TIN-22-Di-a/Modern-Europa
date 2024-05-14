@@ -2,11 +2,6 @@ package core.input;
 
 import core.EngineContext;
 import core.EngineEventHooks;
-import core.graphics.JFrameWindowProvider;
-import core.graphics.WindowProvider;
-import core.loading.AssetLoader;
-import core.loading.AssetManager;
-import core.loading.FileAssetLoader;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;

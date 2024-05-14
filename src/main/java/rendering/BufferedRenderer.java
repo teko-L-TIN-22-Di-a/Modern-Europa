@@ -55,6 +55,7 @@ public class BufferedRenderer implements Renderer {
             // TODO check if also needed here
             var scopedG2d = (Graphics2D) internalG2d.create();
             renderer.render(scopedG2d);
+            scopedG2d.dispose();
         }
 
         var scale = windowSize.div(image.getWidth(), image.getHeight());

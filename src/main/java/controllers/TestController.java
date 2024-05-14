@@ -34,6 +34,13 @@ public class TestController extends Controller {
 
         var assetManager = context.<AssetManager>getService(AssetManager.class);
         var testImage = assetManager.<BufferedImage>getAsset("test.png");
+        for(var x = 0; x < testImage.getWidth(); x++) {
+            for(var y = 0; y < testImage.getHeight(); y++) {
+                if(testImage.getRGB(x, y) == Color.WHITE.getRGB()) {
+                    testImage.setRGB(x, y, Color.TRANSLUCENT);
+                }
+            }
+        }
 
         var windowProvider = context.<WindowProvider>getService(WindowProvider.class);
         canvas = new RenderCanvas(List.of(
@@ -44,18 +51,34 @@ public class TestController extends Controller {
 
                         for(int y = 0; y < image.getHeight(); y++) {
                             for(int x = 0; x < image.getWidth(); x++) {
-                                int color = random.nextInt(255);
+                                int color = random.nextInt(200, 255);
                                 image.setRGB(x, y, new Color(color, color, color).getRGB());
                             }
                         }
 
                         g2d.drawImage(image, 0, 0, null);
 
-                        g2d.drawImage(testImage, 0,0, 64, 32, 0, 0, 64, 32, null);
+
+                        for(var x = 0; x < 25; x++) {
+                            for(var z = 0; z < 25; z++) {
+
+                                var locX = (x * 31) + (z * -31);
+                                var locY = (x * 15) + (z * 15);
+
+                                /*g2d.setPaint(Color.RED);
+                                g2d.drawRect(locX, locY, 62, 30);*/
+                                g2d.drawImage(testImage,
+                                        locX, locY,
+                                        locX + 62, locY + 30,
+                                        0, 0, 62, 30,
+                                        null);
+                            }
+                        }
 
                         g2d.setPaint(Color.BLACK);
 
                         g2d.drawString("Hello World", test,50);
+                        test++;
                     }
                 ))
         ));
@@ -70,7 +93,6 @@ public class TestController extends Controller {
 
         var input = context.<InputBuffer>getService(InputBuffer.class);
         input.bindKeyPressed(keyEvent -> {
-            System.out.println(keyEvent);
            switch(keyEvent.getKeyCode()) {
                case KeyEvent.VK_1:
                    windowProvider.resize(new Vector2f(800, 600));
