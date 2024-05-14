@@ -2,11 +2,11 @@ package core.loading;
 
 import core.Parameters;
 
-public record LoadConfiguration(AssetType type, Parameters test) {
+public record LoadConfiguration(AssetType type, Parameters parameters) {
 
-    public LoadConfiguration(AssetType type, Parameters test) {
+    public LoadConfiguration(AssetType type, Parameters parameters) {
         this.type = type;
-        this.test = test;
+        this.parameters = parameters;
     }
 
     public LoadConfiguration(AssetType type) {

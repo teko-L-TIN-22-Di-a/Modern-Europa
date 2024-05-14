@@ -14,7 +14,7 @@ public class JFrameWindowProvider implements WindowProvider {
 
     private JFrame window;
 
-    public void init() {
+    private void init() {
         // TODO make configurable
         window = new JFrame("Test");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

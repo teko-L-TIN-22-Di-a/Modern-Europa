@@ -24,8 +24,7 @@ public class JsonSettings implements Settings {
     private String filePath;
 
     private JsonSettings(String file) {
-        filePath = getClass().getClassLoader().getResource(file).getFile().replaceFirst("/", "");
-        //filePath = Paths.get(System.getProperty("user.dir"), file).toString();
+        filePath = PathHelper.getResourcePath();
     }
 
     public void load() {

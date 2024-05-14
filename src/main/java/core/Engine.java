@@ -12,6 +12,8 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
     protected static final Logger logger = LogManager.getLogger(Engine.class);
 
     private final PublishSubject<Void> initController = PublishSubject.create();
+    private final PublishSubject<Void> beforeUpdate = PublishSubject.create();
+
     private Controller currentController;
     private EngineContext context;
     private boolean isRunning = true;
@@ -31,7 +33,8 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
 
     public void run() throws Exception {
         while(isRunning) {
-            currentController.run();
+            beforeUpdate.onNext(null);
+            currentController.update();
         }
     }
 
@@ -57,6 +60,11 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
     @Override
     public Subscription bindInitController(Action1<Void> action) {
         return initController.subscribe(action);
+    }
+
+    @Override
+    public Subscription bindBeforeUpdate(Action1<Void> action) {
+        return beforeUpdate.subscribe(action);
     }
 
     public static class Builder {

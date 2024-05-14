@@ -5,20 +5,32 @@ import core.EngineContext;
 import core.SleepHelper;
 import core.graphics.JFrameWindowProvider;
 import core.graphics.WindowProvider;
+import core.loading.AssetLoader;
+import core.loading.AssetManager;
+import core.loading.AssetType;
+import core.loading.LoadConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.Random;
 
 public class TestController extends Controller {
 
     private JPanel canvas;
+    private float test = 0;
 
     @Override
     public void init(EngineContext context) {
+
+        var assetLoader = context.<AssetLoader>getService(AssetLoader.class);
+        assetLoader.load("test.png", new LoadConfiguration(AssetType.Image));
+
+        var assetManager = context.<AssetManager>getService(AssetManager.class);
+        var testImage = assetManager.<BufferedImage>getAsset("test.png");
 
         var windowProvider = context.<WindowProvider>getService(WindowProvider.class);
         canvas = new JPanel() {
@@ -38,6 +50,17 @@ public class TestController extends Controller {
 
                 graphics.drawImage(image, 0, 0, null);
 
+                graphics.scale(5,5);
+
+                graphics.drawImage(testImage, 0, 0, null);
+
+                graphics.scale(1,1);
+
+                graphics.setPaint(Color.BLACK);
+
+                graphics.drawString("Hello World", test,50);
+                test += 0.1;
+
                 super.paint(g);
             }
         };
@@ -53,9 +76,12 @@ public class TestController extends Controller {
     }
 
     @Override
-    public void run() throws Exception {
+    public void update() throws Exception {
+        var now = System.nanoTime();
+
         canvas.repaint();
-        SleepHelper.SleepPrecise( 1000d / 60);
+
+        SleepHelper.SleepPrecise(60, System.nanoTime() - now);
     }
 
     @Override

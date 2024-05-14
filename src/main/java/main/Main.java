@@ -8,6 +8,8 @@ import core.graphics.JFrameWindowProvider;
 import core.loading.DefaultAssetManager;
 import core.loading.FileAssetLoader;
 import core.loading.JsonSettings;
+import rx.subjects.AsyncSubject;
+import rx.subjects.ReplaySubject;
 
 public class Main {
     public static void main(String[] args) {
