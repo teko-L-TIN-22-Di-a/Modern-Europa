@@ -9,6 +9,7 @@ import java.awt.*;
 public interface WindowProvider {
 
     void resize(Vector2f newSize);
+    void setBorderless(boolean value);
 
     Subscription bindWindowResize(Action1<Vector2f> action);
 

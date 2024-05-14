@@ -3,10 +3,11 @@ package core;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
-import java.util.HashMap;
+import javax.swing.*;
 
 public class Engine implements ControllerSwitcher, EngineEventHooks {
     protected static final Logger logger = LogManager.getLogger(Engine.class);
@@ -32,6 +33,8 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
     }
 
     public void run() throws Exception {
+        logger.debug("Starting main game loop.");
+
         while(isRunning) {
             beforeUpdate.onNext(null);
             currentController.update();
@@ -40,7 +43,7 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
 
     @Override
     public void switchTo(Controller controller) {
-        switchTo(controller, Parameters.Empty);
+        switchTo(controller, Parameters.EMPTY);
     }
 
     @Override

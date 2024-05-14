@@ -16,7 +16,9 @@ public class RenderCanvas extends JPanel{
     private List<Renderer> renderSteps = new ArrayList<>();
 
     @Override
-    public void paint(Graphics g) {
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
         for(var step : renderSteps) {
             // Isolate graphics context so that scaling and other transformations won't propagate
             // down to the child components.
@@ -24,7 +26,6 @@ public class RenderCanvas extends JPanel{
             step.render(g2d);
             g2d.dispose();
         }
-        super.paint(g);
     }
 
     public RenderCanvas(List<Renderer> renderSteps) {

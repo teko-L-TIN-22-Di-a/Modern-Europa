@@ -2,15 +2,15 @@ package core;
 
 public class SleepHelper {
 
-    public static void SleepPrecise(int frameRate, long elapsedTicks) throws InterruptedException {
+    public static void SleepPrecise(int frameRate, long elapsedTicks) {
         SleepPrecise((1000d / frameRate) - (elapsedTicks / 10000d));
     }
 
     // The following code was taken from the following link:
     // https://blat-blatnik.github.io/computerBear/making-accurate-sleep-function/
     // It tries to wait a save amount and then busy waits to precisely wait a certain amount of time.
-    public static void SleepPrecise(double milliseconds) throws InterruptedException {
-        if (milliseconds <= 0) return;
+    public static void SleepPrecise(double milliseconds) {
+        if (milliseconds <= 0)  return;
 
         var estimate = 5d;
         var mean = 5d;
@@ -22,7 +22,12 @@ public class SleepHelper {
         while (milliseconds > estimate)
         {
             begin = System.nanoTime();
-            Thread.sleep(1);
+
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
             var observed = (double)(System.nanoTime() - begin) / 10000d;
             milliseconds -= observed;

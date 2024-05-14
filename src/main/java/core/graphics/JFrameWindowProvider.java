@@ -12,12 +12,14 @@ import rx.subjects.PublishSubject;
 
 import javax.security.auth.Subject;
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 
 public class JFrameWindowProvider implements WindowProvider {
     protected static final Logger logger = LogManager.getLogger(JFrameWindowProvider.class);
 
-    private PublishSubject<Vector2f> onResize = PublishSubject.<Vector2f>create();
+    private PublishSubject<Vector2f> onResize = PublishSubject.create();
     private JFrame window;
 
     private void init() {
@@ -34,8 +36,10 @@ public class JFrameWindowProvider implements WindowProvider {
         logger.debug("Cleaned up JFrameWindowProvider");
     }
 
-    public JFrame getWindow() {
-        return window;
+    @Override
+    public void setBorderless(boolean value) {
+        // TODO dont know how to do this yet. Maybe over GraphicsDevice?
+        window.setUndecorated(value);
     }
 
     @Override
@@ -59,6 +63,9 @@ public class JFrameWindowProvider implements WindowProvider {
     @Override
     public void addComponent(Component component) {
         window.add(component);
+        // TODO maybe find a better solution
+        // without revalidation it can get stuck on the init
+        window.revalidate();
     }
 
     public static EngineContext.Builder addToServices(EngineContext.Builder builder) {
@@ -82,7 +89,16 @@ public class JFrameWindowProvider implements WindowProvider {
         var engineHooks = context.<EngineEventHooks>getService(EngineEventHooks.class);
         engineHooks.bindInitController(x -> instance.cleanup());
 
-        instance.init();
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    instance.init();
+                }
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         return context;
     }

@@ -10,7 +10,7 @@ public record LoadConfiguration(AssetType type, Parameters parameters) {
     }
 
     public LoadConfiguration(AssetType type) {
-        this(type, Parameters.Empty);
+        this(type, Parameters.EMPTY);
     }
 
 }

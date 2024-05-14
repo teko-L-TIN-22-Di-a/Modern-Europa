@@ -12,7 +12,6 @@ import core.loading.LoadConfiguration;
 import core.util.Vector2f;
 import rendering.BufferedRenderer;
 import rendering.RenderCanvas;
-import rendering.Renderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,12 +24,15 @@ public class TestController extends Controller {
 
     private RenderCanvas canvas;
     private float test = 0;
+    private Vector2f offset = Vector2f.ZERO;
 
     @Override
     public void init(EngineContext context) {
 
+
         var assetLoader = context.<AssetLoader>getService(AssetLoader.class);
         assetLoader.load("test.png", new LoadConfiguration(AssetType.Image));
+        assetLoader.load("cursor.png", new LoadConfiguration(AssetType.Image));
 
         var assetManager = context.<AssetManager>getService(AssetManager.class);
         var testImage = assetManager.<BufferedImage>getAsset("test.png");
@@ -41,6 +43,17 @@ public class TestController extends Controller {
                 }
             }
         }
+
+        var cursorImage = assetManager.<BufferedImage>getAsset("cursor.png");
+        for(var x = 0; x < cursorImage.getWidth(); x++) {
+            for(var y = 0; y < cursorImage.getHeight(); y++) {
+                if(cursorImage.getRGB(x, y) == Color.WHITE.getRGB()) {
+                    cursorImage.setRGB(x, y, Color.TRANSLUCENT);
+                }
+            }
+        }
+        var toolkit = Toolkit.getDefaultToolkit();
+        var cursor = toolkit.createCustomCursor(cursorImage, new Point(0, 0), "cursor");
 
         var windowProvider = context.<WindowProvider>getService(WindowProvider.class);
         canvas = new RenderCanvas(List.of(
@@ -68,9 +81,9 @@ public class TestController extends Controller {
                                 /*g2d.setPaint(Color.RED);
                                 g2d.drawRect(locX, locY, 62, 30);*/
                                 g2d.drawImage(testImage,
-                                        locX, locY,
-                                        locX + 62, locY + 30,
-                                        0, 0, 62, 30,
+                                        (int)offset.x() + locX,(int)offset.y() + locY,
+                                        (int)offset.x() + locX + 62, (int)offset.y() + locY + 30,
+                                        0, 0, 62, 0 + 30,
                                         null);
                             }
                         }
@@ -82,18 +95,33 @@ public class TestController extends Controller {
                     }
                 ))
         ));
+        //canvas.setOpaque(false);
+        canvas.setCursor(cursor);
         windowProvider.addComponent(canvas);
-        canvas.setOpaque(false);
 
         var btn = new JButton("Click Me");
         canvas.add(btn);
-
         var btn2 = new JButton("Click Me");
         canvas.add(btn2);
+        canvas.revalidate();
 
         var input = context.<InputBuffer>getService(InputBuffer.class);
         input.bindKeyPressed(keyEvent -> {
            switch(keyEvent.getKeyCode()) {
+
+               case KeyEvent.VK_W:
+                   offset = offset.add(0, -5);
+                   break;
+               case KeyEvent.VK_S:
+                   offset = offset.add(0, 5);
+                   break;
+               case KeyEvent.VK_A:
+                   offset = offset.add(-5, 0);
+                   break;
+               case KeyEvent.VK_D:
+                   offset = offset.add(5, 0);
+                   break;
+
                case KeyEvent.VK_1:
                    windowProvider.resize(new Vector2f(800, 600));
                    break;
@@ -109,7 +137,7 @@ public class TestController extends Controller {
     }
 
     @Override
-    public void update() throws Exception {
+    public void update() {
         var now = System.nanoTime();
 
         canvas.repaint();
