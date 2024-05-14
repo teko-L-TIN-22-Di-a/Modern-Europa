@@ -3,15 +3,21 @@ package core.graphics;
 import core.Engine;
 import core.EngineContext;
 import core.EngineEventHooks;
+import core.util.Vector2f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import rx.Subscription;
+import rx.functions.Action1;
+import rx.subjects.PublishSubject;
 
+import javax.security.auth.Subject;
 import javax.swing.*;
 import java.awt.*;
 
 public class JFrameWindowProvider implements WindowProvider {
     protected static final Logger logger = LogManager.getLogger(JFrameWindowProvider.class);
 
+    private PublishSubject<Vector2f> onResize = PublishSubject.<Vector2f>create();
     private JFrame window;
 
     private void init() {
@@ -26,6 +32,28 @@ public class JFrameWindowProvider implements WindowProvider {
     private void cleanup() {
         window.getContentPane().removeAll();
         logger.debug("Cleaned up JFrameWindowProvider");
+    }
+
+    public JFrame getWindow() {
+        return window;
+    }
+
+    @Override
+    public void resize(Vector2f newSize) {
+        window.setSize((int)newSize.x(), (int)newSize.y());
+        logger.debug("Resized Window to {}x{}", newSize.x(), newSize.y());
+        onResize.onNext(new Vector2f(newSize.x(), newSize.y()));
+    }
+
+    @Override
+    public Subscription bindWindowResize(Action1<Vector2f> action) {
+        return onResize.subscribe(action);
+    }
+
+    @Override
+    public Vector2f getWindowSize() {
+        var size = window.getSize();
+        return new Vector2f(size.width, size.height);
     }
 
     @Override

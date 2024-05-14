@@ -21,19 +21,20 @@ public class JsonSettings implements Settings {
 
     private final Gson gson = new Gson();
     private Map<String, Object> settingsMap = new HashMap<>();
-    private String filePath;
+    private final String filePath;
 
     private JsonSettings(String file) {
-        filePath = PathHelper.getResourcePath();
+        filePath = Path.of(PathHelper.getResourcePath(), file).toAbsolutePath().toString();
     }
 
     public void load() {
-        if(!Files.exists(Path.of(filePath))) {
+        Path path = Path.of(filePath);
+        if(!Files.exists(path)) {
             return;
         }
 
         try {
-            var json = Files.readString(Path.of(filePath));
+            var json = Files.readString(path);
 
             var typeToken = new TypeToken<Map<String, Object>>() {};
             settingsMap = gson.fromJson(json, typeToken.getType());
