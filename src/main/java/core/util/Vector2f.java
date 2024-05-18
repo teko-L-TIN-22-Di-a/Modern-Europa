@@ -2,7 +2,10 @@ package core.util;
 
 public record Vector2f(float x, float y) {
 
-    public Vector2f of(float x, float y) {
+    public static Vector2f of(float val) {
+        return new Vector2f(val, val);
+    }
+    public static Vector2f of(float x, float y) {
         return new Vector2f(x, y);
     }
 

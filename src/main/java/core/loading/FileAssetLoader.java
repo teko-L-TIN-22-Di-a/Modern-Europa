@@ -59,7 +59,7 @@ public class FileAssetLoader implements AssetLoader {
                 }
                 case Image -> {
                     var image = ImageIO.read(new File(fullPath));
-                    assetManager.registerAsset(path, image);
+                    assetManager.registerAsset(path, ImageFormatHelper.improveFormat(image));
                     logger.debug("Loaded and registered image: {}", path);
                 }
                 default -> {

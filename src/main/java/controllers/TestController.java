@@ -3,12 +3,11 @@ package controllers;
 import core.Controller;
 import core.EngineContext;
 import core.SleepHelper;
+import core.ecs.Ecs;
+import core.ecs.components.CameraComponent;
 import core.graphics.WindowProvider;
 import core.input.InputBuffer;
-import core.loading.AssetLoader;
-import core.loading.AssetManager;
-import core.loading.AssetType;
-import core.loading.LoadConfiguration;
+import core.loading.*;
 import core.util.Vector2f;
 import rendering.BufferedRenderer;
 import rendering.RenderCanvas;
@@ -29,6 +28,9 @@ public class TestController extends Controller {
     @Override
     public void init(EngineContext context) {
 
+        var ecs = new Ecs();
+        var newEntity = ecs.newEntity();
+        newEntity.setComponent(new CameraComponent(Vector2f.of(300, 240), true));
 
         var assetLoader = context.<AssetLoader>getService(AssetLoader.class);
         assetLoader.load("test.png", new LoadConfiguration(AssetType.Image));
@@ -36,22 +38,10 @@ public class TestController extends Controller {
 
         var assetManager = context.<AssetManager>getService(AssetManager.class);
         var testImage = assetManager.<BufferedImage>getAsset("test.png");
-        for(var x = 0; x < testImage.getWidth(); x++) {
-            for(var y = 0; y < testImage.getHeight(); y++) {
-                if(testImage.getRGB(x, y) == Color.WHITE.getRGB()) {
-                    testImage.setRGB(x, y, Color.TRANSLUCENT);
-                }
-            }
-        }
+        ImageFormatHelper.keyOut(testImage, Color.WHITE);
 
         var cursorImage = assetManager.<BufferedImage>getAsset("cursor.png");
-        for(var x = 0; x < cursorImage.getWidth(); x++) {
-            for(var y = 0; y < cursorImage.getHeight(); y++) {
-                if(cursorImage.getRGB(x, y) == Color.WHITE.getRGB()) {
-                    cursorImage.setRGB(x, y, Color.TRANSLUCENT);
-                }
-            }
-        }
+        ImageFormatHelper.keyOut(cursorImage, Color.WHITE);
         var toolkit = Toolkit.getDefaultToolkit();
         var cursor = toolkit.createCustomCursor(cursorImage, new Point(0, 0), "cursor");
 
@@ -59,6 +49,7 @@ public class TestController extends Controller {
         canvas = new RenderCanvas(List.of(
                 new BufferedRenderer(context, new Vector2f(300, 240), List.of(
                     g2d -> {
+
                         var image = new BufferedImage(300, 240, BufferedImage.TYPE_INT_RGB);
                         var random = new Random();
 
@@ -87,6 +78,16 @@ public class TestController extends Controller {
                                         null);
                             }
                         }
+
+                        /* Stress Test still ran fairly fast so 1'000'000 cursor images
+                            Shouldn't worry about performance yet.
+                            Can still do occlusion testing.
+                        for(int y = 0; y < 1000; y++) {
+                            for(int x = 0; x < 1000; x++) {
+                                g2d.drawImage(cursorImage, x*64, y*64, null);
+                            }
+                        }
+                        */
 
                         g2d.setPaint(Color.BLACK);
 
