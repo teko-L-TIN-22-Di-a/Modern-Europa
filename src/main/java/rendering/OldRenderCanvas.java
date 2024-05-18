@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-public class RenderCanvas extends JPanel{
-    protected static final Logger logger = LogManager.getLogger(RenderCanvas.class);
+public class OldRenderCanvas extends JComponent {
+    protected static final Logger logger = LogManager.getLogger(OldRenderCanvas.class);
 
     private List<Renderer> renderSteps = new ArrayList<>();
 
@@ -24,11 +24,10 @@ public class RenderCanvas extends JPanel{
             // down to the child components.
             var g2d = (Graphics2D) g.create();
             step.render(g2d);
-            g2d.dispose();
         }
     }
 
-    public RenderCanvas(List<Renderer> renderSteps) {
+    public OldRenderCanvas(List<Renderer> renderSteps) {
         setRenderSteps(renderSteps);
     }
 

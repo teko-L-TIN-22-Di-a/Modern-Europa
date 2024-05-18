@@ -3,7 +3,7 @@ package core;
 public class SleepHelper {
 
     public static void SleepPrecise(int frameRate, long elapsedTicks) {
-        SleepPrecise((1000d / frameRate) - (elapsedTicks / 10000d));
+        SleepPrecise((1000d / frameRate) - (elapsedTicks / 1000000d));
     }
 
     // The following code was taken from the following link:
@@ -24,12 +24,13 @@ public class SleepHelper {
             begin = System.nanoTime();
 
             try {
+                Thread.yield();
                 Thread.sleep(1);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
 
-            var observed = (double)(System.nanoTime() - begin) / 10000d;
+            var observed = (double)(System.nanoTime() - begin) / 1000000d;
             milliseconds -= observed;
 
             count++;
@@ -41,7 +42,7 @@ public class SleepHelper {
         }
 
         begin = System.nanoTime();
-        while ((double)(System.nanoTime() - begin) / 10000d < milliseconds);
+        while ((double)(System.nanoTime() - begin) / 1000000d < milliseconds);
     }
 
 }

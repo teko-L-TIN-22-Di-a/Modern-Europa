@@ -2,7 +2,6 @@ package controllers;
 
 import core.Controller;
 import core.EngineContext;
-import core.SleepHelper;
 import core.ecs.Ecs;
 import core.ecs.Entity;
 import core.ecs.components.CameraComponent;
@@ -13,7 +12,7 @@ import core.loading.*;
 import core.util.Vector2f;
 import models.components.TerrainChunkComponent;
 import rendering.BufferedRenderer;
-import rendering.RenderCanvas;
+import rendering.NewRenderCanvas;
 import rendering.IsometricTerrainRenderer;
 
 import java.awt.*;
@@ -25,7 +24,9 @@ public class RenderingTestController extends Controller {
 
     private Ecs ecs;
 
-    private RenderCanvas canvas;
+    private WindowProvider windowProvider;
+    private NewRenderCanvas canvas;
+    private InputBuffer inputBuffer;
     private Entity camera;
 
     @Override
@@ -45,14 +46,14 @@ public class RenderingTestController extends Controller {
 
         ecs = context.getService(Ecs.class);
         var mainTerrain = ecs.newEntity();
-        mainTerrain.setComponent(new TerrainChunkComponent(Vector2f.of(5, 5)));
+        mainTerrain.setComponent(new TerrainChunkComponent(Vector2f.of(100, 100)));
 
         camera = ecs.newEntity();
         // TODO take camera viewport from configuration.
         camera.setComponent(new CameraComponent(Vector2f.of(300, 240), true));
 
-        var windowProvider = context.<WindowProvider>getService(WindowProvider.class);
-        canvas = new RenderCanvas(java.util.List.of(
+        windowProvider = context.getService(WindowProvider.class);
+        canvas = new NewRenderCanvas(java.util.List.of(
                 new BufferedRenderer(context, new Vector2f(300, 240), List.of(
                         g2d -> {
                             g2d.setColor(Color.WHITE);
@@ -63,50 +64,55 @@ public class RenderingTestController extends Controller {
         ));
         canvas.setCursor(cursor);
         windowProvider.addComponent(canvas);
+        canvas.init();
 
-        var input = context.<InputBuffer>getService(InputBuffer.class);
-        input.bindKeyPressed(keyEvent -> {
-
-            var movement = Vector2f.ZERO;
-
-            switch(keyEvent.getKeyCode()) {
-
-                case KeyEvent.VK_W:
-                    movement = movement.add(0, -5);
-                    break;
-                case KeyEvent.VK_S:
-                    movement = movement.add(0, 5);
-                    break;
-                case KeyEvent.VK_A:
-                    movement = movement.add(-5, 0);
-                    break;
-                case KeyEvent.VK_D:
-                    movement = movement.add(5, 0);
-                    break;
-
-                case KeyEvent.VK_1:
-                    windowProvider.resize(new Vector2f(800, 600));
-                    break;
-                case KeyEvent.VK_2:
-                    windowProvider.resize(new Vector2f(1280, 720));
-                    break;
-                case KeyEvent.VK_3:
-                    windowProvider.resize(new Vector2f(1920, 1080));
-                    break;
-            }
-
-            var position = camera.getComponent(PositionComponent.class);
-            camera.setComponent(position.move(movement));
-        });
+        inputBuffer = context.getService(InputBuffer.class);
     }
 
     @Override
     public void update() {
-        var now = System.nanoTime();
 
-        canvas.repaint();
+        var movement = Vector2f.ZERO;
 
-        SleepHelper.SleepPrecise(60, System.nanoTime() - now);
+        if(inputBuffer.isKeyDown(KeyEvent.VK_W)) {
+            movement = movement.add(0, 10);
+        }
+        if(inputBuffer.isKeyDown(KeyEvent.VK_S)) {
+            movement = movement.add(0, -10);
+        }
+        if(inputBuffer.isKeyDown(KeyEvent.VK_A)) {
+            movement = movement.add(10, 0);
+        }
+        if(inputBuffer.isKeyDown(KeyEvent.VK_D)) {
+            movement = movement.add(-10, 0);
+        }
+
+        if(inputBuffer.isKeyDown(KeyEvent.VK_1)) {
+            windowProvider.resize(new Vector2f(800, 600));
+        }else if(inputBuffer.isKeyDown(KeyEvent.VK_2)) {
+            windowProvider.resize(new Vector2f(1280, 720));
+        }else if(inputBuffer.isKeyDown(KeyEvent.VK_3)) {
+            windowProvider.resize(new Vector2f(1920, 1080));
+        }
+
+        var position = camera.getComponent(PositionComponent.class);
+        camera.setComponent(position.move(movement));
+
+        canvas.render();
+        //canvas.paintImmediately(0, 0, (int)size.x(), (int)size.y());
+        //Toolkit.getDefaultToolkit().sync();
+        //canvas.repaint();
+        //SwingUtilities.invokeLater(() -> canvas.repaint());
+
+        /*
+        try {
+            SwingUtilities.invokeAndWait(() -> canvas.repaint());
+            //SwingUtilities.invokeAndWait(() -> canvas.paintImmediately(0, 0, (int)size.x(), (int)size.y()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+         */
+
     }
 
     @Override

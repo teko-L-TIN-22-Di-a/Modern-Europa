@@ -10,7 +10,7 @@ import core.input.InputBuffer;
 import core.loading.*;
 import core.util.Vector2f;
 import rendering.BufferedRenderer;
-import rendering.RenderCanvas;
+import rendering.OldRenderCanvas;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +21,7 @@ import java.util.Random;
 
 public class TestController extends Controller {
 
-    private RenderCanvas canvas;
+    private OldRenderCanvas canvas;
     private float test = 0;
     private Vector2f offset = Vector2f.ZERO;
 
@@ -46,7 +46,7 @@ public class TestController extends Controller {
         var cursor = toolkit.createCustomCursor(cursorImage, new Point(0, 0), "cursor");
 
         var windowProvider = context.<WindowProvider>getService(WindowProvider.class);
-        canvas = new RenderCanvas(List.of(
+        canvas = new OldRenderCanvas(List.of(
                 new BufferedRenderer(context, new Vector2f(300, 240), List.of(
                     g2d -> {
 

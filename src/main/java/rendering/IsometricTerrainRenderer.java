@@ -54,7 +54,7 @@ public class IsometricTerrainRenderer implements Renderer {
             var chunkOffset = chunkEntry.component2().position();
 
             // OriginOf (0,0) on the Image + camera + chunk position
-            var originOffset = renderedChunk.coordinateOrigin().mul(Vector2f.of(-1,-1));
+            var originOffset = renderedChunk.coordinateOrigin().mul(Vector2f.of(-1));
             var renderOffset = originOffset.add(cameraOffset.add(chunkOffset));
 
             g2d.drawImage(

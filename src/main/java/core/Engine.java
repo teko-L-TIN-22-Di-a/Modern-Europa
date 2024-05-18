@@ -14,6 +14,7 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
 
     private final PublishSubject<Void> initController = PublishSubject.create();
     private final PublishSubject<Void> beforeUpdate = PublishSubject.create();
+    private final PublishSubject<Void> afterUpdate = PublishSubject.create();
 
     private Controller currentController;
     private EngineContext context;
@@ -35,9 +36,21 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
     public void run() throws Exception {
         logger.debug("Starting main game loop.");
 
+        long now;
         while(isRunning) {
+            now = System.nanoTime();
+
             beforeUpdate.onNext(null);
             currentController.update();
+            afterUpdate.onNext(null);
+
+            SleepHelper.SleepPrecise(60,System.nanoTime() - now);
+
+            var frameTime = (System.nanoTime() - now)/1000000;
+            if(frameTime > 16.5) {
+                logger.debug("Game loop slowdown to {}ms", frameTime);
+            }
+
         }
     }
 
@@ -68,6 +81,11 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
     @Override
     public Subscription bindBeforeUpdate(Action1<Void> action) {
         return beforeUpdate.subscribe(action);
+    }
+
+    @Override
+    public Subscription bindAfterUpdate(Action1<Void> action) {
+        return afterUpdate.subscribe(action);
     }
 
     public static class Builder {
