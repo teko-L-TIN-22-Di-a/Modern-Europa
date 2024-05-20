@@ -1,6 +1,7 @@
 package main;
 
 
+import controllers.AnotherTestController;
 import controllers.RenderingTestController;
 import controllers.TestController;
 import core.Engine;
@@ -8,6 +9,7 @@ import core.ecs.Ecs;
 import core.graphics.FlatLightLafExtension;
 import core.graphics.JFrameWindowProvider;
 import core.input.JFrameInputBuffer;
+import core.input.JFrameMouseListener;
 import core.loading.DefaultAssetManager;
 import core.loading.FileAssetLoader;
 import core.loading.JsonSettings;
@@ -17,6 +19,7 @@ public class Main {
 
         try {
             new Engine.Builder()
+                    //.bootstrapController(new AnotherTestController())
                     .bootstrapController(new RenderingTestController())
                     .configureServices(builder -> {
 
@@ -30,6 +33,7 @@ public class Main {
                         // Add JFrame Services
                         JFrameWindowProvider.addToServices(builder);
                         JFrameInputBuffer.addToServices(builder);
+                        JFrameMouseListener.addToServices(builder);
                     })
                     .startupServices(context -> {
 
@@ -41,6 +45,7 @@ public class Main {
                         FlatLightLafExtension.init();
                         JFrameWindowProvider.initWindow(context);
                         JFrameInputBuffer.init(context);
+                        JFrameMouseListener.init(context);
                     })
                     .build()
                     .run();

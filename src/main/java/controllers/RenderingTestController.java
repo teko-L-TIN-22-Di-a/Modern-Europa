@@ -8,6 +8,7 @@ import core.ecs.components.CameraComponent;
 import core.ecs.components.PositionComponent;
 import core.graphics.WindowProvider;
 import core.input.InputBuffer;
+import core.input.MouseListener;
 import core.loading.*;
 import core.util.Vector2f;
 import models.components.TerrainChunkComponent;
@@ -25,8 +26,12 @@ public class RenderingTestController extends Controller {
     private Ecs ecs;
 
     private WindowProvider windowProvider;
-    private NewRenderCanvas canvas;
     private InputBuffer inputBuffer;
+
+    private NewRenderCanvas canvas;
+    private BufferedRenderer bufferedRenderer;
+    private IsometricTerrainRenderer terrainRenderer;
+
     private Entity camera;
 
     @Override
@@ -46,27 +51,38 @@ public class RenderingTestController extends Controller {
 
         ecs = context.getService(Ecs.class);
         var mainTerrain = ecs.newEntity();
-        mainTerrain.setComponent(new TerrainChunkComponent(Vector2f.of(100, 100)));
+        mainTerrain.setComponent(new TerrainChunkComponent(Vector2f.of(5, 5)));
 
         camera = ecs.newEntity();
         // TODO take camera viewport from configuration.
         camera.setComponent(new CameraComponent(Vector2f.of(300, 240), true));
 
         windowProvider = context.getService(WindowProvider.class);
-        canvas = new NewRenderCanvas(java.util.List.of(
-                new BufferedRenderer(context, new Vector2f(300, 240), List.of(
-                        g2d -> {
-                            g2d.setColor(Color.WHITE);
-                            g2d.fillRect(0, 0, 800, 600);
-                        },
-                        new IsometricTerrainRenderer(context)
-                ))
+        terrainRenderer = new IsometricTerrainRenderer(context, true);
+        bufferedRenderer = new BufferedRenderer(context, new Vector2f(300, 240), List.of(
+                g2d -> {
+                    g2d.setColor(Color.WHITE);
+                    g2d.fillRect(0, 0, 800, 600);
+                },
+                terrainRenderer
         ));
+        canvas = new NewRenderCanvas(java.util.List.of(
+            bufferedRenderer
+        ));
+
         canvas.setCursor(cursor);
         windowProvider.addComponent(canvas);
         canvas.init();
 
         inputBuffer = context.getService(InputBuffer.class);
+        var mouseListener = context.<MouseListener>getService(MouseListener.class);
+        mouseListener.bindMouseClicked(mouseEvent -> {
+            var pos = Vector2f.of(mouseEvent.getX(), mouseEvent.getY());
+            var tilePos = terrainRenderer.getTilePosition(pos.div(bufferedRenderer.getScale()));
+            if(tilePos != null) {
+                System.out.println("x:" + tilePos.x() + " y:" + tilePos.y());
+            }
+        });
     }
 
     @Override
@@ -87,11 +103,11 @@ public class RenderingTestController extends Controller {
             movement = movement.add(-10, 0);
         }
 
-        if(inputBuffer.isKeyDown(KeyEvent.VK_1)) {
+        if(inputBuffer.isKeyClicked(KeyEvent.VK_1)) {
             windowProvider.resize(new Vector2f(800, 600));
-        }else if(inputBuffer.isKeyDown(KeyEvent.VK_2)) {
+        }else if(inputBuffer.isKeyClicked(KeyEvent.VK_2)) {
             windowProvider.resize(new Vector2f(1280, 720));
-        }else if(inputBuffer.isKeyDown(KeyEvent.VK_3)) {
+        }else if(inputBuffer.isKeyClicked(KeyEvent.VK_3)) {
             windowProvider.resize(new Vector2f(1920, 1080));
         }
 
@@ -99,20 +115,6 @@ public class RenderingTestController extends Controller {
         camera.setComponent(position.move(movement));
 
         canvas.render();
-        //canvas.paintImmediately(0, 0, (int)size.x(), (int)size.y());
-        //Toolkit.getDefaultToolkit().sync();
-        //canvas.repaint();
-        //SwingUtilities.invokeLater(() -> canvas.repaint());
-
-        /*
-        try {
-            SwingUtilities.invokeAndWait(() -> canvas.repaint());
-            //SwingUtilities.invokeAndWait(() -> canvas.paintImmediately(0, 0, (int)size.x(), (int)size.y()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-         */
-
     }
 
     @Override

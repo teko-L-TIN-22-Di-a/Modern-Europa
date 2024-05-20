@@ -10,16 +10,16 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
-import javax.security.auth.Subject;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
 
 public class JFrameWindowProvider implements WindowProvider {
     protected static final Logger logger = LogManager.getLogger(JFrameWindowProvider.class);
 
     private PublishSubject<Vector2f> onResize = PublishSubject.create();
+    private PublishSubject<Component> onComponentAdd = PublishSubject.create();
+    private PublishSubject<Void> onCleanup = PublishSubject.create();
+
     private JFrame window;
 
     private void init() {
@@ -28,12 +28,14 @@ public class JFrameWindowProvider implements WindowProvider {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
         window.setSize(800, 600);
+
         window.setVisible(true);
     }
 
     private void cleanup() {
         window.getContentPane().removeAll();
         logger.debug("Cleaned up JFrameWindowProvider");
+        onCleanup.onNext(null);
     }
 
     @Override
@@ -53,6 +55,14 @@ public class JFrameWindowProvider implements WindowProvider {
     public Subscription bindWindowResize(Action1<Vector2f> action) {
         return onResize.subscribe(action);
     }
+    @Override
+    public Subscription bindComponentAdd(Action1<Component> action) {
+        return onComponentAdd.subscribe(action);
+    }
+    @Override
+    public Subscription bindCleanup(Action1<Void> action) {
+        return onComponentAdd.subscribe();
+    }
 
     @Override
     public Vector2f getWindowSize() {
@@ -63,9 +73,8 @@ public class JFrameWindowProvider implements WindowProvider {
     @Override
     public void addComponent(Component component) {
         window.add(component);
-        // TODO maybe find a better solution
-        // without revalidation it can get stuck on the init
         window.revalidate();
+        onComponentAdd.onNext(component);
     }
 
     public static EngineContext.Builder addToServices(EngineContext.Builder builder) {
@@ -90,12 +99,7 @@ public class JFrameWindowProvider implements WindowProvider {
         engineHooks.bindInitController(x -> instance.cleanup());
 
         try {
-            SwingUtilities.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    instance.init();
-                }
-            });
+            SwingUtilities.invokeAndWait(instance::init);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

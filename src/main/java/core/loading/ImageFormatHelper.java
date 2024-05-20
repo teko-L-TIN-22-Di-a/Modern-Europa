@@ -23,10 +23,15 @@ public class ImageFormatHelper {
     }
 
     public static BufferedImage keyOut(BufferedImage image, Color color) {
+        return keyOut(image, color, Color.TRANSLUCENT);
+    }
+
+    public static BufferedImage keyOut(BufferedImage image, Color color, int newColor) {
+
         for(var x = 0; x < image.getWidth(); x++) {
             for(var y = 0; y < image.getHeight(); y++) {
                 if(image.getRGB(x, y) == color.getRGB()) {
-                    image.setRGB(x, y, Color.TRANSLUCENT);
+                    image.setRGB(x, y, newColor);
                 }
             }
         }

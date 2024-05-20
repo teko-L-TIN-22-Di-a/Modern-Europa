@@ -12,6 +12,8 @@ public interface WindowProvider {
     void setBorderless(boolean value);
 
     Subscription bindWindowResize(Action1<Vector2f> action);
+    Subscription bindComponentAdd(Action1<Component> action);
+    Subscription bindCleanup(Action1<Void> action);
 
     Vector2f getWindowSize();
 

@@ -52,15 +52,18 @@ public class BufferedRenderer implements Renderer {
         internalG2d.clearRect(0, 0, image.getWidth(), image.getHeight());
 
         for (var renderer : renderSteps) {
-            // TODO check if also needed here
             var scopedG2d = (Graphics2D) internalG2d.create();
             renderer.render(scopedG2d);
             scopedG2d.dispose();
         }
 
-        var scale = windowSize.div(image.getWidth(), image.getHeight());
+        var scale = getScale();
         g2d.scale(scale.x(), scale.y());
         g2d.drawImage(image, 0, 0, null);
+    }
+
+    public Vector2f getScale() {
+        return windowSize.div(image.getWidth(), image.getHeight());
     }
 
     private void resizeBuffer(Vector2f size) {
