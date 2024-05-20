@@ -1,6 +1,7 @@
 package main;
 
 
+import config.WindowConfig;
 import controllers.AnotherTestController;
 import controllers.RenderingTestController;
 import controllers.TestController;
@@ -43,7 +44,9 @@ public class Main {
 
                         // Init JFrame
                         FlatLightLafExtension.init();
-                        JFrameWindowProvider.initWindow(context);
+                        JFrameWindowProvider.initWindow(context, window -> {
+                            window.setTitle(WindowConfig.Title);
+                        });
                         JFrameInputBuffer.init(context);
                         JFrameMouseListener.init(context);
                     })

@@ -5,6 +5,7 @@ import core.EngineContext;
 import core.SleepHelper;
 import core.ecs.Ecs;
 import core.ecs.components.CameraComponent;
+import core.graphics.ImageHelper;
 import core.graphics.WindowProvider;
 import core.input.InputBuffer;
 import core.loading.*;
@@ -19,6 +20,8 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Random;
 
+// TODO delete
+// Keep for reference but will be deleted because everything has been improved and this class is unecessary.
 public class TestController extends Controller {
 
     private OldRenderCanvas canvas;
@@ -38,10 +41,10 @@ public class TestController extends Controller {
 
         var assetManager = context.<AssetManager>getService(AssetManager.class);
         var testImage = assetManager.<BufferedImage>getAsset("test.png");
-        ImageFormatHelper.keyOut(testImage, Color.WHITE);
+        ImageHelper.keyOut(testImage, Color.WHITE);
 
         var cursorImage = assetManager.<BufferedImage>getAsset("cursor.png");
-        ImageFormatHelper.keyOut(cursorImage, Color.WHITE);
+        ImageHelper.keyOut(cursorImage, Color.WHITE);
         var toolkit = Toolkit.getDefaultToolkit();
         var cursor = toolkit.createCustomCursor(cursorImage, new Point(0, 0), "cursor");
 

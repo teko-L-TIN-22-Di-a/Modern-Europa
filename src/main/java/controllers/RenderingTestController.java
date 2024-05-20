@@ -1,11 +1,13 @@
 package controllers;
 
+import config.ScreenConfig;
 import core.Controller;
 import core.EngineContext;
 import core.ecs.Ecs;
 import core.ecs.Entity;
 import core.ecs.components.CameraComponent;
 import core.ecs.components.PositionComponent;
+import core.graphics.ImageHelper;
 import core.graphics.WindowProvider;
 import core.input.InputBuffer;
 import core.input.MouseListener;
@@ -41,10 +43,10 @@ public class RenderingTestController extends Controller {
 
         var assetManager = context.<AssetManager>getService(AssetManager.class);
         var testImage = assetManager.<BufferedImage>getAsset("test.png");
-        ImageFormatHelper.keyOut(testImage, Color.WHITE);
+        ImageHelper.keyOut(testImage, Color.WHITE);
 
         var cursorImage = assetManager.<BufferedImage>getAsset("cursor.png");
-        ImageFormatHelper.keyOut(cursorImage, Color.WHITE);
+        ImageHelper.keyOut(cursorImage, Color.WHITE);
 
         var toolkit = Toolkit.getDefaultToolkit();
         var cursor = toolkit.createCustomCursor(cursorImage, new Point(0, 0), "cursor");
@@ -54,15 +56,16 @@ public class RenderingTestController extends Controller {
         mainTerrain.setComponent(new TerrainChunkComponent(Vector2f.of(5, 5)));
 
         camera = ecs.newEntity();
-        // TODO take camera viewport from configuration.
-        camera.setComponent(new CameraComponent(Vector2f.of(300, 240), true));
+        camera.setComponent(new CameraComponent(ScreenConfig.ViewportSize, true));
+
+        var whiteNoiseTexture = ImageHelper.newImage(ScreenConfig.ViewportSize);
 
         windowProvider = context.getService(WindowProvider.class);
         terrainRenderer = new IsometricTerrainRenderer(context, true);
-        bufferedRenderer = new BufferedRenderer(context, new Vector2f(300, 240), List.of(
+        bufferedRenderer = new BufferedRenderer(context, ScreenConfig.ViewportSize, List.of(
                 g2d -> {
-                    g2d.setColor(Color.WHITE);
-                    g2d.fillRect(0, 0, 800, 600);
+                    ImageHelper.drawWhiteNoise(whiteNoiseTexture, 200, 255);
+                    g2d.drawImage(whiteNoiseTexture, 0,0, null);
                 },
                 terrainRenderer
         ));

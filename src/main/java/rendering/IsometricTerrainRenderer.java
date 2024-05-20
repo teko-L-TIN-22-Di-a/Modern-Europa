@@ -8,7 +8,7 @@ import core.ecs.components.CameraComponent;
 import core.ecs.components.PositionComponent;
 import core.ecs.helper.CameraHelper;
 import core.loading.AssetManager;
-import core.loading.ImageFormatHelper;
+import core.graphics.ImageHelper;
 import core.util.Bounds;
 import core.util.Vector2f;
 import models.Tile;
@@ -33,7 +33,7 @@ public class IsometricTerrainRenderer implements Renderer {
 
         var assetManager = context.<AssetManager>getService(AssetManager.class);
         testTile = assetManager.getAsset("test.png");
-        ImageFormatHelper.keyOut(testTile, Color.WHITE);
+        ImageHelper.keyOut(testTile, Color.WHITE);
     }
 
     public Vector2f getTilePosition(Vector2f mousePos) {
@@ -165,7 +165,7 @@ public class IsometricTerrainRenderer implements Renderer {
         g2d.setColor(new Color(0,0,0,0));
         g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
 
-        var tileMouseMap = ImageFormatHelper.newImage((int) TileConfig.TileSize.x(), (int) TileConfig.TileSize.y());
+        var tileMouseMap = ImageHelper.newImage((int) TileConfig.TileSize.x(), (int) TileConfig.TileSize.y());
         var mouseMapGraphics = (Graphics2D) tileMouseMap.getGraphics();
 
         var currentId = new Color(0, 0, 0, 255).getRGB() + 1;
@@ -229,11 +229,11 @@ public class IsometricTerrainRenderer implements Renderer {
                 (terrainSize.x() + terrainSize.y()) * TileConfig.HalfTileSize.y()
         );
 
-        var image = ImageFormatHelper.newImage((int) imageSize.x(), (int) imageSize.y());
+        var image = ImageHelper.newImage((int) imageSize.x(), (int) imageSize.y());
         BufferedImage mouseMap = null;
 
         if(mouseMapEnabled) {
-            mouseMap = ImageFormatHelper.newImage((int) imageSize.x(), (int) imageSize.y());
+            mouseMap = ImageHelper.newImage((int) imageSize.x(), (int) imageSize.y());
         }
 
         var xOrigin = terrainSize.y() * TileConfig.HalfTileSize.x();

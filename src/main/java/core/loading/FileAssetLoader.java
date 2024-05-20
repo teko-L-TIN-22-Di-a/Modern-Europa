@@ -1,7 +1,7 @@
 package core.loading;
 
-import core.Engine;
 import core.EngineContext;
+import core.graphics.ImageHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import rx.subjects.ReplaySubject;
@@ -9,8 +9,6 @@ import rx.subjects.ReplaySubject;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
@@ -59,7 +57,7 @@ public class FileAssetLoader implements AssetLoader {
                 }
                 case Image -> {
                     var image = ImageIO.read(new File(fullPath));
-                    assetManager.registerAsset(path, ImageFormatHelper.improveFormat(image));
+                    assetManager.registerAsset(path, ImageHelper.improveFormat(image));
                     logger.debug("Loaded and registered image: {}", path);
                 }
                 default -> {

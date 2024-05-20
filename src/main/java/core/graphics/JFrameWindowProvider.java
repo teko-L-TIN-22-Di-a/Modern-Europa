@@ -22,12 +22,12 @@ public class JFrameWindowProvider implements WindowProvider {
 
     private JFrame window;
 
-    private void init() {
-        // TODO make configurable
-        window = new JFrame("Test");
+    private void init(Action1<JFrame> configuration) {
+        window = new JFrame("Window");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
         window.setSize(800, 600);
+        configuration.call(window);
 
         window.setVisible(true);
     }
@@ -83,7 +83,7 @@ public class JFrameWindowProvider implements WindowProvider {
         return builder;
     }
 
-    public static EngineContext initWindow(EngineContext context) {
+    public static EngineContext initWindow(EngineContext context, Action1<JFrame> configuration) {
 
         var windowProvider = context.<WindowProvider>getService(WindowProvider.class);
 
@@ -99,7 +99,7 @@ public class JFrameWindowProvider implements WindowProvider {
         engineHooks.bindInitController(x -> instance.cleanup());
 
         try {
-            SwingUtilities.invokeAndWait(instance::init);
+            SwingUtilities.invokeAndWait(() -> instance.init(configuration));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
