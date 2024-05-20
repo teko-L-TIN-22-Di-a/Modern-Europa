@@ -1,4 +1,4 @@
 package models;
 
-public record Tile(int type, float y) {
+public record Tile(String resourcePath, float y) {
 }

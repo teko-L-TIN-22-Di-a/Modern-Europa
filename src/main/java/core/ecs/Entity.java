@@ -1,6 +1,6 @@
 package core.ecs;
 
-import core.ecs.components.PositionComponent;
+import core.ecs.components.Position;
 import core.util.Vector2f;
 
 public record Entity(Ecs ecs, int id) {
@@ -9,7 +9,7 @@ public record Entity(Ecs ecs, int id) {
         this.ecs = ecs;
         this.id = id;
 
-        setComponent(new PositionComponent(Vector2f.ZERO));
+        setComponent(new Position(Vector2f.ZERO));
     }
 
     public <T> T getComponent(Class<T> componentClass) {

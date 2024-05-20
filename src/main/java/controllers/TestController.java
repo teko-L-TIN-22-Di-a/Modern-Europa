@@ -4,7 +4,7 @@ import core.Controller;
 import core.EngineContext;
 import core.SleepHelper;
 import core.ecs.Ecs;
-import core.ecs.components.CameraComponent;
+import core.ecs.components.Camera;
 import core.graphics.ImageHelper;
 import core.graphics.WindowProvider;
 import core.input.InputBuffer;
@@ -33,7 +33,7 @@ public class TestController extends Controller {
 
         var ecs = new Ecs();
         var newEntity = ecs.newEntity();
-        newEntity.setComponent(new CameraComponent(Vector2f.of(300, 240), true));
+        newEntity.setComponent(new Camera(Vector2f.of(300, 240), true));
 
         var assetLoader = context.<AssetLoader>getService(AssetLoader.class);
         assetLoader.load("test.png", new LoadConfiguration(AssetType.Image));
