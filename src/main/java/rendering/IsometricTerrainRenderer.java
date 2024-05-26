@@ -85,7 +85,7 @@ public class IsometricTerrainRenderer implements Renderer {
             var renderOffset = cameraOffset.add(chunkOffset).sub(chunk.originOffset());
 
             g2d.drawImage(
-                    chunk.mouseMap(),
+                    chunk.image(),
                     (int) renderOffset.x(),
                     (int) renderOffset.y(),
                     null);

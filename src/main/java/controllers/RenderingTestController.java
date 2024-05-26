@@ -62,13 +62,11 @@ public class RenderingTestController extends Controller {
 
         ecs = context.getService(Ecs.class);
         terrain = ecs.newEntity();
-        terrain.setComponent(new TerrainChunk(Vector2f.of(500, 500)));
+        terrain.setComponent(new TerrainChunk(Vector2f.of(2, 2)));
 
-        /*
         var terrain2 = ecs.newEntity();
         terrain2.setComponent(new TerrainChunk(Vector2f.of(2, 2)));
         terrain2.setComponent(new Position(Vector2f.of(2, 0)));
-         */
 
         camera = ecs.newEntity();
         camera.setComponent(new Camera(ScreenConfig.ViewportSize, true));
