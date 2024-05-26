@@ -142,11 +142,7 @@ public class TestController extends Controller {
 
     @Override
     public void update() {
-        var now = System.nanoTime();
-
         canvas.repaint();
-
-        SleepHelper.SleepPrecise(60, System.nanoTime() - now);
     }
 
     @Override

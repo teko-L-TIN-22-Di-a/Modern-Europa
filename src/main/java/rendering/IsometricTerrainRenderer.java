@@ -45,15 +45,16 @@ public class IsometricTerrainRenderer implements Renderer {
 
             var targetPos = mousePos
                     .sub(cameraOffset)
-                    .add(chunk.originOffset())
-                    .add(terrainEntry.component2().position());
+                    .add(chunk.originOffset());
             var bounds = chunk.visualBounds();
 
             if(!bounds.inersects(targetPos)) continue;
 
+            targetPos = targetPos.sub(getChunkOffset(terrainEntry));
+
             var id = chunk.mouseMap().getRGB((int) targetPos.x(), (int) targetPos.y());
             var tilePosition = chunk.idMap().get(id);
-            if(tilePosition != null) return tilePosition;
+            if(tilePosition != null) return tilePosition.add(terrainEntry.component2().position());
         }
 
         return null;
@@ -78,13 +79,13 @@ public class IsometricTerrainRenderer implements Renderer {
             }
 
             var chunk = bufferedChunks.get(terrainEntry.entityId());
-            var chunkOffset = terrainEntry.component2().position();
+            var chunkOffset = getChunkOffset(terrainEntry);
 
             // OriginOf (0,0) on the Image + camera + chunk position
             var renderOffset = cameraOffset.add(chunkOffset).sub(chunk.originOffset());
 
             g2d.drawImage(
-                    chunk.image(),
+                    chunk.mouseMap(),
                     (int) renderOffset.x(),
                     (int) renderOffset.y(),
                     null);
@@ -237,7 +238,11 @@ public class IsometricTerrainRenderer implements Renderer {
                 mouseMap,
                 new HashMap<>(),
                 Vector2f.of(xOrigin, 0),
-                new Bounds(terrain.component2().position(), imageSize));
+                new Bounds(getChunkOffset(terrain), imageSize));
+    }
+
+    private Vector2f getChunkOffset(EcsView2<TerrainChunk, Position> terrainOffset) {
+        return IsometricHelper.toScreenSpace(terrainOffset.component2().position());
     }
 
     private Vector2f getCameraOffset(List<EcsView2<Camera, Position>> cameras) {

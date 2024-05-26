@@ -22,6 +22,7 @@ public class Main {
             new Engine.Builder()
                     //.bootstrapController(new AnotherTestController())
                     .bootstrapController(new RenderingTestController())
+                    .setFramerate(60)
                     .configureServices(builder -> {
 
                         Ecs.addToServices(builder);

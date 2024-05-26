@@ -8,11 +8,13 @@ import core.ecs.Ecs;
 import core.ecs.Entity;
 import core.ecs.components.Camera;
 import core.ecs.components.Position;
+import core.ecs.helper.CameraHelper;
 import core.graphics.ImageHelper;
 import core.graphics.WindowProvider;
 import core.input.InputBuffer;
 import core.input.MouseListener;
 import core.loading.*;
+import core.util.InterpolateHelper;
 import core.util.Vector2f;
 import models.Tile;
 import models.components.TerrainChunk;
@@ -40,6 +42,9 @@ public class RenderingTestController extends Controller {
     private Entity camera;
     private Entity terrain;
 
+    private Vector2f hoverPos = Vector2f.ZERO;
+    private Vector2f targetPos = Vector2f.ZERO;
+
     @Override
     public void init(EngineContext context) {
 
@@ -57,7 +62,13 @@ public class RenderingTestController extends Controller {
 
         ecs = context.getService(Ecs.class);
         terrain = ecs.newEntity();
-        terrain.setComponent(new TerrainChunk(Vector2f.of(10, 10)));
+        terrain.setComponent(new TerrainChunk(Vector2f.of(500, 500)));
+
+        /*
+        var terrain2 = ecs.newEntity();
+        terrain2.setComponent(new TerrainChunk(Vector2f.of(2, 2)));
+        terrain2.setComponent(new Position(Vector2f.of(2, 0)));
+         */
 
         camera = ecs.newEntity();
         camera.setComponent(new Camera(ScreenConfig.ViewportSize, true));
@@ -93,7 +104,21 @@ public class RenderingTestController extends Controller {
 
                     g2d.drawImage(whiteNoiseTexture, 0,0, null);
                 },
-                terrainRenderer
+                terrainRenderer,
+                g2d -> {
+                    var renderPos = IsometricHelper
+                            .toScreenSpace(hoverPos)
+                            .sub(Vector2f.of(TileConfig.HalfTileSize.x(), TileConfig.TileSize.y()))
+                            .add(CameraHelper.GetCameraOffset(camera));
+
+                    g2d.drawImage(
+                            testImage,
+                            (int) renderPos.x(), (int) renderPos.y(),
+                            (int) renderPos.x() + 66, (int) renderPos.y() + 62,
+                            126, 0,
+                            126 + 66, 62,
+                            null);
+                }
         ));
         canvas = new NewRenderCanvas(java.util.List.of(
             bufferedRenderer
@@ -105,6 +130,13 @@ public class RenderingTestController extends Controller {
 
         inputBuffer = context.getService(InputBuffer.class);
         var mouseListener = context.<MouseListener>getService(MouseListener.class);
+        mouseListener.bindMouseMoved(mouseEvent -> {
+            var pos = Vector2f.of(mouseEvent.getX(), mouseEvent.getY());
+            var tilePos = terrainRenderer.getTilePosition(pos.div(bufferedRenderer.getScale()));
+            if(tilePos != null) {
+                targetPos = tilePos;
+            }
+        });
         mouseListener.bindMouseClicked(mouseEvent -> {
             var pos = Vector2f.of(mouseEvent.getX(), mouseEvent.getY());
             var tilePos = terrainRenderer.getTilePosition(pos.div(bufferedRenderer.getScale()));
@@ -145,6 +177,8 @@ public class RenderingTestController extends Controller {
 
         var position = camera.getComponent(Position.class);
         camera.setComponent(position.move(movement));
+
+        hoverPos = InterpolateHelper.interpolateLinear(hoverPos, targetPos, 0.5f);
 
         canvas.render();
     }

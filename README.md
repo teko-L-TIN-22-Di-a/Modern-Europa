@@ -11,3 +11,6 @@ Für das OOP-Projekt wird ein Multiplayer Real-Time-Strategie-Spiel mit dem Name
 -	Sobald ein Spieler keine Gebäude mehr besitzt, ist das Spiel beendet und es wird ein Spieler als Sieger deklariert.
 -	Der Spielfluss wird mit Log4J geloggt und unterstützt das Erkennen und Debuggen von Fehlern.
 -	Ressourcen werden zufällig auf der Spielkarte verteilt. (Optional* die ganze Spielkarte wird generiert.)
+## Anleitung
+- Eine Technische Dokumentation ist unter dem "doc" Ordner zu finden.
+- Eine kurze Setup Guide ist ebenfalls unter "doc/setup.md" zu finden.

@@ -18,9 +18,11 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
 
     private Controller currentController;
     private EngineContext context;
+    private int fps;
     private boolean isRunning = true;
 
     private Engine(Engine.Builder builder) {
+        fps = builder.fps;
 
         var contextBuilder = new EngineContext.Builder();
         contextBuilder.addService(ControllerSwitcher.class, this);
@@ -33,7 +35,7 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
         switchTo(builder.bootController);
     }
 
-    public void run() throws Exception {
+    public void run() {
         logger.debug("Starting main game loop.");
 
         long now;
@@ -44,8 +46,9 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
             currentController.update();
             afterUpdate.onNext(null);
 
-            SleepHelper.SleepPrecise(60,System.nanoTime() - now);
+            SleepHelper.SleepPrecise(fps,System.nanoTime() - now);
 
+            // TODO remove debug
             var frameTime = (System.nanoTime() - now)/1000000;
             if(frameTime > 16.5) {
                 logger.debug("Game loop slowdown to {}ms", frameTime);
@@ -91,8 +94,14 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
     public static class Builder {
 
         private Controller bootController;
+        private int fps = 60;
         private Action1<EngineContext.Builder> configureServiceAction;
         private Action1<EngineContext> startupServiceAction;
+
+        public Builder setFramerate(int fps) {
+            this.fps = fps;
+            return this;
+        }
 
         public Builder bootstrapController(Controller controller) {
             this.bootController = controller;
