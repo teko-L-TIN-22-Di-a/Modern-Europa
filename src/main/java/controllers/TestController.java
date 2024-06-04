@@ -2,7 +2,6 @@ package controllers;
 
 import core.Controller;
 import core.EngineContext;
-import core.SleepHelper;
 import core.ecs.Ecs;
 import core.ecs.components.Camera;
 import core.graphics.ImageHelper;
