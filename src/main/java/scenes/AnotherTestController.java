@@ -1,4 +1,4 @@
-package controllers;
+package scenes;
 
 import config.ScreenConfig;
 import core.Controller;
@@ -6,9 +6,8 @@ import core.EngineContext;
 import core.graphics.ImageHelper;
 import core.graphics.WindowProvider;
 import core.loading.*;
-import core.util.Vector2f;
-import rendering.BufferedRenderer;
-import rendering.NewRenderCanvas;
+import scenes.lib.rendering.BufferedRenderer;
+import scenes.lib.rendering.NewRenderCanvas;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

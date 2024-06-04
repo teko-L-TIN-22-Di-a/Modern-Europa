@@ -1,23 +1,29 @@
-package rendering;
+package scenes.lib.rendering;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
-public class OldRenderCanvas extends JComponent {
-    protected static final Logger logger = LogManager.getLogger(OldRenderCanvas.class);
+public class NewRenderCanvas extends Canvas {
+    protected static final Logger logger = LogManager.getLogger(NewRenderCanvas.class);
 
     private List<Renderer> renderSteps = new ArrayList<>();
+    private BufferStrategy bufferStrategy;
 
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    public void init() {
+        createBufferStrategy(2);
+        setIgnoreRepaint(true);
+        bufferStrategy = getBufferStrategy();
+    }
+
+    public void render() {
+        var g = bufferStrategy.getDrawGraphics();
 
         for(var step : renderSteps) {
             // Isolate graphics context so that scaling and other transformations won't propagate
@@ -25,9 +31,13 @@ public class OldRenderCanvas extends JComponent {
             var g2d = (Graphics2D) g.create();
             step.render(g2d);
         }
+        g.dispose();
+
+        bufferStrategy.show();
     }
 
-    public OldRenderCanvas(List<Renderer> renderSteps) {
+    public NewRenderCanvas(List<Renderer> renderSteps)
+    {
         setRenderSteps(renderSteps);
     }
 

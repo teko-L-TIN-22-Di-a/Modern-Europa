@@ -1,4 +1,4 @@
-package rendering;
+package scenes.lib.rendering;
 
 import config.TileConfig;
 import core.EngineContext;
@@ -10,8 +10,8 @@ import core.ecs.helper.CameraHelper;
 import core.graphics.ImageHelper;
 import core.util.Bounds;
 import core.util.Vector2f;
-import models.Tile;
-import models.components.TerrainChunk;
+import scenes.lib.Tile;
+import scenes.lib.components.TerrainChunk;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

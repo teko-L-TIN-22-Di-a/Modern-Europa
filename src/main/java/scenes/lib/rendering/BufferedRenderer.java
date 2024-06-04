@@ -1,4 +1,4 @@
-package rendering;
+package scenes.lib.rendering;
 
 import core.EngineContext;
 import core.graphics.WindowProvider;
@@ -6,7 +6,6 @@ import core.util.Vector2f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;

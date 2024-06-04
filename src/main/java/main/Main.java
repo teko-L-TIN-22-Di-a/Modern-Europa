@@ -2,9 +2,8 @@ package main;
 
 
 import config.WindowConfig;
-import controllers.AnotherTestController;
-import controllers.RenderingTestController;
-import controllers.TestController;
+import scenes.MainController;
+import scenes.RenderingTestController;
 import core.Engine;
 import core.ecs.Ecs;
 import core.graphics.FlatLightLafExtension;
@@ -14,6 +13,7 @@ import core.input.JFrameMouseListener;
 import core.loading.DefaultAssetManager;
 import core.loading.FileAssetLoader;
 import core.loading.JsonSettings;
+import scenes.StartupController;
 
 public class Main {
     public static void main(String[] args) {
@@ -21,10 +21,9 @@ public class Main {
         try {
             new Engine.Builder()
                     //.bootstrapController(new AnotherTestController())
-                    .bootstrapController(new RenderingTestController())
+                    .bootstrapController(new StartupController(new MainController()))
                     .setFramerate(60)
                     .configureServices(builder -> {
-
                         Ecs.addToServices(builder);
 
                         // Adding Asset and Settings Services

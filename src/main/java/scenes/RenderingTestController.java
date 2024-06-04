@@ -1,4 +1,4 @@
-package controllers;
+package scenes;
 
 import config.ScreenConfig;
 import config.TileConfig;
@@ -16,9 +16,9 @@ import core.input.MouseListener;
 import core.loading.*;
 import core.util.InterpolateHelper;
 import core.util.Vector2f;
-import models.Tile;
-import models.components.TerrainChunk;
-import rendering.*;
+import scenes.lib.Tile;
+import scenes.lib.components.TerrainChunk;
+import scenes.lib.rendering.*;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -189,8 +189,10 @@ public class RenderingTestController extends Controller {
 
     private void loadAssets(EngineContext context) {
         var assetLoader = context.<AssetLoader>getService(AssetLoader.class);
-        assetLoader.load("test.png", new LoadConfiguration(AssetType.Image));
-        assetLoader.load("cursor.png", new LoadConfiguration(AssetType.Image));
+        assetLoader.load(Map.ofEntries(
+                entry("test.png", LoadConfiguration.DefaultImage),
+                entry("cursor.png", LoadConfiguration.DefaultImage)
+        ));
     }
 
 }

@@ -1,4 +1,4 @@
-package rendering;
+package scenes.lib.rendering;
 
 import java.util.HashMap;
 import java.util.Map;

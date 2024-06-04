@@ -1,4 +1,4 @@
-package controllers;
+package scenes;
 
 import core.Controller;
 import core.EngineContext;
@@ -9,8 +9,8 @@ import core.graphics.WindowProvider;
 import core.input.InputBuffer;
 import core.loading.*;
 import core.util.Vector2f;
-import rendering.BufferedRenderer;
-import rendering.OldRenderCanvas;
+import scenes.lib.rendering.BufferedRenderer;
+import scenes.lib.rendering.OldRenderCanvas;
 
 import javax.swing.*;
 import java.awt.*;

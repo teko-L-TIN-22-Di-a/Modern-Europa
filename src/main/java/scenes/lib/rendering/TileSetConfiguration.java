@@ -1,4 +1,4 @@
-package rendering;
+package scenes.lib.rendering;
 
 import core.util.Vector2f;
 
