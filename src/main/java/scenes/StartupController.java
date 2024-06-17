@@ -52,7 +52,7 @@ public class StartupController extends Controller {
 
     private void Load() {
         assetLoader.load(Map.ofEntries(
-                entry("test.png", LoadConfiguration.DefaultImage),
+                entry("ground.png", LoadConfiguration.DefaultImage),
                 entry("cursor.png", LoadConfiguration.DefaultImage)
         ));
     }
@@ -67,15 +67,12 @@ public class StartupController extends Controller {
         assetManager.registerAsset(AssetConstants.CURSOR, cursor);
 
         // Tile set
-        var testImage = assetManager.<BufferedImage>getAsset("test.png");
+        var testImage = assetManager.<BufferedImage>getAsset("ground.png");
         ImageHelper.keyOut(testImage, Color.WHITE);
 
         var tileSet = new TileSet();
         tileSet.add(Map.ofEntries(
-                entry("1", new TileSetConfiguration(testImage, Vector2f.of(0,0), Vector2f.of(62, 30))),
-                entry("2", new TileSetConfiguration(testImage, Vector2f.of(0,30), Vector2f.of(62, 30))),
-                entry("3", new TileSetConfiguration(testImage, Vector2f.of(62,0), Vector2f.of(62, 30))),
-                entry("4", new TileSetConfiguration(testImage, Vector2f.of(62,30), Vector2f.of(62, 30)))
+                entry("1", new TileSetConfiguration(testImage, Vector2f.of(0,0), Vector2f.of(132, 64)))
         ));
         assetManager.registerAsset(AssetConstants.TILE_SET, tileSet);
     }

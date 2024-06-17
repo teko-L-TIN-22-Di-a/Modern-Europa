@@ -13,7 +13,7 @@ public class TerrainChunk {
 
         for (int x = 0; x < tiles.length; x++) {
             for (int z = 0; z < tiles[x].length; z++) {
-                tiles[x][z] = new Tile("3",0);
+                tiles[x][z] = new Tile("1",0);
             }
         }
     }

@@ -17,6 +17,7 @@ import scenes.lib.PlayerController;
 import scenes.lib.components.TerrainChunk;
 import scenes.lib.rendering.*;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -70,8 +71,27 @@ public class MainController extends Controller {
                 ))
         ));
 
-        canvas.setCursor(cursor);
-        windowProvider.addComponent(canvas);
+        var container = new JPanel(new GridBagLayout());
+        var constraints = new GridBagConstraints();
+
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.fill = GridBagConstraints.BOTH;
+        container.add(canvas, constraints);
+
+        var subContainer = new JPanel();
+        subContainer.add(new JButton("test"));
+        constraints.gridy = 1;
+        constraints.weighty = 0.0;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.ipady = 100;
+        container.add(subContainer, constraints);
+
+        container.setCursor(cursor);
+        windowProvider.addComponent(container);
+
         canvas.init();
     }
 
