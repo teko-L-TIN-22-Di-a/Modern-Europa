@@ -79,7 +79,7 @@ public class MenuController extends Controller {
 
     private void onJoinButtonClick() {
         var textInput = new JTextField();
-        textInput.setText("localhost");
+        textInput.setText("localhost:3000");
 
         var result = new DialogRenderer(
                 Arrays.asList("Please enter the Server Host address.", textInput).toArray(),

@@ -30,11 +30,10 @@ public class IoClient {
         listenThread = new Thread(this::listen);
     }
 
-    public void connect(String address) throws IOException {
+    public void connect(String hostname, int port) throws IOException {
         var socket = new Socket();
 
-        // TODO make configurable
-        socket.connect(new InetSocketAddress(address, 3000));
+        socket.connect(new InetSocketAddress(hostname, port));
 
         var handler = new SocketHandler(socket);
         this.socket = new IoSocket(handler);
@@ -42,7 +41,7 @@ public class IoClient {
         bindSocket(this.socket);
         handler.Connect();
 
-        logger.info("Connected to <{}>", address);
+        logger.info("Connected to <{}:{}>", hostname, port);
 
         listenThread.start();
     }

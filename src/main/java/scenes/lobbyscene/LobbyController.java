@@ -6,14 +6,17 @@ import core.EngineContext;
 import core.Parameters;
 import core.graphics.WindowProvider;
 import core.loading.AssetManager;
+import core.loading.Settings;
 import core.networking.IoClient;
 import core.networking.IoServer;
 import scenes.lib.AssetConstants;
+import scenes.lib.settings.UserSettings;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LobbyController extends Controller {
@@ -23,70 +26,69 @@ public class LobbyController extends Controller {
 
     private WindowProvider windowProvider;
     private ControllerSwitcher switcher;
+    private Settings settings;
 
-    private JPanel menuContainer;
-    private JPanel menuPanel;
-
-    private Controller pendingController;
+    private ArrayList<String> playerNames = new ArrayList<>();
+    private LobbyRenderer lobbyRenderer;
 
     @Override
     public void init(EngineContext context, Parameters parameters) {
         switcher = context.getService(ControllerSwitcher.class);
+        windowProvider = context.getService(WindowProvider.class);
+        settings = context.getService(Settings.class);
 
         var assetManager = context.<AssetManager>getService(AssetManager.class);
         var cursor = assetManager.<Cursor>getAsset(AssetConstants.CURSOR);
-        windowProvider = context.getService(WindowProvider.class);
 
-        menuContainer = new JPanel();
-        menuPanel = new JPanel(new GridBagLayout());
-        menuPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        var constraints = new GridBagConstraints();
-
-        constraints.anchor = GridBagConstraints.NORTH;
-        constraints.gridwidth = GridBagConstraints.REMAINDER;
-        var title = new JLabel("Lobby");
-        title.setFont(new Font(title.getFont().getName(), Font.BOLD, 52));
-        menuPanel.add(title, constraints);
-
-        var playersContainer = new JPanel();
-        playersContainer.setLayout(new BoxLayout(playersContainer, BoxLayout.Y_AXIS));
-        constraints.anchor = GridBagConstraints.CENTER;
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-
-        constraints.weighty = 1;
-        menuPanel.add(playersContainer, constraints);
-
-        menuPanel.setCursor(cursor);
-        menuContainer.add(menuPanel);
-        windowProvider.addComponent(menuContainer);
+        lobbyRenderer = new LobbyRenderer();
+        lobbyRenderer.setCursor(cursor);
+        windowProvider.addComponent(lobbyRenderer);
 
         var hostOnPort = parameters.getString(LobbyController.HOST_ON_PORT);
         var hostAddress = parameters.getString(LobbyController.HOST_ADDRESS);
 
         if(hostOnPort != null) {
-            playersContainer.add(new JLabel("Host"));
-            playersContainer.revalidate();
+            playerNames.add(settings.get(UserSettings.class).Username() + " [Host]");
+            lobbyRenderer.UpdatePlayerList(playerNames);
 
-            var server = new IoServer();
-            AtomicInteger i = new AtomicInteger(1);
-            server.bindConnect(socket -> {
-                playersContainer.add(new JLabel("Player" + i.getAndIncrement()));
-                playersContainer.revalidate();
-            });
-            try {
-                server.StartListening();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            var server = initServer(Integer.parseInt(hostOnPort));
         } else if(hostAddress != null) {
-            var client = new IoClient();
-            try {
-                client.connect(hostAddress);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            var client = initClient(hostAddress);
         }
 
+    }
+
+    private IoServer initServer(int port) {
+        var server = new IoServer();
+        AtomicInteger i = new AtomicInteger(1);
+        server.bindConnect(socket -> {
+            playerNames.add("player" + i.getAndIncrement());
+            lobbyRenderer.UpdatePlayerList(playerNames);
+        });
+
+        try {
+            server.StartListening(port);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return server;
+    }
+
+    private IoClient initClient(String hostAddress) {
+        var client = new IoClient();
+        try {
+
+            var addressParts = hostAddress.split(":");
+            client.connect(
+                    addressParts[0],
+                    Integer.parseInt(addressParts[1])
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return client;
     }
 
     @Override

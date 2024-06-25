@@ -36,9 +36,8 @@ public class IoServer {
         });
     }
 
-    public void StartListening() throws IOException {
-        // TODO make configurable
-        serverSocket = new ServerSocket(3000);
+    public void StartListening(int port) throws IOException {
+        serverSocket = new ServerSocket(port);
         connectionThread.start();
     }
 

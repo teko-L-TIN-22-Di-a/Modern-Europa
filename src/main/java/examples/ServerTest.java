@@ -26,7 +26,7 @@ public class ServerTest {
         });
 
         try {
-            server.StartListening();
+            server.StartListening(3000);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

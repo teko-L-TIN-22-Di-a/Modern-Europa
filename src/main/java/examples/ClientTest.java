@@ -22,7 +22,7 @@ public class ClientTest {
         });
 
         try {
-            server.connect("127.0.0.1");
+            server.connect("127.0.0.1", 3000);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
