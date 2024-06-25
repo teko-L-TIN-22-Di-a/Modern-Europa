@@ -1,5 +1,6 @@
 package scenes.lobbyscene;
 
+import com.google.gson.Gson;
 import core.Controller;
 import core.ControllerSwitcher;
 import core.EngineContext;
@@ -9,7 +10,11 @@ import core.loading.AssetManager;
 import core.loading.Settings;
 import core.networking.IoClient;
 import core.networking.IoServer;
+import core.util.JsonConverter;
 import scenes.lib.AssetConstants;
+import scenes.lib.networking.LobbyUpdateMessage;
+import scenes.lib.networking.RegisterMessage;
+import scenes.lib.networking.SocketMessage;
 import scenes.lib.settings.UserSettings;
 
 import javax.swing.*;
@@ -23,6 +28,8 @@ public class LobbyController extends Controller {
 
     public static final String HOST_ON_PORT = "hostOnPort";
     public static final String HOST_ADDRESS = "hostAddress";
+
+    private static final Gson gson = JsonConverter.getInstance();
 
     private WindowProvider windowProvider;
     private ControllerSwitcher switcher;
@@ -40,12 +47,14 @@ public class LobbyController extends Controller {
         var assetManager = context.<AssetManager>getService(AssetManager.class);
         var cursor = assetManager.<Cursor>getAsset(AssetConstants.CURSOR);
 
-        lobbyRenderer = new LobbyRenderer();
-        lobbyRenderer.setCursor(cursor);
-        windowProvider.addComponent(lobbyRenderer);
-
         var hostOnPort = parameters.getString(LobbyController.HOST_ON_PORT);
         var hostAddress = parameters.getString(LobbyController.HOST_ADDRESS);
+
+        var isHost = hostOnPort != null;
+
+        lobbyRenderer = new LobbyRenderer(isHost);
+        lobbyRenderer.setCursor(cursor);
+        windowProvider.addComponent(lobbyRenderer);
 
         if(hostOnPort != null) {
             playerNames.add(settings.get(UserSettings.class).Username() + " [Host]");
@@ -59,11 +68,28 @@ public class LobbyController extends Controller {
     }
 
     private IoServer initServer(int port) {
+        // TODO move code to serverHandler
         var server = new IoServer();
         AtomicInteger i = new AtomicInteger(1);
         server.bindConnect(socket -> {
-            playerNames.add("player" + i.getAndIncrement());
-            lobbyRenderer.UpdatePlayerList(playerNames);
+            socket.bindReceive(msg -> {
+                System.out.println("Server Message Received! " + msg + RegisterMessage.TYPE);
+                var message = gson.fromJson(msg, SocketMessage.class);
+                if(message.type().equals(RegisterMessage.TYPE)) {
+                    System.out.println("Sending");
+                    var registerMessage = message.getMessage(RegisterMessage.class);
+
+                    playerNames.add(registerMessage.username());
+                    lobbyRenderer.UpdatePlayerList(playerNames);
+
+                    var updateMessage = SocketMessage.of(new LobbyUpdateMessage(playerNames));
+                    try {
+                        server.send(gson.toJson(updateMessage));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
         });
 
         try {
@@ -76,9 +102,26 @@ public class LobbyController extends Controller {
     }
 
     private IoClient initClient(String hostAddress) {
+        // TODO move code to clientHandler
         var client = new IoClient();
-        try {
+        client.bindConnect(x -> {
+            System.out.println("Client Connected!");
+            var username = settings.get(UserSettings.class).Username();
+            var registerMessage = SocketMessage.of(new RegisterMessage(username));
 
+            client.send(gson.toJson(registerMessage));
+        });
+        client.bindReceive(msg -> {
+            System.out.println("Client received update");
+            var message = gson.fromJson(msg, SocketMessage.class);
+            if(message.type().equals(LobbyUpdateMessage.TYPE)) {
+                var updateMessage = message.getMessage(LobbyUpdateMessage.class);
+                playerNames = updateMessage.users();
+                lobbyRenderer.UpdatePlayerList(playerNames);
+            }
+        });
+
+        try {
             var addressParts = hostAddress.split(":");
             client.connect(
                     addressParts[0],

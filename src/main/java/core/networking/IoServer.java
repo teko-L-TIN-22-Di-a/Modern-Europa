@@ -102,6 +102,12 @@ public class IoServer {
         });
     }
 
+    public void send(String data) throws IOException {
+        for(var socket : clients.values()){
+            socket.send(data);
+        }
+    }
+
     public Subscription bindConnect(Action1<IoSocket> action) {
         return connect.subscribe(action);
     }
