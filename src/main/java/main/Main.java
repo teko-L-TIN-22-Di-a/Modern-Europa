@@ -2,8 +2,7 @@ package main;
 
 
 import config.WindowConfig;
-import scenes.MainController;
-import scenes.RenderingTestController;
+import scenes.menuscene.MenuController;
 import core.Engine;
 import core.ecs.Ecs;
 import core.graphics.FlatLightLafExtension;
@@ -21,7 +20,7 @@ public class Main {
         try {
             new Engine.Builder()
                     //.bootstrapController(new AnotherTestController())
-                    .bootstrapController(new StartupController(new MainController()))
+                    .bootstrapController(new StartupController(new MenuController()))
                     .setFramerate(60)
                     .configureServices(builder -> {
                         Ecs.addToServices(builder);

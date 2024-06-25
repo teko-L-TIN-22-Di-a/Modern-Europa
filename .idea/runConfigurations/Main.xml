@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Main" type="Application" factoryName="Application">
+  <configuration default="false" name="Main" type="Application" factoryName="Application" singleton="false">
     <option name="MAIN_CLASS_NAME" value="main.Main" />
     <module name="Modern-Europa" />
     <option name="PROGRAM_PARAMETERS" value="-Dsun.java2d.opengl=true" />

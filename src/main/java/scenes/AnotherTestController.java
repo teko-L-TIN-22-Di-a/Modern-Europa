@@ -3,6 +3,7 @@ package scenes;
 import config.ScreenConfig;
 import core.Controller;
 import core.EngineContext;
+import core.Parameters;
 import core.graphics.ImageHelper;
 import core.graphics.WindowProvider;
 import core.loading.*;
@@ -18,7 +19,7 @@ public class AnotherTestController extends Controller {
     private NewRenderCanvas canvas;
 
     @Override
-    public void init(EngineContext context) {
+    public void init(EngineContext context, Parameters parameters) {
 
         loadAssets(context);
 

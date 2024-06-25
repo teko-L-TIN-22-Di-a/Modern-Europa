@@ -3,6 +3,7 @@ package scenes;
 import config.ScreenConfig;
 import core.Controller;
 import core.EngineContext;
+import core.Parameters;
 import core.graphics.WindowProvider;
 import core.util.Vector2f;
 import scenes.lib.rendering.BufferedRenderer;
@@ -27,7 +28,7 @@ public class PiController extends Controller {
     private NewRenderCanvas canvas;
 
     @Override
-    public void init(EngineContext context) {
+    public void init(EngineContext context, Parameters parameters) {
 
         for(var i = 0; i < 1000; i++) {
             newPoint();

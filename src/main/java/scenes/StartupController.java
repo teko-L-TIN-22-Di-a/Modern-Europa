@@ -3,6 +3,7 @@ package scenes;
 import core.Controller;
 import core.ControllerSwitcher;
 import core.EngineContext;
+import core.Parameters;
 import core.graphics.ImageHelper;
 import core.loading.AssetLoader;
 import core.loading.AssetManager;
@@ -31,7 +32,7 @@ public class StartupController extends Controller {
     }
 
     @Override
-    public void init(EngineContext context) {
+    public void init(EngineContext context, Parameters parameters) {
         switcher = context.getService(ControllerSwitcher.class);
         assetLoader = context.getService(AssetLoader.class);
         assetManager = context.getService(AssetManager.class);

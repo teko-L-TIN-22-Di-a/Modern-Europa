@@ -4,6 +4,7 @@ import config.ScreenConfig;
 import config.TileConfig;
 import core.Controller;
 import core.EngineContext;
+import core.Parameters;
 import core.ecs.Ecs;
 import core.ecs.Entity;
 import core.ecs.components.Camera;
@@ -46,7 +47,7 @@ public class RenderingTestController extends Controller {
     private Vector2f targetPos = Vector2f.ZERO;
 
     @Override
-    public void init(EngineContext context) {
+    public void init(EngineContext context, Parameters parameters) {
 
         loadAssets(context);
 

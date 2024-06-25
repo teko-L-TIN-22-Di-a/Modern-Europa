@@ -43,7 +43,7 @@ public class JsonSettings implements Settings {
     }
 
     public void put(String path, Object value) {
-        settingsMap.put(path, gson.toJson(value));
+        settingsMap.put(path, value);
     }
 
     public void save() {

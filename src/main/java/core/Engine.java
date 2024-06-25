@@ -1,5 +1,6 @@
 package core;
 
+import com.google.gson.Gson;
 import core.util.SleepHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,12 +8,17 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
+import java.util.Vector;
+
 public class Engine implements ControllerSwitcher, EngineEventHooks {
     protected static final Logger logger = LogManager.getLogger(Engine.class);
 
     private final PublishSubject<Void> initController = PublishSubject.create();
     private final PublishSubject<Void> beforeUpdate = PublishSubject.create();
     private final PublishSubject<Void> afterUpdate = PublishSubject.create();
+
+    private Controller queuedController = null;
+    private Parameters queuedParameters = null;
 
     private Controller currentController;
     private EngineContext context;
@@ -41,6 +47,13 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
             now = System.nanoTime();
 
             beforeUpdate.onNext(null);
+
+            if(queuedController != null) {
+                switchTo(queuedController, queuedParameters);
+                queuedController = null;
+                queuedParameters = null;
+            }
+
             currentController.update();
             afterUpdate.onNext(null);
 
@@ -56,13 +69,29 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
     }
 
     @Override
+    public void queue(Controller controller) {
+        queuedController = controller;
+        queuedParameters = Parameters.EMPTY;
+    }
+
+    @Override
+    public void queue(Controller controller, Parameters parameters) {
+        queuedController = controller;
+        queuedParameters = parameters;
+    }
+
+    @Override
     public void switchTo(Controller controller) {
         switchTo(controller, Parameters.EMPTY);
     }
 
     @Override
     public void switchTo(Controller controller, Parameters parameters) {
-        logger.debug("Switching to controller <{}>", controller.getClass().getName());
+        logger.debug(
+                "Switching to controller <{}> with parameters [{}]",
+                controller.getClass().getName(),
+                new Gson().toJson(parameters)
+                );
 
         if(currentController != null) {
             currentController.cleanup();
@@ -70,7 +99,7 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
 
         currentController = controller;
         initController.onNext(null);
-        controller.init(context);
+        controller.init(context, parameters);
         logger.debug("Controller <{}> initialised", controller.getClass().getName());
     }
 

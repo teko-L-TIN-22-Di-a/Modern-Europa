@@ -1,29 +1,21 @@
-package scenes;
+package scenes.gamescene;
 
 import config.ScreenConfig;
-import config.TileConfig;
 import core.Controller;
 import core.EngineContext;
+import core.Parameters;
 import core.ecs.Ecs;
-import core.ecs.helper.CameraHelper;
-import core.graphics.ImageHelper;
 import core.graphics.WindowProvider;
-import core.loading.AssetLoader;
 import core.loading.AssetManager;
-import core.loading.LoadConfiguration;
 import core.util.Vector2f;
 import scenes.lib.AssetConstants;
 import scenes.lib.PlayerController;
 import scenes.lib.components.TerrainChunk;
+import scenes.lib.gui.MainGui;
 import scenes.lib.rendering.*;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.Map;
-
-import static java.util.Map.entry;
 
 public class MainController extends Controller {
 
@@ -32,7 +24,7 @@ public class MainController extends Controller {
     private Ecs ecs;
 
     @Override
-    public void init(EngineContext context) {
+    public void init(EngineContext context, Parameters parameters) {
         playerController = new PlayerController(context);
         ecs = context.getService(Ecs.class);
 
@@ -71,24 +63,7 @@ public class MainController extends Controller {
                 ))
         ));
 
-        var container = new JPanel(new GridBagLayout());
-        var constraints = new GridBagConstraints();
-
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.fill = GridBagConstraints.BOTH;
-        container.add(canvas, constraints);
-
-        var subContainer = new JPanel();
-        subContainer.add(new JButton("test"));
-        constraints.gridy = 1;
-        constraints.weighty = 0.0;
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.ipady = 100;
-        container.add(subContainer, constraints);
-
+        var container = new MainGui(canvas);
         container.setCursor(cursor);
         windowProvider.addComponent(container);
 

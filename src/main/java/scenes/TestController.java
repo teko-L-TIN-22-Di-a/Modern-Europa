@@ -2,6 +2,7 @@ package scenes;
 
 import core.Controller;
 import core.EngineContext;
+import core.Parameters;
 import core.ecs.Ecs;
 import core.ecs.components.Camera;
 import core.graphics.ImageHelper;
@@ -28,7 +29,7 @@ public class TestController extends Controller {
     private Vector2f offset = Vector2f.ZERO;
 
     @Override
-    public void init(EngineContext context) {
+    public void init(EngineContext context, Parameters parameters) {
 
         var ecs = new Ecs();
         var newEntity = ecs.newEntity();
