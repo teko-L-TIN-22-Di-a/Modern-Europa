@@ -1,7 +1,6 @@
 package scenes.lib.components;
 
 import core.util.Vector2f;
-import scenes.lib.Tile;
 
 public class TerrainChunk {
 

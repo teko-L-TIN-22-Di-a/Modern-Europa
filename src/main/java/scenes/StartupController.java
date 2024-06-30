@@ -10,8 +10,8 @@ import core.loading.AssetManager;
 import core.loading.LoadConfiguration;
 import core.util.Vector2f;
 import scenes.lib.AssetConstants;
-import scenes.lib.rendering.TileSet;
-import scenes.lib.rendering.TileSetConfiguration;
+import scenes.lib.rendering.TextureAtlas;
+import scenes.lib.rendering.TextureAtlasEntry;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -71,9 +71,9 @@ public class StartupController extends Controller {
         var testImage = assetManager.<BufferedImage>getAsset("ground.png");
         ImageHelper.keyOut(testImage, Color.WHITE);
 
-        var tileSet = new TileSet();
+        var tileSet = new TextureAtlas();
         tileSet.add(Map.ofEntries(
-                entry("1", new TileSetConfiguration(testImage, Vector2f.of(0,0), Vector2f.of(132, 64)))
+                entry("1", new TextureAtlasEntry(testImage, Vector2f.of(0,0), Vector2f.of(132, 64)))
         ));
         assetManager.registerAsset(AssetConstants.TILE_SET, tileSet);
     }

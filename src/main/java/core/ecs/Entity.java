@@ -2,6 +2,7 @@ package core.ecs;
 
 import core.ecs.components.Position;
 import core.util.Vector2f;
+import core.util.Vector3f;
 
 public record Entity(Ecs ecs, int id) {
 
@@ -9,7 +10,7 @@ public record Entity(Ecs ecs, int id) {
         this.ecs = ecs;
         this.id = id;
 
-        setComponent(new Position(Vector2f.ZERO));
+        setComponent(new Position(Vector3f.ZERO));
     }
 
     public <T> T getComponent(Class<T> componentClass) {

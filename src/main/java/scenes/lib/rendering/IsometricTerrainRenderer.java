@@ -10,7 +10,7 @@ import core.ecs.helper.CameraHelper;
 import core.graphics.ImageHelper;
 import core.util.Bounds;
 import core.util.Vector2f;
-import scenes.lib.Tile;
+import scenes.lib.components.Tile;
 import scenes.lib.components.TerrainChunk;
 
 import java.awt.*;
@@ -22,21 +22,18 @@ public class IsometricTerrainRenderer implements Renderer {
 
     private final Ecs ecs;
 
-    private final TileSet tileSet;
+    private final TextureAtlas textureAtlas;
     private final boolean mouseMapEnabled;
     private final Map<Integer, RenderedChunkEntry> bufferedChunks = new HashMap<>();
+    private Vector2f bufferedCameraOffset = Vector2f.ZERO;
 
-    public IsometricTerrainRenderer(EngineContext context, TileSet tileSet, boolean enableMouseMap) {
+    public IsometricTerrainRenderer(EngineContext context, TextureAtlas textureAtlas, boolean enableMouseMap) {
         ecs = context.getService(Ecs.class);
-        this.tileSet = tileSet;
+        this.textureAtlas = textureAtlas;
         mouseMapEnabled = enableMouseMap;
     }
 
     public Vector2f getTilePosition(Vector2f mousePos) {
-        // TODO check if querying for entites is necessary.
-        var cameraEntries = ecs.view(Camera.class, Position.class);
-        var cameraOffset = getCameraOffset(cameraEntries);
-
         var terrainEntries = ecs.view(TerrainChunk.class, Position.class);
 
         for(var terrainEntry : terrainEntries) {
@@ -44,7 +41,7 @@ public class IsometricTerrainRenderer implements Renderer {
             if(chunk == null) continue;
 
             var targetPos = mousePos
-                    .sub(cameraOffset)
+                    .sub(bufferedCameraOffset)
                     .add(chunk.originOffset());
             var bounds = chunk.visualBounds();
 
@@ -54,7 +51,7 @@ public class IsometricTerrainRenderer implements Renderer {
 
             var id = chunk.mouseMap().getRGB((int) targetPos.x(), (int) targetPos.y());
             var tilePosition = chunk.idMap().get(id);
-            if(tilePosition != null) return tilePosition.add(terrainEntry.component2().position());
+            if(tilePosition != null) return tilePosition.add(terrainEntry.component2().position().toVector2fxy());
         }
 
         return null;
@@ -63,7 +60,7 @@ public class IsometricTerrainRenderer implements Renderer {
     @Override
     public void render(Graphics2D g2d) {
         var cameraEntries = ecs.view(Camera.class, Position.class);
-        var cameraOffset = getCameraOffset(cameraEntries);
+        bufferedCameraOffset = getCameraOffset(cameraEntries);
 
         var terrainEntries = ecs.view(TerrainChunk.class, Position.class);
 
@@ -82,7 +79,7 @@ public class IsometricTerrainRenderer implements Renderer {
             var chunkOffset = getChunkOffset(terrainEntry);
 
             // OriginOf (0,0) on the Image + camera + chunk position
-            var renderOffset = cameraOffset.add(chunkOffset).sub(chunk.originOffset());
+            var renderOffset = bufferedCameraOffset.add(chunkOffset).sub(chunk.originOffset());
 
             g2d.drawImage(
                     chunk.image(),
@@ -131,7 +128,7 @@ public class IsometricTerrainRenderer implements Renderer {
                         // 0,0 is in center of image offset with half the tile size.
                         .add(Vector2f.of(-TileConfig.HalfTileSize.x(), 0));
 
-                var tileConfiguration = tileSet.get(tile.resourcePath());
+                var tileConfiguration = textureAtlas.get(tile.resourcePath());
 
                 g2d.drawImage(
                         tileConfiguration.image(),
@@ -182,7 +179,7 @@ public class IsometricTerrainRenderer implements Renderer {
                 mouseMapGraphics.setColor(new Color(currentId));
                 mouseMapGraphics.fillRect(0,0, tileMouseMap.getWidth(), tileMouseMap.getHeight());
 
-                var tileConfiguration = tileSet.get(tile.resourcePath());
+                var tileConfiguration = textureAtlas.get(tile.resourcePath());
 
                 // Set draw mode to only render background color where it intersects with tile.
                 mouseMapGraphics.setComposite(dstInComposite);

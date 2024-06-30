@@ -17,7 +17,8 @@ import core.input.MouseListener;
 import core.loading.*;
 import core.util.InterpolateHelper;
 import core.util.Vector2f;
-import scenes.lib.Tile;
+import core.util.Vector3f;
+import scenes.lib.components.Tile;
 import scenes.lib.components.TerrainChunk;
 import scenes.lib.rendering.*;
 
@@ -68,7 +69,7 @@ public class RenderingTestController extends Controller {
 
         var terrain2 = ecs.newEntity();
         terrain2.setComponent(new TerrainChunk(Vector2f.of(50, 50)));
-        terrain2.setComponent(new Position(Vector2f.of(2, 0)));
+        terrain2.setComponent(new Position(Vector3f.of(2, 0, 0)));
 
         camera = ecs.newEntity();
         camera.setComponent(new Camera(ScreenConfig.ViewportSize, true));
@@ -81,12 +82,12 @@ public class RenderingTestController extends Controller {
         maskG2d.setColor(Color.BLACK);
         maskG2d.fillOval(0,0, 64,64);
 
-        var tileSet = new TileSet();
+        var tileSet = new TextureAtlas();
         tileSet.add(Map.ofEntries(
-                entry("1", new TileSetConfiguration(testImage, Vector2f.of(0,0), Vector2f.of(62, 30))),
-                entry("2", new TileSetConfiguration(testImage, Vector2f.of(0,30), Vector2f.of(62, 30))),
-                entry("3", new TileSetConfiguration(testImage, Vector2f.of(62,0), Vector2f.of(62, 30))),
-                entry("4", new TileSetConfiguration(testImage, Vector2f.of(62,30), Vector2f.of(62, 30)))
+                entry("1", new TextureAtlasEntry(testImage, Vector2f.of(0,0), Vector2f.of(62, 30))),
+                entry("2", new TextureAtlasEntry(testImage, Vector2f.of(0,30), Vector2f.of(62, 30))),
+                entry("3", new TextureAtlasEntry(testImage, Vector2f.of(62,0), Vector2f.of(62, 30))),
+                entry("4", new TextureAtlasEntry(testImage, Vector2f.of(62,30), Vector2f.of(62, 30)))
         ));
 
         windowProvider = context.getService(WindowProvider.class);
