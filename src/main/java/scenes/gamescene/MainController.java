@@ -12,10 +12,12 @@ import core.graphics.WindowProvider;
 import core.input.InputBuffer;
 import core.loading.AssetManager;
 import core.util.Vector2f;
+import core.util.Vector3f;
 import scenes.lib.AssetConstants;
 import scenes.lib.PlayerController;
 import scenes.lib.components.Sprite;
 import scenes.lib.components.TerrainChunk;
+import scenes.lib.entities.EntityHelper;
 import scenes.lib.gui.MainGui;
 import scenes.lib.rendering.*;
 
@@ -31,6 +33,7 @@ public class MainController extends Controller {
     private InputBuffer inputBuffer;
 
     private Entity camera;
+    private Entity testUnit;
 
     @Override
     public void init(EngineContext context, Parameters parameters) {
@@ -42,8 +45,8 @@ public class MainController extends Controller {
         var terrain = ecs.newEntity();
         terrain.setComponent(new TerrainChunk(Vector2f.of(5, 5)));
 
-        var testSprite = ecs.newEntity();
-        testSprite.setComponent(new Sprite("0", Vector2f.ZERO, true));
+        testUnit = EntityHelper.createUnit(ecs, 1);
+        var testSprite = EntityHelper.createMainBase(ecs, 1);
 
         camera = ecs.newEntity();
         camera.setComponent(new Camera(ScreenConfig.ViewportSize, true));
@@ -69,6 +72,23 @@ public class MainController extends Controller {
             movement = movement.add(-10, 0);
         }
 
+        var unitMovement = Vector3f.ZERO;
+
+        if(inputBuffer.isKeyDown(KeyEvent.VK_UP)) {
+            unitMovement = unitMovement.add(0, 0, -0.1f);
+        }
+        if(inputBuffer.isKeyDown(KeyEvent.VK_DOWN)) {
+            unitMovement = unitMovement.add(0, 0, 0.1f);
+        }
+        if(inputBuffer.isKeyDown(KeyEvent.VK_LEFT)) {
+            unitMovement = unitMovement.add(-0.1f, 0, 0);
+        }
+        if(inputBuffer.isKeyDown(KeyEvent.VK_RIGHT)) {
+            unitMovement = unitMovement.add(0.1f, 0, 0);
+        }
+        var unitPos = testUnit.getComponent(Position.class);
+        testUnit.setComponent(unitPos.move(unitMovement));
+
         var position = camera.getComponent(Position.class);
         camera.setComponent(position.move(movement));
 
@@ -84,11 +104,12 @@ public class MainController extends Controller {
     private void setupCanvas(EngineContext context) {
         var assetManager = context.<AssetManager>getService(AssetManager.class);
         var cursor = assetManager.<Cursor>getAsset(AssetConstants.CURSOR);
-        var tileSet = assetManager.<TextureAtlas>getAsset(AssetConstants.TILE_SET);
+        var tileSet = assetManager.<TextureAtlas>getAsset(AssetConstants.TEXTURE_ATLAS);
 
         var windowProvider = context.<WindowProvider>getService(WindowProvider.class);
         var terrainRenderer = new IsometricTerrainRenderer(context, tileSet,true);
         var spriteRenderer = new SpriteRenderer(context, tileSet);
+        var fogOfWarRenderer = new FogOfWarRenderer(context, ScreenConfig.ViewportSize);
         canvas = new NewRenderCanvas(java.util.List.of(
                 new BufferedRenderer(context, ScreenConfig.ViewportSize, List.of(
                         g2d -> {
@@ -96,7 +117,8 @@ public class MainController extends Controller {
                             g2d.fillRect(0,0, (int) ScreenConfig.ViewportSize.x(), (int) ScreenConfig.ViewportSize.y());
                         },
                         terrainRenderer,
-                        spriteRenderer
+                        spriteRenderer,
+                        fogOfWarRenderer
                 ))
         ));
 

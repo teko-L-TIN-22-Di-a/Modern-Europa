@@ -1,5 +1,6 @@
 package scenes.lib.rendering;
 
+import config.TileConfig;
 import core.EngineContext;
 import core.ecs.Ecs;
 import core.ecs.EcsView2;
@@ -10,6 +11,7 @@ import core.util.Vector2f;
 import scenes.lib.components.Sprite;
 
 import java.awt.*;
+import java.util.Comparator;
 import java.util.List;
 
 public class SpriteRenderer implements Renderer {
@@ -28,15 +30,33 @@ public class SpriteRenderer implements Renderer {
         var cameraOffset = getCameraOffset(cameraEntries);
 
         var spriteEntries = ecs.view(Sprite.class, Position.class);
-        for (var spriteEntry : spriteEntries) {
-            if(spriteEntry.component1().visible()) continue;
+        // Depth sort
+        spriteEntries.sort(Comparator.comparing(entry -> {
+            var pos = entry.component2().position();
+            return pos.x() + pos.z();
+        }));
 
-            g2d.setColor(Color.RED);
+        for (var spriteEntry : spriteEntries) {
+            if(!spriteEntry.component1().visible()) continue;
 
             var spritePos = IsometricHelper.toScreenSpace(spriteEntry.component2().position());
-            var pos = spritePos.add(cameraOffset);
+            var drawingPos = spritePos.add(cameraOffset).sub(spriteEntry.component1().origin());
 
-            g2d.fillRect((int) pos.x(), (int) pos.y(), 8, 8);
+            var texture = textureAtlas.get(spriteEntry.component1().resourcePath());
+
+            g2d.drawImage(
+                    texture.image(),
+                    (int) drawingPos.x(),
+                    (int) drawingPos.y(),
+                    (int) (drawingPos.x() + texture.size().x()),
+                    (int) (drawingPos.y() + texture.size().y()),
+                    (int) texture.offset().x(), (int) texture.offset().y(),
+                    (int) (texture.offset().x() + texture.size().x()),
+                    (int) (texture.offset().y() + texture.size().y()),
+                    null
+            );
+
+            //g2d.fillRect((int) drawingPos.x(), (int) drawingPos.y(), 8, 8);
         }
 
     }

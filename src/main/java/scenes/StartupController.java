@@ -10,6 +10,7 @@ import core.loading.AssetManager;
 import core.loading.LoadConfiguration;
 import core.util.Vector2f;
 import scenes.lib.AssetConstants;
+import scenes.lib.TextureConstants;
 import scenes.lib.rendering.TextureAtlas;
 import scenes.lib.rendering.TextureAtlasEntry;
 
@@ -54,7 +55,9 @@ public class StartupController extends Controller {
     private void Load() {
         assetLoader.load(Map.ofEntries(
                 entry("ground.png", LoadConfiguration.DefaultImage),
-                entry("cursor.png", LoadConfiguration.DefaultImage)
+                entry("cursor.png", LoadConfiguration.DefaultImage),
+                entry("infantry.png", LoadConfiguration.DefaultImage),
+                entry("building.png", LoadConfiguration.DefaultImage)
         ));
     }
 
@@ -67,15 +70,21 @@ public class StartupController extends Controller {
         var cursor = toolkit.createCustomCursor(cursorImage, new Point(0, 0), "cursor");
         assetManager.registerAsset(AssetConstants.CURSOR, cursor);
 
-        // Tile set
+        // Texture atlas
         var testImage = assetManager.<BufferedImage>getAsset("ground.png");
         ImageHelper.keyOut(testImage, Color.WHITE);
+        var testBase = assetManager.<BufferedImage>getAsset("building.png");
+        ImageHelper.keyOut(testBase, Color.WHITE);
+        var testInfantry = assetManager.<BufferedImage>getAsset("infantry.png");
+        ImageHelper.keyOut(testInfantry, Color.WHITE);
 
         var tileSet = new TextureAtlas();
         tileSet.add(Map.ofEntries(
-                entry("1", new TextureAtlasEntry(testImage, Vector2f.of(0,0), Vector2f.of(132, 64)))
+                entry("1", new TextureAtlasEntry(testImage, Vector2f.of(0,0), Vector2f.of(132, 64))),
+                entry(TextureConstants.UNIT, new TextureAtlasEntry(testInfantry, Vector2f.of(0,0), Vector2f.of(14, 18))),
+                entry(TextureConstants.BASE, new TextureAtlasEntry(testBase, Vector2f.of(0,0), Vector2f.of(132, 84)))
         ));
-        assetManager.registerAsset(AssetConstants.TILE_SET, tileSet);
+        assetManager.registerAsset(AssetConstants.TEXTURE_ATLAS, tileSet);
     }
 
 }

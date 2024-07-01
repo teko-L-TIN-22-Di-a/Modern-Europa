@@ -85,4 +85,15 @@ public class ImageHelper {
         return image;
     }
 
+    public static BufferedImage cleanup(BufferedImage image) {
+
+        // TODO Improve
+        for(var x = 0; x < image.getWidth(); x++) {
+            for(var y = 0; y < image.getHeight(); y++) {
+                image.setRGB(x, y, Color.TRANSLUCENT);
+            }
+        }
+        return image;
+    }
+
 }
