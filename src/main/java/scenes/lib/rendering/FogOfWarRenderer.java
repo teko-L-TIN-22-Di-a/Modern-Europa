@@ -83,6 +83,8 @@ public class FogOfWarRenderer implements Renderer {
             renderedChunk = bufferedChunks.get(terrain.entityId()); // TODO Huh?
         }
 
+        resetFogOfWarEntry(renderedChunk);
+
         var chunkGraphics = (Graphics2D) renderedChunk.image().getGraphics();
 
         for(var entry : visibilityEntries) {
@@ -120,6 +122,12 @@ public class FogOfWarRenderer implements Renderer {
         return new FogOfWarChunkEntry(
                 image,
                 Vector2f.of(xOrigin, 0));
+    }
+
+    private void resetFogOfWarEntry(FogOfWarChunkEntry entry) {
+        var g = (Graphics2D) entry.image().getGraphics();
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, entry.image().getWidth(), entry.image().getHeight());
     }
 
     private Vector2f getChunkOffset(EcsView2<TerrainChunk, Position> terrainOffset) {

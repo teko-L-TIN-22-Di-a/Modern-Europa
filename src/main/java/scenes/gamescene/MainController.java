@@ -48,6 +48,9 @@ public class MainController extends Controller {
         testUnit = EntityHelper.createUnit(ecs, 1);
         var testSprite = EntityHelper.createMainBase(ecs, 1);
 
+        var generator = EntityHelper.createGenerator(ecs, 1);
+        generator.setComponent(new Position(Vector3f.of(1,0,0)));
+
         camera = ecs.newEntity();
         camera.setComponent(new Camera(ScreenConfig.ViewportSize, true));
 

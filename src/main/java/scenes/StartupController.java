@@ -1,5 +1,6 @@
 package scenes;
 
+import config.TileConfig;
 import core.Controller;
 import core.ControllerSwitcher;
 import core.EngineContext;
@@ -80,9 +81,10 @@ public class StartupController extends Controller {
 
         var tileSet = new TextureAtlas();
         tileSet.add(Map.ofEntries(
-                entry("1", new TextureAtlasEntry(testImage, Vector2f.of(0,0), Vector2f.of(132, 64))),
-                entry(TextureConstants.UNIT, new TextureAtlasEntry(testInfantry, Vector2f.of(0,0), Vector2f.of(14, 18))),
-                entry(TextureConstants.BASE, new TextureAtlasEntry(testBase, Vector2f.of(0,0), Vector2f.of(132, 84)))
+                entry("1", new TextureAtlasEntry(testImage, Vector2f.of(0,0), TileConfig.TileSize)),
+                entry(TextureConstants.UNIT, new TextureAtlasEntry(testInfantry, Vector2f.of(0,0), Vector2f.of(26, 28))),
+                entry(TextureConstants.BASE, new TextureAtlasEntry(testBase, Vector2f.of(0,0), Vector2f.of(132, 82))),
+                entry(TextureConstants.GENERATOR, new TextureAtlasEntry(testBase, Vector2f.of(132,0), Vector2f.of(132, 82)))
         ));
         assetManager.registerAsset(AssetConstants.TEXTURE_ATLAS, tileSet);
     }
