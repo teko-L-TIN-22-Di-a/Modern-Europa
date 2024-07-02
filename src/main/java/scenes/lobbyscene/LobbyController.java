@@ -11,6 +11,7 @@ import core.loading.Settings;
 import core.networking.IoClient;
 import core.networking.IoServer;
 import core.util.JsonConverter;
+import scenes.gamescene.MainController;
 import scenes.lib.AssetConstants;
 import scenes.lib.networking.LobbyUpdateMessage;
 import scenes.lib.networking.RegisterMessage;
@@ -57,6 +58,7 @@ public class LobbyController extends Controller {
         windowProvider.addComponent(lobbyRenderer);
 
         if(hostOnPort != null) {
+            lobbyRenderer.bindStartButtonClick(e -> onStartButtonClick());
             playerNames.add(settings.get(UserSettings.class).Username() + " [Host]");
             lobbyRenderer.UpdatePlayerList(playerNames);
 
@@ -70,7 +72,6 @@ public class LobbyController extends Controller {
     private IoServer initServer(int port) {
         // TODO move code to serverHandler
         var server = new IoServer();
-        AtomicInteger i = new AtomicInteger(1);
         server.bindConnect(socket -> {
             socket.bindReceive(msg -> {
                 System.out.println("Server Message Received! " + msg + RegisterMessage.TYPE);
@@ -132,6 +133,10 @@ public class LobbyController extends Controller {
         }
 
         return client;
+    }
+
+    public void onStartButtonClick() {
+        switcher.queue(new MainController());
     }
 
     @Override
