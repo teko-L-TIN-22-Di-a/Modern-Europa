@@ -81,6 +81,13 @@ public class Ecs {
         componentMap.put(entityId, component);
     }
 
+    public void delete(int entityId) {
+        entites.removeIf(e -> e.id() == entityId);
+        for(var component : componentMaps.values()) {
+            component.remove(entityId);
+        }
+    }
+
     public void setComponent(int entityId, Object component) {
         setComponent(entityId, component, component.getClass());
     }

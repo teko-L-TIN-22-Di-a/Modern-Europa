@@ -23,7 +23,10 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.util.Map.entry;
 
 public class LobbyController extends Controller {
 
@@ -36,8 +39,11 @@ public class LobbyController extends Controller {
     private ControllerSwitcher switcher;
     private Settings settings;
 
+    private String myUsername;
     private ArrayList<String> playerNames = new ArrayList<>();
     private LobbyRenderer lobbyRenderer;
+    private IoServer server = null;
+    private IoClient client = null;
 
     @Override
     public void init(EngineContext context, Parameters parameters) {
@@ -51,6 +57,8 @@ public class LobbyController extends Controller {
         var hostOnPort = parameters.getString(LobbyController.HOST_ON_PORT);
         var hostAddress = parameters.getString(LobbyController.HOST_ADDRESS);
 
+        myUsername = settings.get(UserSettings.class).Username();
+
         var isHost = hostOnPort != null;
 
         lobbyRenderer = new LobbyRenderer(isHost);
@@ -59,12 +67,12 @@ public class LobbyController extends Controller {
 
         if(hostOnPort != null) {
             lobbyRenderer.bindStartButtonClick(e -> onStartButtonClick());
-            playerNames.add(settings.get(UserSettings.class).Username() + " [Host]");
+            playerNames.add(myUsername + " [Host]");
             lobbyRenderer.UpdatePlayerList(playerNames);
 
-            var server = initServer(Integer.parseInt(hostOnPort));
+            server = initServer(Integer.parseInt(hostOnPort));
         } else if(hostAddress != null) {
-            var client = initClient(hostAddress);
+            client = initClient(hostAddress);
         }
 
     }
@@ -107,8 +115,7 @@ public class LobbyController extends Controller {
         var client = new IoClient();
         client.bindConnect(x -> {
             System.out.println("Client Connected!");
-            var username = settings.get(UserSettings.class).Username();
-            var registerMessage = SocketMessage.of(new RegisterMessage(username));
+            var registerMessage = SocketMessage.of(new RegisterMessage(myUsername));
 
             client.send(gson.toJson(registerMessage));
         });
@@ -136,7 +143,24 @@ public class LobbyController extends Controller {
     }
 
     public void onStartButtonClick() {
-        switcher.queue(new MainController());
+
+        // TODO handle differently depending on server or client.
+
+        if(server != null) {
+            switcher.queue(new MainController(), new Parameters(Map.ofEntries(
+                    entry(MainController.PLAYER_ID, 1),
+                    entry(MainController.PLAYER_NAME, myUsername),
+                    entry(MainController.HOSTING_SOCKET, server)
+            )));
+        } else if(client != null) {
+            switcher.queue(new MainController(), new Parameters(Map.ofEntries(
+                    entry(MainController.PLAYER_ID, 1),
+                    entry(MainController.PLAYER_NAME, myUsername),
+                    entry(MainController.CLIENT_SOCKET, client)
+            )));
+        } else {
+            throw new RuntimeException("Neither the server nor the client was initialized!");
+        }
     }
 
     @Override

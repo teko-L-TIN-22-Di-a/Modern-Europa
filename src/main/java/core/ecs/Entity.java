@@ -26,4 +26,8 @@ public record Entity(Ecs ecs, int id) {
         return setComponent(component, component.getClass());
     }
 
+    public void delete() {
+        ecs.delete(id);
+    }
+
 }

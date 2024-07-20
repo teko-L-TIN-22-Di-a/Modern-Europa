@@ -30,4 +30,22 @@ public class Parameters {
         return get(key);
     }
 
+    @Override
+    public String toString() {
+        // Only for debugging maybe clean up in the future?
+
+        if(parameters.isEmpty()) {
+            return "{}";
+        }
+
+        var string = "{";
+
+        for (var entry : parameters.entrySet()) {
+            string += "\"" + entry.getKey() + "\": \"" + entry.getValue() + "\",";
+        }
+
+        string = string.substring(0, string.length() - 1);
+
+        return string + "}";
+    }
 }

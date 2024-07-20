@@ -96,4 +96,11 @@ public class ImageHelper {
         return image;
     }
 
+    public static BufferedImage clone(BufferedImage image) {
+        var cm = image.getColorModel();
+        var isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        var raster = image.copyData(null);
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+    }
+
 }

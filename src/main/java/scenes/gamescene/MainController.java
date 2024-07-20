@@ -27,6 +27,11 @@ import java.util.List;
 
 public class MainController extends Controller {
 
+    public static final String PLAYER_ID = "player_id";
+    public static final String PLAYER_NAME = "player_name";
+    public static final String HOSTING_SOCKET = "hosting_socket";
+    public static final String CLIENT_SOCKET = "client_socket";
+
     private NewRenderCanvas canvas;
     private PlayerController playerController;
     private Ecs ecs;
@@ -45,10 +50,10 @@ public class MainController extends Controller {
         var terrain = ecs.newEntity();
         terrain.setComponent(new TerrainChunk(Vector2f.of(5, 5)));
 
-        testUnit = EntityHelper.createUnit(ecs, 1);
-        var testSprite = EntityHelper.createMainBase(ecs, 1);
+        testUnit = EntityHelper.createUnit(ecs, 3);
+        var testSprite = EntityHelper.createMainBase(ecs, 3);
 
-        var generator = EntityHelper.createGenerator(ecs, 1);
+        var generator = EntityHelper.createGenerator(ecs, 3);
         generator.setComponent(new Position(Vector3f.of(1,0,0)));
 
         camera = ecs.newEntity();

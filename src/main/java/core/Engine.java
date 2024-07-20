@@ -87,11 +87,19 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
 
     @Override
     public void switchTo(Controller controller, Parameters parameters) {
+        /*
         logger.debug(
                 "Switching to controller <{}> with parameters [{}]",
                 controller.getClass().getName(),
                 new Gson().toJson(parameters)
                 );
+         */
+
+        logger.debug(
+                "Switching to controller <{}> with parameters [{}]",
+                controller.getClass().getName(),
+                parameters
+        );
 
         if(currentController != null) {
             currentController.cleanup();
