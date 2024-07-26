@@ -3,29 +3,46 @@ package core.ecs;
 import core.EngineContext;
 import core.EngineEventHooks;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Ecs {
 
     private int currentId = 0;
 
-    private List<Entity> entites = new LinkedList<Entity>();
-    private Map<Class<?>, Map<Integer, Object>> componentMaps = new HashMap<>();
+    private final List<Entity> entities = new LinkedList<Entity>();
+    private final Map<String, Map<Integer, Object>> componentMaps = new HashMap<>();
 
     public void clear() {
         currentId = 0;
-        entites.clear();
+        entities.clear();
         componentMaps.clear();
     }
 
+    public EcsSnapshot getSnapshot() {
+        return new EcsSnapshot(
+                currentId,
+                new ArrayList<>(entities.stream().map(entity -> new SnapshotEntity(entity.id())).toList()),
+                new HashMap<>(componentMaps));
+    }
+
+    /**
+     * Completely overrides to the state the snapshot was in.
+     * @param snapshot
+     */
+    public void loadSnapshot(EcsSnapshot snapshot) {
+        clear();
+        currentId = snapshot.currentId();
+        entities.addAll(snapshot.entities().stream().map(entity -> new Entity(this, entity.id())).toList());
+        componentMaps.putAll(snapshot.componentMaps());
+    }
+
     public Entity newEntity() {
-        return new Entity(this, currentId++);
+        var entity = new Entity(this, currentId++);
+        entities.add(entity);
+        return entity;
     }
     public Entity getEntity(int id) {
-        for(var e : entites) {
+        for(var e : entities) {
            if(e.id() == id) {
                return e;
            }
@@ -75,30 +92,31 @@ public class Ecs {
         return (T) componentMap.get(entityId);
     }
 
-    public void setComponent(int entityId, Object component, Class<?> type) {
+    public void setComponent(int entityId, Record component, Class<?> type) {
         var componentMap = tryGetComponentMap(type);
 
         componentMap.put(entityId, component);
     }
 
     public void delete(int entityId) {
-        entites.removeIf(e -> e.id() == entityId);
+        entities.removeIf(e -> e.id() == entityId);
         for(var component : componentMaps.values()) {
             component.remove(entityId);
         }
     }
 
-    public void setComponent(int entityId, Object component) {
+    public void setComponent(int entityId, Record component) {
         setComponent(entityId, component, component.getClass());
     }
 
     private Map<Integer, Object> tryGetComponentMap(Class<?> type) {
-        if(componentMaps.containsKey(type)) {
-            return componentMaps.get(type);
+        var typeKey = type.getName();
+        if(componentMaps.containsKey(typeKey)) {
+            return componentMaps.get(typeKey);
         }
 
         var newMap = new HashMap<Integer, Object>();
-        componentMaps.put(type, newMap);
+        componentMaps.put(typeKey, newMap);
         return newMap;
     }
 

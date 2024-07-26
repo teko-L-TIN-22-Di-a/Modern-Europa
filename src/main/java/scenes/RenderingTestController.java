@@ -65,10 +65,10 @@ public class RenderingTestController extends Controller {
         ecs = context.getService(Ecs.class);
 
         terrain = ecs.newEntity();
-        terrain.setComponent(new TerrainChunk(Vector2f.of(2, 2)));
+        terrain.setComponent(TerrainChunk.generate(Vector2f.of(2, 2)));
 
         var terrain2 = ecs.newEntity();
-        terrain2.setComponent(new TerrainChunk(Vector2f.of(50, 50)));
+        terrain2.setComponent(TerrainChunk.generate(Vector2f.of(50, 50)));
         terrain2.setComponent(new Position(Vector3f.of(2, 0, 0)));
 
         camera = ecs.newEntity();
@@ -144,7 +144,7 @@ public class RenderingTestController extends Controller {
             if(tilePos != null) {
                 var tile = terrain.getComponent(TerrainChunk.class).getTiles()[(int) tilePos.x()][(int) tilePos.y()];
                 terrain.getComponent(TerrainChunk.class).getTiles()[(int) tilePos.x()][(int) tilePos.y()] = new Tile("1", 0);
-                terrain.getComponent(TerrainChunk.class).markDirty(true);
+                ecs.setComponent(terrain.id(), terrain.getComponent(TerrainChunk.class).markDirty(true));
                 System.out.println("x:" + tilePos.x() + " y:" + tilePos.y());
             }
         });

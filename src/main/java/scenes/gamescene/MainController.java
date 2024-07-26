@@ -5,12 +5,14 @@ import core.Controller;
 import core.EngineContext;
 import core.Parameters;
 import core.ecs.Ecs;
+import core.ecs.EcsSnapshot;
 import core.ecs.Entity;
 import core.ecs.components.Camera;
 import core.ecs.components.Position;
 import core.graphics.WindowProvider;
 import core.input.InputBuffer;
 import core.loading.AssetManager;
+import core.networking.IoServer;
 import core.util.Vector2f;
 import core.util.Vector3f;
 import scenes.lib.AssetConstants;
@@ -28,7 +30,7 @@ import java.util.List;
 public class MainController extends Controller {
 
     public static final String PLAYER_ID = "player_id";
-    public static final String PLAYER_NAME = "player_name";
+    public static final String ECS_SNAPSHOT = "ecs_snapshot";
     public static final String HOSTING_SOCKET = "hosting_socket";
     public static final String CLIENT_SOCKET = "client_socket";
 
@@ -46,6 +48,14 @@ public class MainController extends Controller {
         ecs = context.getService(Ecs.class);
         inputBuffer = context.getService(InputBuffer.class);
 
+        var snapshot = parameters.<EcsSnapshot>get(ECS_SNAPSHOT);
+        ecs.loadSnapshot(snapshot);
+
+        // TODO learn what map to load.
+        var terrain = ecs.newEntity();
+        terrain.setComponent(TerrainChunk.generate(Vector2f.of(25, 25)));
+
+        /*
         // Setup Entities
         var terrain = ecs.newEntity();
         terrain.setComponent(new TerrainChunk(Vector2f.of(5, 5)));
@@ -55,6 +65,8 @@ public class MainController extends Controller {
 
         var generator = EntityHelper.createGenerator(ecs, 3);
         generator.setComponent(new Position(Vector3f.of(1,0,0)));
+
+        */
 
         camera = ecs.newEntity();
         camera.setComponent(new Camera(ScreenConfig.ViewportSize, true));
@@ -94,8 +106,11 @@ public class MainController extends Controller {
         if(inputBuffer.isKeyDown(KeyEvent.VK_RIGHT)) {
             unitMovement = unitMovement.add(0.1f, 0, 0);
         }
+
+        /*
         var unitPos = testUnit.getComponent(Position.class);
         testUnit.setComponent(unitPos.move(unitMovement));
+        */
 
         var position = camera.getComponent(Position.class);
         camera.setComponent(position.move(movement));

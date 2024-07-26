@@ -30,13 +30,16 @@ public class IoClient {
         listenThread = new Thread(this::listen);
     }
 
+    public String getUuid() { return socket.getUuid(); }
+
     public void connect(String hostname, int port) throws IOException {
         var socket = new Socket();
 
         socket.connect(new InetSocketAddress(hostname, port));
 
         var handler = new SocketHandler(socket);
-        this.socket = new IoSocket(handler);
+        var uuid = handler.read(); // First message is uuid
+        this.socket = new IoSocket(handler, uuid);
 
         bindSocket(this.socket);
         handler.Connect();

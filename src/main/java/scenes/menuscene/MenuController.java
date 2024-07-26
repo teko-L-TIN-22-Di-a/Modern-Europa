@@ -23,6 +23,8 @@ import static java.util.Map.entry;
 
 public class MenuController extends Controller {
 
+    public static final String DISPLAY_ERROR = "displayError";
+
     private WindowProvider windowProvider;
     private ControllerSwitcher switcher;
     private Settings settings;
@@ -38,12 +40,22 @@ public class MenuController extends Controller {
         var assetManager = context.<AssetManager>getService(AssetManager.class);
         var cursor = assetManager.<Cursor>getAsset(AssetConstants.CURSOR);
 
+        var errorMessage = parameters.getString(MenuController.DISPLAY_ERROR);
+
         menuRenderer = new MenuRenderer();
         menuRenderer.setCursor(cursor);
         menuRenderer.bindHostButtonClick(x -> onHostButtonClick());
         menuRenderer.bindJoinButtonClick(x -> onJoinButtonClick());
         menuRenderer.bindFreeModeButtonClick(x -> onFreeModeButtonClick());
         windowProvider.addComponent(menuRenderer);
+
+        if(errorMessage != null) {
+            new DialogRenderer(
+                    errorMessage,
+                    JOptionPane.ERROR_MESSAGE,
+                    JOptionPane.OK_OPTION
+            ).showDialog(menuRenderer.getParent(), "Error");
+        }
 
         var userSettings = settings.get(UserSettings.class);
         if(userSettings == null) {
@@ -54,6 +66,7 @@ public class MenuController extends Controller {
 
     private void onHostButtonClick() {
         switcher.queue(new LobbyController(), new Parameters(Map.ofEntries(
+                entry(LobbyController.LOBBY_CONTROLLER_TYPE, LobbyController.HOST_LOBBY),
                 entry(LobbyController.HOST_ON_PORT, "3000")
         )));
     }
@@ -89,6 +102,7 @@ public class MenuController extends Controller {
 
         if (result == JOptionPane.OK_OPTION) {
             switcher.queue(new LobbyController(), new Parameters(Map.ofEntries(
+                    entry(LobbyController.LOBBY_CONTROLLER_TYPE, LobbyController.CLIENT_LOBBY),
                     entry(LobbyController.HOST_ADDRESS, textInput.getText())
             )));
         }

@@ -8,28 +8,24 @@ import core.Parameters;
 import core.graphics.WindowProvider;
 import core.loading.AssetManager;
 import core.loading.Settings;
-import core.networking.IoClient;
-import core.networking.IoServer;
 import core.util.JsonConverter;
+import scenes.SetupGameController;
 import scenes.gamescene.MainController;
 import scenes.lib.AssetConstants;
-import scenes.lib.networking.LobbyUpdateMessage;
-import scenes.lib.networking.RegisterMessage;
-import scenes.lib.networking.SocketMessage;
+import scenes.lib.PlayerInfo;
 import scenes.lib.settings.UserSettings;
+import scenes.menuscene.MenuController;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static java.util.Map.entry;
 
 public class LobbyController extends Controller {
 
+    public static final String HOST_LOBBY = "hostLobby";
+    public static final String CLIENT_LOBBY = "clientLobby";
+    public static final String LOBBY_CONTROLLER_TYPE = "lobbyControllerType";
     public static final String HOST_ON_PORT = "hostOnPort";
     public static final String HOST_ADDRESS = "hostAddress";
 
@@ -40,10 +36,11 @@ public class LobbyController extends Controller {
     private Settings settings;
 
     private String myUsername;
-    private ArrayList<String> playerNames = new ArrayList<>();
+    private ArrayList<PlayerInfo> players = new ArrayList<>();
     private LobbyRenderer lobbyRenderer;
-    private IoServer server = null;
-    private IoClient client = null;
+    private ServerHandler server = null;
+    private ClientHandler client = null;
+    private String controllerType;
 
     @Override
     public void init(EngineContext context, Parameters parameters) {
@@ -56,111 +53,93 @@ public class LobbyController extends Controller {
 
         var hostOnPort = parameters.getString(LobbyController.HOST_ON_PORT);
         var hostAddress = parameters.getString(LobbyController.HOST_ADDRESS);
+        controllerType = parameters.getString(LobbyController.LOBBY_CONTROLLER_TYPE);
 
         myUsername = settings.get(UserSettings.class).Username();
 
-        var isHost = hostOnPort != null;
-
-        lobbyRenderer = new LobbyRenderer(isHost);
+        lobbyRenderer = new LobbyRenderer(controllerType.equals(HOST_LOBBY));
         lobbyRenderer.setCursor(cursor);
         windowProvider.addComponent(lobbyRenderer);
 
-        if(hostOnPort != null) {
-            lobbyRenderer.bindStartButtonClick(e -> onStartButtonClick());
-            playerNames.add(myUsername + " [Host]");
-            lobbyRenderer.UpdatePlayerList(playerNames);
+        switch(controllerType) {
+            case HOST_LOBBY:
+                lobbyRenderer.bindStartButtonClick(e -> onStartButtonClick());
+                players.add(PlayerInfo.forHost(myUsername));
+                lobbyRenderer.UpdatePlayerList(players);
 
-            server = initServer(Integer.parseInt(hostOnPort));
-        } else if(hostAddress != null) {
-            client = initClient(hostAddress);
+                server = initServer(Integer.parseInt(hostOnPort));
+                break;
+            case CLIENT_LOBBY:
+                client = initClient(hostAddress);
+                break;
+            default:
+                throw new RuntimeException("Invalid controllerType: " + controllerType);
         }
 
     }
 
-    private IoServer initServer(int port) {
-        // TODO move code to serverHandler
-        var server = new IoServer();
-        server.bindConnect(socket -> {
-            socket.bindReceive(msg -> {
-                System.out.println("Server Message Received! " + msg + RegisterMessage.TYPE);
-                var message = gson.fromJson(msg, SocketMessage.class);
-                if(message.type().equals(RegisterMessage.TYPE)) {
-                    System.out.println("Sending");
-                    var registerMessage = message.getMessage(RegisterMessage.class);
-
-                    playerNames.add(registerMessage.username());
-                    lobbyRenderer.UpdatePlayerList(playerNames);
-
-                    var updateMessage = SocketMessage.of(new LobbyUpdateMessage(playerNames));
-                    try {
-                        server.send(gson.toJson(updateMessage));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
+    private ServerHandler initServer(int port) {
+        var server = new ServerHandler(port);
+        server.bindPlayerConnection(playerInfo -> {
+            players.add(playerInfo);
+            server.updatePlayerList(players);
+            lobbyRenderer.UpdatePlayerList(players);
         });
-
-        try {
-            server.StartListening(port);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        server.bindPlayerDisconnection(playerInfo -> {
+            players.remove(playerInfo);
+            server.updatePlayerList(players);
+            lobbyRenderer.UpdatePlayerList(players);
+        });
+        server.init();
 
         return server;
     }
 
-    private IoClient initClient(String hostAddress) {
-        // TODO move code to clientHandler
-        var client = new IoClient();
-        client.bindConnect(x -> {
-            System.out.println("Client Connected!");
-            var registerMessage = SocketMessage.of(new RegisterMessage(myUsername));
-
-            client.send(gson.toJson(registerMessage));
+    private ClientHandler initClient(String hostAddress) {
+        var client = new ClientHandler(hostAddress);
+        client.bindConnection(x -> {
+            client.registerUser(myUsername);
         });
-        client.bindReceive(msg -> {
-            System.out.println("Client received update");
-            var message = gson.fromJson(msg, SocketMessage.class);
-            if(message.type().equals(LobbyUpdateMessage.TYPE)) {
-                var updateMessage = message.getMessage(LobbyUpdateMessage.class);
-                playerNames = updateMessage.users();
-                lobbyRenderer.UpdatePlayerList(playerNames);
+        client.bindPlayerListUpdate(playerList -> {
+            players = new ArrayList<>(playerList);
+            lobbyRenderer.UpdatePlayerList(players);
+        });
+        client.bindDisconnection(username -> {
+            // TODO reconnect logic?
+            switcher.queue(new MenuController(), new Parameters(Map.ofEntries(
+                    entry(MenuController.DISPLAY_ERROR, "Disconnect from host")
+            )));
+        });
+        client.bindGameInit(snapshot -> {
+
+            var player = players.stream()
+                    .filter(playerInfo -> playerInfo.socketId().equals(client.getClient().getUuid()))
+                    .findFirst();
+
+            if(player.isEmpty()) {
+                throw new RuntimeException("Player entry for client not found");
             }
+
+            switcher.queue(new MainController(), new Parameters(Map.ofEntries(
+                    entry(MainController.CLIENT_SOCKET, client.getClient()),
+                    entry(MainController.ECS_SNAPSHOT, snapshot),
+                    entry(MainController.PLAYER_ID, player.get().id())
+            )));
         });
-
-        try {
-            var addressParts = hostAddress.split(":");
-            client.connect(
-                    addressParts[0],
-                    Integer.parseInt(addressParts[1])
-            );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+        client.init();
         return client;
     }
 
     public void onStartButtonClick() {
 
-        // TODO handle differently depending on server or client.
-
-        if(server != null) {
-            switcher.queue(new MainController(), new Parameters(Map.ofEntries(
-                    entry(MainController.PLAYER_ID, 1),
-                    entry(MainController.PLAYER_NAME, myUsername),
-                    entry(MainController.HOSTING_SOCKET, server)
-            )));
-        } else if(client != null) {
-            switcher.queue(new MainController(), new Parameters(Map.ofEntries(
-                    entry(MainController.PLAYER_ID, 1),
-                    entry(MainController.PLAYER_NAME, myUsername),
-                    entry(MainController.CLIENT_SOCKET, client)
-            )));
-        } else {
-            throw new RuntimeException("Neither the server nor the client was initialized!");
+        if(controllerType.equals(CLIENT_LOBBY)) {
+            throw new RuntimeException("Start button received as client!");
         }
+
+        switcher.queue(new SetupGameController(), new Parameters(Map.ofEntries(
+                entry(SetupGameController.SERVER, server.getServer()),
+                entry(SetupGameController.PLAYERS, players)
+        )));
     }
 
     @Override
@@ -170,7 +149,12 @@ public class LobbyController extends Controller {
 
     @Override
     public void cleanup() {
-        // Do nothing
+        if(server != null) {
+            server.dispose();
+        }
+        if(client != null) {
+            client.dispose();
+        }
     }
 
 }

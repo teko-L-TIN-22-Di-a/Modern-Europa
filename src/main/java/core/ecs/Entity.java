@@ -17,12 +17,12 @@ public record Entity(Ecs ecs, int id) {
         return ecs.getComponent(id, componentClass);
     }
 
-    public Entity setComponent(Object component, Class<?> componentClass) {
+    public Entity setComponent(Record component, Class<?> componentClass) {
         ecs.setComponent(id, component, componentClass);
         return this;
     }
 
-    public Entity setComponent(Object component) {
+    public Entity setComponent(Record component) {
         return setComponent(component, component.getClass());
     }
 

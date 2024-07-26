@@ -38,14 +38,14 @@ public class Parameters {
             return "{}";
         }
 
-        var string = "{";
+        var string = "";
 
         for (var entry : parameters.entrySet()) {
-            string += "\"" + entry.getKey() + "\": \"" + entry.getValue() + "\",";
+            string += "\n" + entry.getKey() + ": \"" + entry.getValue() + "\"";
         }
 
         string = string.substring(0, string.length() - 1);
 
-        return string + "}";
+        return string;
     }
 }

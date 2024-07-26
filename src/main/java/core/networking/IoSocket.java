@@ -18,9 +18,11 @@ public class IoSocket implements Closeable {
     private final PublishSubject<String> receive = PublishSubject.create();
     private final PublishSubject<String> send = PublishSubject.create();
 
+    private String uuid;
     private SocketHandler socket;
 
-    public IoSocket(SocketHandler socketHandler) {
+    public IoSocket(SocketHandler socketHandler, String uuid) {
+        this.uuid = uuid;
         socket = socketHandler;
 
         subscriptions.addAll(Arrays.asList(
@@ -30,6 +32,8 @@ public class IoSocket implements Closeable {
                 socket.bindSend(send::onNext)
         ));
     }
+
+    public String getUuid() { return uuid; }
 
     public Subscription bindConnect(Action1<Void> action) {
         return connect.subscribe(action);

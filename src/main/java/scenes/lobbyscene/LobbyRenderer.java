@@ -3,6 +3,7 @@ package scenes.lobbyscene;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
+import scenes.lib.PlayerInfo;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -46,11 +47,12 @@ public class LobbyRenderer extends JPanel {
         add(menuPanel);
     }
 
-    public void UpdatePlayerList(ArrayList<String> players) {
+    public void UpdatePlayerList(ArrayList<PlayerInfo> players) {
         playersContainer.removeAll();
 
-        for (var playerName : players) {
-            playersContainer.add(new JLabel(playerName));
+        for (var player : players) {
+            var displayName = player.name() + (player.isHost() ? " [Host]" : "");
+            playersContainer.add(new JLabel(displayName));
         }
 
         playersContainer.revalidate();

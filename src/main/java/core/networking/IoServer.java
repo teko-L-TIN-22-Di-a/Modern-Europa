@@ -36,6 +36,8 @@ public class IoServer {
         });
     }
 
+    public Map<String, IoSocket> getClients() { return clients; }
+
     public void StartListening(int port) throws IOException {
         serverSocket = new ServerSocket(port);
         connectionThread.start();
@@ -54,10 +56,11 @@ public class IoServer {
             try {
                 var handler = new SocketHandler(serverSocket.accept());
                 var uuid = UUID.randomUUID().toString();
-                var socket = new IoSocket(handler);
+                var socket = new IoSocket(handler, uuid);
 
                 logger.info("New client connected <{}>", uuid);
                 logger.debug("{} -> {}", uuid, handler.getInetAddress());
+                handler.send(uuid);
 
                 bindSocket(socket);
                 clients.put(uuid, socket);

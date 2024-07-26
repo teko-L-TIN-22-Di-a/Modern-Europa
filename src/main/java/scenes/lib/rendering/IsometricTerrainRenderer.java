@@ -102,7 +102,7 @@ public class IsometricTerrainRenderer implements Renderer {
             renderChunkMouseMap(terrain);
         }
 
-        terrain.component1().markDirty(false);
+        ecs.setComponent(terrain.entityId(), terrain.component1().markDirty(false));
     }
 
     private void renderChunk(EcsView2<TerrainChunk, Position> terrain) {

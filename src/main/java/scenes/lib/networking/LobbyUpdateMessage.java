@@ -1,7 +1,9 @@
 package scenes.lib.networking;
 
-import java.util.ArrayList;
+import scenes.lib.PlayerInfo;
 
-public record LobbyUpdateMessage(ArrayList<String> users) {
+import java.util.List;
+
+public record LobbyUpdateMessage(List<PlayerInfo> players) {
     public static final String TYPE = LobbyUpdateMessage.class.getSimpleName();
 }

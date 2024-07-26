@@ -2,23 +2,22 @@ package scenes.lib.components;
 
 import core.util.Vector2f;
 
-public class TerrainChunk {
+public record TerrainChunk(Tile[][] tiles, boolean isDirty) {
 
-    private Tile[][] tiles;
-    private boolean isDirty;
-
-    public TerrainChunk(Vector2f size) {
-        tiles = new Tile[(int)size.x()][(int)size.y()];
+    public static TerrainChunk generate(Vector2f size) {
+        var tiles = new Tile[(int)size.x()][(int)size.y()];
 
         for (int x = 0; x < tiles.length; x++) {
             for (int z = 0; z < tiles[x].length; z++) {
                 tiles[x][z] = new Tile("1",0);
             }
         }
+
+        return new TerrainChunk(tiles, false);
     }
 
-    public void markDirty(boolean dirty) {
-        isDirty = dirty;
+    public TerrainChunk markDirty(boolean dirty) {
+        return new TerrainChunk(tiles, dirty);
     }
 
     public boolean isDirty() {
