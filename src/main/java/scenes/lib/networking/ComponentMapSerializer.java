@@ -4,10 +4,7 @@ package scenes.lib.networking;
 import com.google.gson.*;
 import core.ecs.components.Camera;
 import core.ecs.components.Position;
-import scenes.lib.components.Sprite;
-import scenes.lib.components.TerrainChunk;
-import scenes.lib.components.Tile;
-import scenes.lib.components.Visibility;
+import scenes.lib.components.*;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -45,7 +42,8 @@ public class ComponentMapSerializer implements JsonSerializer<Map<String, Map<In
                         Sprite.class,
                         TerrainChunk.class,
                         Tile.class,
-                        Visibility.class
+                        Visibility.class,
+                        UnitInfo.class
                 );
 
                 var matchingType = types.stream().filter(x -> x.getName().equals(entry.getKey())).findFirst();

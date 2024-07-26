@@ -1,4 +1,4 @@
 package scenes.lib.components;
 
-public record Visibility(int playerId, float strength) {
+public record Visibility(float strength) {
 }

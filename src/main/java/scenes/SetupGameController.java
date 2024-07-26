@@ -74,7 +74,7 @@ public class SetupGameController extends Controller {
             generator.setComponent(new Position(slot.toVector3fy(0).add(1, 0, 0)));
 
             var mainUnit = EntityHelper.createUnit(ecs, playerId);
-            generator.setComponent(new Position(slot.toVector3fy(0).add(1, 0, 0)));
+            mainUnit.setComponent(new Position(slot.toVector3fy(0).add(0, 0, 1)));
 
             newPlayerList.add(player.withId(playerId));
             playerId++;

@@ -40,6 +40,9 @@ public record Vector2f(float x, float y) {
     public Vector2f mul(Vector2f v) {
         return new Vector2f(x * v.x, y * v.y);
     }
+    public Vector2f mul(float v) {
+        return new Vector2f(x * v, y * v);
+    }
 
     public Vector2f div(Vector2f v) {
         return new Vector2f(x / v.x, y / v.y);

@@ -19,6 +19,7 @@ import scenes.lib.AssetConstants;
 import scenes.lib.PlayerController;
 import scenes.lib.components.Sprite;
 import scenes.lib.components.TerrainChunk;
+import scenes.lib.components.UnitInfo;
 import scenes.lib.entities.EntityHelper;
 import scenes.lib.gui.MainGui;
 import scenes.lib.rendering.*;
@@ -48,6 +49,7 @@ public class MainController extends Controller {
         ecs = context.getService(Ecs.class);
         inputBuffer = context.getService(InputBuffer.class);
 
+        var playerId = parameters.getInt(PLAYER_ID);
         var snapshot = parameters.<EcsSnapshot>get(ECS_SNAPSHOT);
         ecs.loadSnapshot(snapshot);
 
@@ -55,21 +57,10 @@ public class MainController extends Controller {
         var terrain = ecs.newEntity();
         terrain.setComponent(TerrainChunk.generate(Vector2f.of(25, 25)));
 
-        /*
-        // Setup Entities
-        var terrain = ecs.newEntity();
-        terrain.setComponent(new TerrainChunk(Vector2f.of(5, 5)));
-
-        testUnit = EntityHelper.createUnit(ecs, 3);
-        var testSprite = EntityHelper.createMainBase(ecs, 3);
-
-        var generator = EntityHelper.createGenerator(ecs, 3);
-        generator.setComponent(new Position(Vector3f.of(1,0,0)));
-
-        */
-
         camera = ecs.newEntity();
         camera.setComponent(new Camera(ScreenConfig.ViewportSize, true));
+
+        centerCameraOnBase(playerId);
 
         setupCanvas(context);
     }
@@ -122,6 +113,19 @@ public class MainController extends Controller {
     @Override
     public void cleanup() {
 
+    }
+
+    private void centerCameraOnBase(int playerId) {
+        var units = ecs.view(UnitInfo.class, Position.class);
+        var mainBase = units.stream().filter(unit -> {
+            var unitInfo = unit.component1();
+            return unitInfo.playerId() == playerId && unitInfo.type().equals(UnitInfo.BASE);
+        }).findFirst();
+        if(mainBase.isPresent()) {
+            var mainBaseOrigin = mainBase.get().component2().position().add(1f, 0, 1f);
+            var cameraOffset = IsometricHelper.toScreenSpace(mainBaseOrigin).mul(-1);
+            camera.setComponent(new Position(cameraOffset.toVector3f()));
+        }
     }
 
     private void setupCanvas(EngineContext context) {
