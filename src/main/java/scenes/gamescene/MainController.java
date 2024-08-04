@@ -6,11 +6,9 @@ import core.EngineContext;
 import core.Parameters;
 import core.ecs.Ecs;
 import core.ecs.EcsSnapshot;
-import core.ecs.Entity;
 import core.ecs.components.Camera;
 import core.ecs.components.Position;
 import core.graphics.WindowProvider;
-import core.input.InputBuffer;
 import core.input.JFrameMouseListener;
 import core.input.MouseListener;
 import core.loading.AssetManager;
@@ -18,16 +16,15 @@ import core.networking.IoClient;
 import core.networking.IoServer;
 import core.util.Vector2f;
 import core.util.Vector3f;
+import scenes.gamescene.rendering.MainGui;
 import scenes.gamescene.rendering.SelectionRenderer;
 import scenes.lib.AssetConstants;
 import scenes.lib.PlayerInfo;
 import scenes.lib.components.TerrainChunk;
 import scenes.lib.components.UnitInfo;
-import scenes.lib.gui.MainGui;
 import scenes.lib.rendering.*;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.util.List;
 
 public class MainController extends Controller {
@@ -167,7 +164,7 @@ public class MainController extends Controller {
         windowProvider.addComponent(container);
         canvas.init();
 
-        return new RenderingContext(selectionRenderer, container);
+        return new RenderingContext(scale, terrainRenderer, selectionRenderer, container);
     }
 
 }

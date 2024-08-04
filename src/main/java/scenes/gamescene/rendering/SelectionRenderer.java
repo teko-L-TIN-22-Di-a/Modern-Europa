@@ -21,6 +21,7 @@ import java.awt.event.MouseEvent;
 public class SelectionRenderer implements Renderer {
 
     private Vector2f cameraOffset = Vector2f.ZERO;
+    private boolean enabled = true;
     private Vector2f scale;
     private boolean selecting = false;
     private Vector2f selectionAnchor = null;
@@ -43,8 +44,14 @@ public class SelectionRenderer implements Renderer {
         mouseListener.bindMouseDragged(this::onMouseDragged);
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     @Override
     public void render(Graphics2D g2d) {
+        if(!enabled) return;
+
         cameraOffset = CameraHelper.getCameraOffset(ecs);
 
         var selectableUnits = ecs.view(Position.class, Selection.class);
@@ -55,7 +62,7 @@ public class SelectionRenderer implements Renderer {
             var pos = unit.component1().position();
             var bounds = unit.component2().bounds().move(IsometricHelper.toScreenSpace(pos).add(cameraOffset));
 
-            g2d.setColor(new Color(255, 0, 255));
+            g2d.setColor(new Color(255, 255, 255));
             g2d.drawRect(
                     (int) bounds.position().x(), (int) bounds.position().y(),
                     (int) bounds.size().x(), (int) bounds.size().y());
@@ -85,6 +92,8 @@ public class SelectionRenderer implements Renderer {
     }
 
     private void onMouseClicked(MouseEvent e) {
+        if(!enabled) return;
+
         if(e.getButton() != MouseEvent.BUTTON1) {
             return;
         }
@@ -96,6 +105,8 @@ public class SelectionRenderer implements Renderer {
     }
 
     private void onMouseDragged(MouseEvent e) {
+        if(!enabled) return;
+
         if(!selecting) {
             return;
         }
@@ -104,6 +115,8 @@ public class SelectionRenderer implements Renderer {
     }
 
     private void onMousePressed(MouseEvent e) {
+        if(!enabled) return;
+
         if(e.getButton() != MouseEvent.BUTTON1) {
             return;
         }
@@ -113,6 +126,8 @@ public class SelectionRenderer implements Renderer {
     }
 
     private void onMouseReleased(MouseEvent e) {
+        if(!enabled) return;
+
         if(e.getButton() != MouseEvent.BUTTON1) {
             return;
         }

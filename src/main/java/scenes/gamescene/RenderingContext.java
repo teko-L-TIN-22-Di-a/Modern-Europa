@@ -1,7 +1,13 @@
 package scenes.gamescene;
 
+import core.util.Vector2f;
+import scenes.gamescene.rendering.MainGui;
 import scenes.gamescene.rendering.SelectionRenderer;
-import scenes.lib.gui.MainGui;
+import scenes.lib.rendering.IsometricTerrainRenderer;
 
-public record RenderingContext(SelectionRenderer selectionRenderer, MainGui mainGui) {
+public record RenderingContext(
+        Vector2f scale,
+        IsometricTerrainRenderer terrainRenderer,
+        SelectionRenderer selectionRenderer,
+        MainGui mainGui) {
 }

@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static config.TileConfig.TileSize;
 import static java.util.Map.entry;
 
 public class StartupController extends Controller {
@@ -79,7 +80,9 @@ public class StartupController extends Controller {
 
         var tileSet = new TextureAtlas();
         tileSet.add(Map.ofEntries(
-                entry("1", new TextureAtlasEntry(groundTexture, Vector2f.of(0,0), TileConfig.TileSize))
+                entry("1", new TextureAtlasEntry(groundTexture, Vector2f.of(0,0), TileSize)),
+                entry(TextureConstants.HIGHLIGHT, new TextureAtlasEntry(groundTexture, Vector2f.of(0, TileSize.y()), TileSize)),
+                entry(TextureConstants.HIGHLIGHT_ERROR, new TextureAtlasEntry(groundTexture, TileSize, TileSize))
         ));
         tileSet.add(ProcessPlayerAssets());
         assetManager.registerAsset(AssetConstants.TEXTURE_ATLAS, tileSet);

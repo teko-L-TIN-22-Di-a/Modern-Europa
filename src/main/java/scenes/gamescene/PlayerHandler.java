@@ -11,11 +11,13 @@ import core.util.Vector2f;
 import rx.Subscription;
 import rx.functions.Action1;
 import scenes.gamescene.PlayerState.MainState;
+import scenes.gamescene.PlayerState.PlaceState;
 import scenes.lib.components.Selection;
 import scenes.lib.components.UnitInfo;
 import scenes.lib.rendering.IsometricHelper;
 
 import java.util.List;
+import java.util.Map;
 
 public class PlayerHandler {
 
@@ -28,8 +30,14 @@ public class PlayerHandler {
         ecs = context.getService(Ecs.class);
         this.playerId = playerId;
         state = new StateMachine(List.of(
-                new MainState()
+                new MainState(context, renderingContext),
+                new PlaceState(context, renderingContext)
         ), MainState.class);
+
+        renderingContext.mainGui().createNewTab("Main", Map.of("Buildings", Map.ofEntries(
+                Map.entry("Base", x -> prepareBuildCommand()),
+                Map.entry("Generator", x -> prepareBuildCommand())
+        )));
 
         renderingContext.selectionRenderer().bindBoundsSelection(this::onBoundsSelection);
         renderingContext.selectionRenderer().bindPointSelection(this::onPointSelection);
@@ -37,6 +45,10 @@ public class PlayerHandler {
 
     public void update() {
         state.update();
+    }
+
+    private void prepareBuildCommand() {
+        state.transitionTo(PlaceState.class);
     }
 
     private void onBoundsSelection(Bounds bounds) {

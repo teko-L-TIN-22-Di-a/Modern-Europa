@@ -32,7 +32,7 @@ public class SpriteRenderer implements Renderer {
         // Depth sort
         spriteEntries.sort(Comparator.comparing(entry -> {
             var pos = entry.component2().position();
-            return pos.x() + pos.z();
+            return pos.x() + pos.z() + pos.y();
         }));
 
         for (var spriteEntry : spriteEntries) {
