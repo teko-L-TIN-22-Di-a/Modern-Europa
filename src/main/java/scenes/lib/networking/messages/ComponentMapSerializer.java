@@ -1,4 +1,4 @@
-package scenes.lib.networking;
+package scenes.lib.networking.messages;
 
 
 import com.google.gson.*;
@@ -42,8 +42,8 @@ public class ComponentMapSerializer implements JsonSerializer<Map<String, Map<In
                         Sprite.class,
                         TerrainChunk.class,
                         Tile.class,
-                        Visibility.class,
-                        UnitInfo.class
+                        UnitInfo.class,
+                        Selection.class
                 );
 
                 var matchingType = types.stream().filter(x -> x.getName().equals(entry.getKey())).findFirst();

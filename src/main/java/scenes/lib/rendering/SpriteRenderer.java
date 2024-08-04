@@ -26,8 +26,7 @@ public class SpriteRenderer implements Renderer {
 
     @Override
     public void render(Graphics2D g2d) {
-        var cameraEntries = ecs.view(Camera.class, Position.class);
-        var cameraOffset = getCameraOffset(cameraEntries);
+        var cameraOffset = CameraHelper.getCameraOffset(ecs);
 
         var spriteEntries = ecs.view(Sprite.class, Position.class);
         // Depth sort
@@ -59,16 +58,6 @@ public class SpriteRenderer implements Renderer {
             //g2d.fillRect((int) drawingPos.x(), (int) drawingPos.y(), 8, 8);
         }
 
-    }
-
-    private Vector2f getCameraOffset(List<EcsView2<Camera, Position>> cameras) {
-        for (var entry : cameras) {
-            if(entry.component1().active()) {
-                return CameraHelper.GetCameraOffset(entry.component1(), entry.component2());
-            }
-        }
-
-        return Vector2f.ZERO;
     }
 
 }

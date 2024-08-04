@@ -1,9 +1,13 @@
 package core.ecs.helper;
 
+import core.ecs.Ecs;
+import core.ecs.EcsView2;
 import core.ecs.Entity;
 import core.ecs.components.Camera;
 import core.ecs.components.Position;
 import core.util.Vector2f;
+
+import java.util.List;
 
 public class CameraHelper {
 
@@ -19,6 +23,21 @@ public class CameraHelper {
         var position = cameraEntity.getComponent(Position.class);
 
         return GetCameraOffset(camera, position);
+    }
+
+    public static Vector2f getCameraOffset(List<EcsView2<Camera, Position>> cameras) {
+        for (var entry : cameras) {
+            if(entry.component1().active()) {
+                return GetCameraOffset(entry.component1(), entry.component2());
+            }
+        }
+
+        return Vector2f.ZERO;
+    }
+
+    public static Vector2f getCameraOffset(Ecs ecs) {
+        var cameraEntries = ecs.view(Camera.class, Position.class);
+        return getCameraOffset(cameraEntries);
     }
 
 }

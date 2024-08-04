@@ -1,4 +1,4 @@
-package scenes.lib.networking;
+package scenes.lib.networking.messages;
 
 import scenes.lib.PlayerInfo;
 

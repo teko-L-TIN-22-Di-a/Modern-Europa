@@ -50,6 +50,34 @@ public class Ecs {
         return null;
     }
 
+    public <T, T2, T3> List<EcsView3<T,T2,T3>> view(Class<T> type, Class<T2> type2, Class<T3> type3) {
+        var componentMap = tryGetComponentMap(type);
+        var componentMap2 = tryGetComponentMap(type2);
+        var componentMap3 = tryGetComponentMap(type3);
+
+        var filteredList = new LinkedList<EcsView3<T, T2, T3>>();
+
+        for(var entry : componentMap.entrySet()) {
+
+            if(!componentMap2.containsKey(entry.getKey())) {
+                continue;
+            }
+
+            if(!componentMap3.containsKey(entry.getKey())) {
+                continue;
+            }
+
+            //noinspection unchecked
+            filteredList.push(new EcsView3<>(
+                    entry.getKey(),
+                    (T) entry.getValue(),
+                    (T2) componentMap2.get(entry.getKey()),
+                    (T3) componentMap3.get(entry.getKey())));
+        }
+
+        return filteredList;
+    }
+
     public <T, T2> List<EcsView2<T,T2>> view(Class<T> type, Class<T2> type2) {
         var componentMap = tryGetComponentMap(type);
         var componentMap2 = tryGetComponentMap(type2);

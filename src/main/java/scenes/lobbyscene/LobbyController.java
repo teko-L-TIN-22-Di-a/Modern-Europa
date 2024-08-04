@@ -137,7 +137,7 @@ public class LobbyController extends Controller {
         }
 
         switcher.queue(new SetupGameController(), new Parameters(Map.ofEntries(
-                entry(SetupGameController.SERVER, server.getServer()),
+                entry(SetupGameController.SERVER_SOCKET, server.getServer()),
                 entry(SetupGameController.PLAYERS, players)
         )));
     }

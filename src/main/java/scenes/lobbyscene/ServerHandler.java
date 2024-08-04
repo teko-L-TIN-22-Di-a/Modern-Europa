@@ -1,7 +1,6 @@
 package scenes.lobbyscene;
 
 import com.google.gson.Gson;
-import core.networking.IoClient;
 import core.networking.IoServer;
 import core.networking.IoSocket;
 import core.util.JsonConverter;
@@ -9,9 +8,9 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 import scenes.lib.PlayerInfo;
-import scenes.lib.networking.LobbyUpdateMessage;
-import scenes.lib.networking.RegisterMessage;
-import scenes.lib.networking.SocketMessage;
+import scenes.lib.networking.messages.LobbyUpdateMessage;
+import scenes.lib.networking.messages.RegisterMessage;
+import scenes.lib.networking.messages.SocketMessage;
 
 import java.io.IOException;
 import java.util.*;

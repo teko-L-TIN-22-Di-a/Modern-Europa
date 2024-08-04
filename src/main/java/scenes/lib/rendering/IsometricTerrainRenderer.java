@@ -45,7 +45,7 @@ public class IsometricTerrainRenderer implements Renderer {
                     .add(chunk.originOffset());
             var bounds = chunk.visualBounds();
 
-            if(!bounds.inersects(targetPos)) continue;
+            if(!bounds.intersects(targetPos)) continue;
 
             targetPos = targetPos.sub(getChunkOffset(terrainEntry));
 
@@ -59,8 +59,7 @@ public class IsometricTerrainRenderer implements Renderer {
 
     @Override
     public void render(Graphics2D g2d) {
-        var cameraEntries = ecs.view(Camera.class, Position.class);
-        bufferedCameraOffset = getCameraOffset(cameraEntries);
+        bufferedCameraOffset = CameraHelper.getCameraOffset(ecs);
 
         var terrainEntries = ecs.view(TerrainChunk.class, Position.class);
 
@@ -240,16 +239,6 @@ public class IsometricTerrainRenderer implements Renderer {
 
     private Vector2f getChunkOffset(EcsView2<TerrainChunk, Position> terrainOffset) {
         return IsometricHelper.toScreenSpace(terrainOffset.component2().position());
-    }
-
-    private Vector2f getCameraOffset(List<EcsView2<Camera, Position>> cameras) {
-        for (var entry : cameras) {
-            if(entry.component1().active()) {
-                return CameraHelper.GetCameraOffset(entry.component1(), entry.component2());
-            }
-        }
-
-        return Vector2f.ZERO;
     }
 
 }

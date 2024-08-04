@@ -126,6 +126,11 @@ public class JFrameMouseListener implements
     }
 
     private void cleanup() {
+        for (var component : trackedComponents) {
+            component.removeMouseListener(this);
+            component.removeMouseWheelListener(this);
+            component.removeMouseMotionListener(this);
+        }
         trackedComponents.clear();
     }
 
