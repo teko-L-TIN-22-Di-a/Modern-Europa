@@ -20,13 +20,13 @@ public abstract class State {
         stateMachine.transitionBack(parameters);
     }
 
-    protected void transitionTo() {
-        transitionTo(Parameters.EMPTY);
+    protected void transitionTo(Class<? extends State> stateClass) {
+        transitionTo(stateClass, Parameters.EMPTY);
     }
-    protected void transitionTo(Parameters parameters) {
+    protected void transitionTo(Class<? extends State> stateClass, Parameters parameters) {
         ensureRegistered();
 
-        stateMachine.transitionBack(parameters);
+        stateMachine.transitionTo(stateClass, parameters);
     }
 
     public abstract void update();

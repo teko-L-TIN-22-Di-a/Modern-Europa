@@ -17,11 +17,11 @@ public class StateMachine {
 
     public StateMachine(List<State> states, Class<? extends State> initialState) {
         for (State state : states) {
-            if(state.getClass().equals(initialState)) {
-                currentState = state;
-            }
             state.register(this);
             stateMap.put(state.getClass().getName(), state);
+            if(state.getClass().equals(initialState)) {
+                transitionTo(initialState);
+            }
         }
     }
 

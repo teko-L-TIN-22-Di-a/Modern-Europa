@@ -137,6 +137,11 @@ public class Ecs {
         setComponent(entityId, component, component.getClass());
     }
 
+    public void removeComponent(int entityId, Class<?> type) {
+        var componentMap = tryGetComponentMap(type);
+        componentMap.remove(entityId);
+    }
+
     private Map<Integer, Object> tryGetComponentMap(Class<?> type) {
         var typeKey = type.getName();
         if(componentMaps.containsKey(typeKey)) {

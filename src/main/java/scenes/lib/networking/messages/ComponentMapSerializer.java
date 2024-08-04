@@ -43,7 +43,10 @@ public class ComponentMapSerializer implements JsonSerializer<Map<String, Map<In
                         TerrainChunk.class,
                         Tile.class,
                         UnitInfo.class,
-                        Selection.class
+                        Selection.class,
+                        PathFindingTarget.class,
+                        Command.class,
+                        NetSynch.class
                 );
 
                 var matchingType = types.stream().filter(x -> x.getName().equals(entry.getKey())).findFirst();

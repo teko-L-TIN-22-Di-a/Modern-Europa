@@ -26,6 +26,10 @@ public record Entity(Ecs ecs, int id) {
         return setComponent(component, component.getClass());
     }
 
+    public void removeComponent(Class<?> componentClass) {
+        ecs.removeComponent(id, componentClass);
+    }
+
     public void delete() {
         ecs.delete(id);
     }

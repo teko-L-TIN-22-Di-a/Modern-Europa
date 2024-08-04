@@ -6,6 +6,7 @@ import core.EngineContext;
 import core.Parameters;
 import core.ecs.Ecs;
 import core.ecs.EcsSnapshot;
+import core.ecs.RunnableSystem;
 import core.ecs.components.Camera;
 import core.ecs.components.Position;
 import core.graphics.WindowProvider;
@@ -18,6 +19,10 @@ import core.util.Vector2f;
 import core.util.Vector3f;
 import scenes.gamescene.rendering.MainGui;
 import scenes.gamescene.rendering.SelectionRenderer;
+import scenes.gamescene.systems.ClientSystem;
+import scenes.gamescene.systems.CommandSystem;
+import scenes.gamescene.systems.MovementSystem;
+import scenes.gamescene.systems.ServerSystem;
 import scenes.lib.AssetConstants;
 import scenes.lib.PlayerInfo;
 import scenes.lib.components.TerrainChunk;
@@ -25,6 +30,7 @@ import scenes.lib.components.UnitInfo;
 import scenes.lib.rendering.*;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainController extends Controller {
@@ -42,6 +48,8 @@ public class MainController extends Controller {
     private CameraHandler cameraHandler;
     private Ecs ecs;
 
+    private List<RunnableSystem> systems;
+
     private ServerHandler server;
     private ClientHandler client;
 
@@ -55,11 +63,20 @@ public class MainController extends Controller {
         var players = parameters.<List<PlayerInfo>>get(PLAYERS);
         var client = parameters.<IoClient>get(CLIENT_SOCKET);
 
+        systems = new ArrayList<>();
+
         if(server != null) {
             this.server = initServer(server, players);
+            systems.add(new ServerSystem(context, this.server));
         } else if (client != null) {
             this.client = initClient(client);
+            systems.add(new ClientSystem(context, this.client));
         }
+
+        systems.addAll(List.of(
+                new CommandSystem(context),
+                new MovementSystem(context)
+        ));
 
         ecs.loadSnapshot(snapshot);
 
@@ -74,6 +91,7 @@ public class MainController extends Controller {
     public void update() {
         playerHandler.update();
         cameraHandler.update();
+        systems.forEach(RunnableSystem::update);
 
         canvas.render();
     }

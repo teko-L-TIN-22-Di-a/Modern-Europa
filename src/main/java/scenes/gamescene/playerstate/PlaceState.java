@@ -1,4 +1,4 @@
-package scenes.gamescene.PlayerState;
+package scenes.gamescene.playerstate;
 
 import config.TileConfig;
 import core.EngineContext;
@@ -12,10 +12,8 @@ import core.util.State;
 import core.util.Vector2f;
 import rx.Subscription;
 import scenes.gamescene.RenderingContext;
-import scenes.gamescene.rendering.SelectionRenderer;
 import scenes.lib.TextureConstants;
 import scenes.lib.components.Sprite;
-import scenes.lib.rendering.IsometricTerrainRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +39,7 @@ public class PlaceState extends State {
     @Override
     public void enter(Parameters parameters) {
         renderingContext.selectionRenderer().setEnabled(false);
+        renderingContext.mainGui().setEnabled(false);
 
         highlightEffectSprite = ecs.newEntity();
         highlightEffectSprite.setComponent(new Sprite(TextureConstants.HIGHLIGHT, Vector2f.of(TileConfig.HalfTileSize.x(), 0), true));
@@ -56,7 +55,7 @@ public class PlaceState extends State {
                 }),
                 mouseListener.bindMouseClicked(mouseEvent -> {
                     // TODO call command
-                    transitionBack();
+                    transitionTo(MainState.class);
                 })
         ));
     }

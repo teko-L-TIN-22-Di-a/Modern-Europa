@@ -8,10 +8,8 @@ import core.ecs.components.Position;
 import core.util.Bounds;
 import core.util.StateMachine;
 import core.util.Vector2f;
-import rx.Subscription;
-import rx.functions.Action1;
-import scenes.gamescene.PlayerState.MainState;
-import scenes.gamescene.PlayerState.PlaceState;
+import scenes.gamescene.playerstate.MainState;
+import scenes.gamescene.playerstate.PlaceState;
 import scenes.lib.components.Selection;
 import scenes.lib.components.UnitInfo;
 import scenes.lib.rendering.IsometricHelper;
@@ -30,7 +28,7 @@ public class PlayerHandler {
         ecs = context.getService(Ecs.class);
         this.playerId = playerId;
         state = new StateMachine(List.of(
-                new MainState(context, renderingContext),
+                new MainState(context, renderingContext, playerId),
                 new PlaceState(context, renderingContext)
         ), MainState.class);
 
