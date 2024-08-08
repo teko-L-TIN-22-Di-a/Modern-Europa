@@ -2,6 +2,7 @@ package scenes.gamescene.systems;
 
 import core.EngineContext;
 import core.ecs.Ecs;
+import core.ecs.EcsView;
 import core.ecs.EcsView2;
 import core.ecs.RunnableSystem;
 import scenes.gamescene.ServerHandler;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public class ServerSystem implements RunnableSystem {
 
-    private List<EcsView2<Command, NetSynch>> receivedCommands = new ArrayList<>();
+    private List<EcsView<Command>> receivedCommands = new ArrayList<>();
 
     private static final int SLEEP_TIMEOUT = 8;
     private final ServerHandler serverHandler;
@@ -33,23 +34,7 @@ public class ServerSystem implements RunnableSystem {
 
     public void update() {
 
-        if(!receivedCommands.isEmpty()) {
-            var existingEntries = ecs.view(NetSynch.class);
-
-            for(var entry : receivedCommands) {
-                var existingEntry = existingEntries.stream()
-                        .filter(x -> x.Component().uuid().equals(entry.component2().uuid()))
-                        .findFirst();
-
-                if(!existingEntry.isPresent()) {
-                    continue;
-                }
-
-                ecs.setComponent(existingEntry.get().entityId(), entry.component1().setSent());
-            }
-
-            receivedCommands.clear();
-        }
+        synchroniseCommands();
 
         if(sleepTimeout > 0) {
             sleepTimeout--;
@@ -58,20 +43,41 @@ public class ServerSystem implements RunnableSystem {
 
         sleepTimeout = SLEEP_TIMEOUT;
 
-        var commands = ecs.view(Command.class, NetSynch.class)
+        var commands = ecs.view(Command.class)
                 .stream()
-                .filter(entry -> !entry.component1().sent())
+                .filter(entry -> !entry.component().sent())
                 .toList();
 
         if(commands.isEmpty()) {
             return;
         }
 
-        serverHandler.sendCommandList(commands);
-        System.out.println("Pushing server side update!");
+        serverHandler.sendCommandList(commands.stream().map(command -> new EcsView<Command>(command.entityId(), command.component().setProcessed(false))).toList());
 
         for(var command : commands) {
-            ecs.setComponent(command.entityId(), command.component1().setSent());
+            ecs.setComponent(command.entityId(), command.component().setSent());
+        }
+
+    }
+
+    private void synchroniseCommands() {
+
+        if(receivedCommands.isEmpty()) {
+            return;
+        }
+
+        var commands = ecs.view(Command.class);
+
+        var receivedCommands = List.copyOf(this.receivedCommands);
+        this.receivedCommands.clear();
+
+        for(var command : receivedCommands) {
+            if(commands.stream().anyMatch(x -> x.component().commandId().equals(command.component().commandId()))) {
+                continue;
+            }
+
+            var entity = ecs.newEntity();
+            entity.setComponent(command.component());
         }
 
     }

@@ -4,6 +4,7 @@ import core.util.Vector2f;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.SplittableRandom;
 import java.util.stream.IntStream;
@@ -86,13 +87,17 @@ public class ImageHelper {
     }
 
     public static BufferedImage cleanup(BufferedImage image) {
+        return cleanup(image, Color.TRANSLUCENT);
+    }
 
-        // TODO Improve
-        for(var x = 0; x < image.getWidth(); x++) {
-            for(var y = 0; y < image.getHeight(); y++) {
-                image.setRGB(x, y, Color.TRANSLUCENT);
-            }
-        }
+    public static BufferedImage cleanup(BufferedImage image, int cleanupColor) {
+        var raster = image.getRaster();
+        var bytesPerPixel = 4;
+        var data = new int[image.getWidth() * image.getHeight() * bytesPerPixel];
+
+        Arrays.fill(data, cleanupColor);
+        raster.setPixels(0, 0, image.getWidth(), image.getHeight(), data);
+
         return image;
     }
 

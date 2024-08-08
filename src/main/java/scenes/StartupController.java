@@ -97,6 +97,7 @@ public class StartupController extends Controller {
 
         // Base colors
         var entries = new HashMap<>(Map.ofEntries(
+                entry(TextureConstants.SMALL_UNIT, new TextureAtlasEntry(infantryTextures, Vector2f.of(0, 28), Vector2f.of(26, 28))),
                 entry(TextureConstants.UNIT, new TextureAtlasEntry(infantryTextures, Vector2f.of(0, 0), Vector2f.of(26, 28))),
                 entry(TextureConstants.BASE, new TextureAtlasEntry(buildingsTexture, Vector2f.of(0, 0), Vector2f.of(132, 82))),
                 entry(TextureConstants.GENERATOR, new TextureAtlasEntry(buildingsTexture, Vector2f.of(132, 0), Vector2f.of(132, 82)))
@@ -113,6 +114,7 @@ public class StartupController extends Controller {
             ImageHelper.keyOut(coloredInfantryTextures, Color.MAGENTA, color.getRGB());
 
             entries.putAll(Map.ofEntries(
+                    entry(TextureConstants.SMALL_UNIT + i, new TextureAtlasEntry(coloredInfantryTextures, Vector2f.of(0,28), Vector2f.of(26, 28))),
                     entry(TextureConstants.UNIT + i, new TextureAtlasEntry(coloredInfantryTextures, Vector2f.of(0,0), Vector2f.of(26, 28))),
                     entry(TextureConstants.BASE + i, new TextureAtlasEntry(coloredBuildingsTexture, Vector2f.of(0,0), Vector2f.of(132, 82))),
                     entry(TextureConstants.GENERATOR + i, new TextureAtlasEntry(coloredBuildingsTexture, Vector2f.of(132,0), Vector2f.of(132, 82)))

@@ -5,6 +5,9 @@ import core.ecs.Ecs;
 import core.ecs.RunnableSystem;
 import core.ecs.components.Position;
 import core.util.InterpolateHelper;
+import core.util.Vector2f;
+import scenes.gamescene.commands.CommandConstants;
+import scenes.lib.components.Command;
 import scenes.lib.components.PathFindingTarget;
 import scenes.lib.components.UnitInfo;
 
@@ -17,19 +20,32 @@ public class CommandSystem implements RunnableSystem {
     }
 
     public void update() {
-        var units = ecs.view(Position.class, UnitInfo.class, PathFindingTarget.class);
+        var commands = ecs
+                .view(Command.class)
+                .stream()
+                .filter(command -> !command.component().processed())
+                .toList();
 
-        for(var unit : units) {
+        var units = ecs.view(UnitInfo.class);
 
-            var currentPosition = unit.component1().position();
-            var newPos = InterpolateHelper.interpolateLinear(currentPosition.toVector2fxz(), unit.component3().target(), 0.1f);
-            var movement = currentPosition.toVector2fxz().sub(newPos);
-            if(Math.abs(movement.x()) <= 0.001 && Math.abs(movement.y()) <= 0.001) {
-                ecs.removeComponent(unit.entityId(), PathFindingTarget.class);
+        for(var command : commands) {
+            switch (command.component().commandType()) {
+                case CommandConstants.MOVEMENT_TARGET:
+
+                    var parameters = command.component().parameters();
+                    var targetPos = parameters.<Vector2f>get(CommandConstants.MOVEMENT_TARGET_POSITION);
+                    var unitId = parameters.getString(CommandConstants.MOVEMENT_TARGET_UNIT);
+
+                    var unit = units.stream().filter(x -> x.component().uuid().equals(unitId)).findFirst();
+
+                    if(unit.isPresent()) {
+                        ecs.setComponent(unit.get().entityId(), new PathFindingTarget(targetPos));
+                    }
+
+                    break;
             }
 
-            ecs.setComponent(unit.entityId(), new Position(newPos.toVector3fy(currentPosition.y())));
-
+            ecs.setComponent(command.entityId(), command.component().setProcessed());
         }
 
     }

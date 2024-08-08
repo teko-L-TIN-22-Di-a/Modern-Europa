@@ -4,13 +4,15 @@ import core.EngineContext;
 import core.EngineEventHooks;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class Ecs {
 
     private int currentId = 0;
 
     private final List<Entity> entities = new LinkedList<Entity>();
-    private final Map<String, Map<Integer, Object>> componentMaps = new HashMap<>();
+    private final ConcurrentMap<String, Map<Integer, Object>> componentMaps = new ConcurrentHashMap<>();
 
     public void clear() {
         currentId = 0;

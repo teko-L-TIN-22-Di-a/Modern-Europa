@@ -22,7 +22,10 @@ public class MovementSystem implements RunnableSystem {
         for(var unit : units) {
 
             var currentPosition = unit.component1().position();
-            var newPos = InterpolateHelper.interpolateLinear(currentPosition.toVector2fxz(), unit.component3().target(), 0.1f);
+            var newPos = InterpolateHelper.interpolateLinear(
+                    currentPosition.toVector2fxz(),
+                    unit.component3().target(),
+                    unit.component2().movementSpeed() * 0.001f);
             var movement = currentPosition.toVector2fxz().sub(newPos);
             if(Math.abs(movement.x()) <= 0.001 && Math.abs(movement.y()) <= 0.001) {
                 ecs.removeComponent(unit.entityId(), PathFindingTarget.class);

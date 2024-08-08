@@ -8,6 +8,6 @@ import scenes.lib.components.NetSynch;
 
 import java.util.List;
 
-public record CommandMessage(List<EcsView2<Command, NetSynch>> commands) {
+public record CommandMessage(List<EcsView<Command>> commands) {
     public static final String TYPE = CommandMessage.class.getSimpleName();
 }

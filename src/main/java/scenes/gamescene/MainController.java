@@ -91,6 +91,7 @@ public class MainController extends Controller {
     public void update() {
         playerHandler.update();
         cameraHandler.update();
+
         systems.forEach(RunnableSystem::update);
 
         canvas.render();

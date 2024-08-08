@@ -18,8 +18,14 @@ public record Command(String commandType, String commandId, Parameters parameter
     public Command setSent() {
         return new Command(commandType, commandId, parameters, true, processed, TimeToLive);
     }
+    public Command setSent(boolean sent) {
+        return new Command(commandType, commandId, parameters, sent, processed, TimeToLive);
+    }
 
     public Command setProcessed() {
         return new Command(commandType, commandId, parameters, sent, true, TimeToLive);
+    }
+    public Command setProcessed(boolean processed) {
+        return new Command(commandType, commandId, parameters, sent, processed, TimeToLive);
     }
 }

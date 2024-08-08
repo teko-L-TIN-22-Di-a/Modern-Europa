@@ -4,8 +4,6 @@ import config.TileConfig;
 import core.EngineContext;
 import core.ecs.Ecs;
 import core.ecs.EcsView2;
-import core.ecs.EcsView3;
-import core.ecs.components.Camera;
 import core.ecs.components.Position;
 import core.ecs.helper.CameraHelper;
 import core.graphics.ImageHelper;
@@ -21,11 +19,13 @@ import java.util.Map;
 
 public class FogOfWarRenderer implements Renderer {
 
+    private final Map<Integer, BufferedImage> bufferedFogOfWarBrushes = new HashMap<>();
+
     private final Ecs ecs;
-    private BufferedImage noiseTexture;
-    private BufferedImage visibleFogOfWar;
+    private final BufferedImage noiseTexture;
+    private final BufferedImage visibleFogOfWar;
     private final Map<Integer, FogOfWarChunkEntry> bufferedChunks = new HashMap<>();
-    private int playerIdFilter;
+    private final int playerIdFilter;
 
     public FogOfWarRenderer(EngineContext context, Vector2f viewPort, int playerIdFilter) {
         ecs = context.getService(Ecs.class);
@@ -80,29 +80,44 @@ public class FogOfWarRenderer implements Renderer {
 
         if(renderedChunk == null) {
             bufferedChunks.put(terrain.entityId(), createChunkEntry(terrain));
-            renderedChunk = bufferedChunks.get(terrain.entityId()); // TODO Huh?
+            renderedChunk = bufferedChunks.get(terrain.entityId());
         }
 
         resetFogOfWarEntry(renderedChunk);
 
         var chunkGraphics = (Graphics2D) renderedChunk.image().getGraphics();
+        chunkGraphics.setComposite(AlphaComposite.DstOut);
 
         for(var entry : visibilityEntries) {
 
             if(entry.component2().playerId() != playerIdFilter) { continue; }
 
-            chunkGraphics.setComposite(AlphaComposite.DstOut);
-
             var position = IsometricHelper.toScreenSpace(entry.component1().position());
             var drawingPos = position.add(renderedChunk.originOffset());
 
-            var viewSize = entry.component2().visibilityStrength()*32;
+            var brush = getBufferedFogOfWarBrush(entry.component2().visibilityStrength());
 
-            chunkGraphics.fillOval(
-                    (int) (drawingPos.x() - viewSize/2f), (int) (drawingPos.y() - viewSize/2f),
-                    (int) viewSize, (int) viewSize);
+            chunkGraphics.drawImage(
+                    brush,
+                    (int) (drawingPos.x() - brush.getWidth()/2f), (int) (drawingPos.y() - brush.getHeight()/2f),
+                    null
+            );
+        }
+    }
+
+    private BufferedImage getBufferedFogOfWarBrush(int strength) {
+        if(bufferedFogOfWarBrushes.containsKey(strength)) {
+            return bufferedFogOfWarBrushes.get(strength);
         }
 
+        var viewSize = Vector2f.of(1, 0.55f).mul(32 * strength);
+        var newBrushImage = ImageHelper.newImage(viewSize);
+        ImageHelper.cleanup(newBrushImage);
+        var brushGraphics = (Graphics2D) newBrushImage.getGraphics();
+        brushGraphics.fillOval(0, 0, newBrushImage.getWidth(), newBrushImage.getHeight());
+
+        bufferedFogOfWarBrushes.put(strength, newBrushImage);
+        return newBrushImage;
     }
 
     private FogOfWarChunkEntry createChunkEntry(EcsView2<TerrainChunk, Position> terrain) {

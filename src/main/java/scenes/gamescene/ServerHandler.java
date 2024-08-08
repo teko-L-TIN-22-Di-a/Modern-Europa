@@ -1,6 +1,7 @@
 package scenes.gamescene;
 
 import com.google.gson.Gson;
+import core.ecs.EcsView;
 import core.ecs.EcsView2;
 import core.networking.IoServer;
 import core.networking.IoSocket;
@@ -57,7 +58,7 @@ public class ServerHandler {
         subscriptions.forEach(Subscription::unsubscribe);
     }
 
-    public void sendCommandList(List<EcsView2<Command, NetSynch>> commands) {
+    public void sendCommandList(List<EcsView<Command>> commands) {
         var updateMessage = SocketMessage.of(new CommandMessage(commands));
         try {
             server.send(gson.toJson(updateMessage));

@@ -9,6 +9,7 @@ import java.util.Map;
 public record SocketMessage(String type, Object value) {
     public final static Gson gson = new GsonBuilder()
             .registerTypeAdapter(new TypeToken<Map<String, Map<Integer, Object>>>() {}.getType(), new ComponentMapSerializer())
+            .registerTypeAdapter(new TypeToken<Map<String, Object>>() {}.getType(), new ParameterSerializer())
             .create();
 
     public <T> T getMessage(Class<T> type) {

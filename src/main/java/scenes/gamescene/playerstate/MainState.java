@@ -6,21 +6,25 @@ import core.ecs.Ecs;
 import core.ecs.EcsView3;
 import core.ecs.components.Position;
 import core.input.MouseListener;
+import core.util.CircleBounds;
 import core.util.State;
 import core.util.Vector2f;
 import rx.Subscription;
 import scenes.gamescene.RenderingContext;
-import scenes.lib.components.PathFindingTarget;
+import scenes.gamescene.commands.CommandConstants;
 import scenes.lib.components.Selection;
 import scenes.lib.components.UnitInfo;
+import scenes.lib.entities.EntityHelper;
 
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MainState extends State {
 
     private final List<Subscription> subscriptions = new ArrayList<>();
+
+    private final Queue<MouseEvent> queuedMouseEvents = new ConcurrentLinkedQueue<>();
 
     private final RenderingContext renderingContext;
     private final MouseListener mouseListener;
@@ -37,22 +41,14 @@ public class MainState extends State {
 
     @Override
     public void update() {
-        // Do Nothing
+        while(!queuedMouseEvents.isEmpty()) {
+            handleMouseEvent(queuedMouseEvents.poll());
+        }
     }
 
     @Override
     public void enter(Parameters parameters) {
-        subscriptions.add(mouseListener.bindMouseReleased(mouseEvent -> {
-
-            if(mouseEvent.getButton() != MouseEvent.BUTTON3) return;
-
-            var pos = Vector2f.of(mouseEvent.getX(), mouseEvent.getY());
-            var tilePos = renderingContext.terrainRenderer().getTilePosition(pos.div(renderingContext.scale()));
-            if(tilePos != null) {
-                setPathFindingTarget(tilePos.add(0.5f, 0.5f));
-            }
-
-        }));
+        subscriptions.add(mouseListener.bindMouseReleased(queuedMouseEvents::add));
     }
 
     @Override
@@ -61,10 +57,44 @@ public class MainState extends State {
         subscriptions.clear();
     }
 
+    private void handleMouseEvent(MouseEvent event) {
+        if(event.getButton() != MouseEvent.BUTTON3) return;
+
+        var pos = Vector2f.of(event.getX(), event.getY());
+        var tilePos = renderingContext.terrainRenderer().getTilePosition(pos.div(renderingContext.scale()));
+        if(tilePos != null) {
+            setPathFindingTarget(tilePos);
+        }
+    }
+
     private void setPathFindingTarget(Vector2f target) {
         var selectedUnits = getMovableSelectedUnits();
+
+        var rnd = new Random();
+        var maxTries = 10;
+        var tries = 0;
+        var circleSize = 0.2f;
+        List<CircleBounds> points = new ArrayList<>();
+
+        while(points.size() < selectedUnits.size()) {
+            var tmpPos = Vector2f.of(rnd.nextFloat(0.2f, 0.8f), rnd.nextFloat(0.2f, 0.8f));
+            var tmpCircle = new CircleBounds(tmpPos, circleSize);
+
+            if(points.stream().noneMatch(tmpCircle::intersects) || tries >= maxTries) {
+                points.add(tmpCircle);
+                tries = 0;
+            } else {
+                tries++;
+            }
+        }
+
+        var i = 0;
         for(var unit: selectedUnits) {
-            ecs.setComponent(unit.entityId(), new PathFindingTarget(target));
+            var subPos = points.get(i++).position();
+            EntityHelper.createCommand(ecs, CommandConstants.MOVEMENT_TARGET, new Parameters(Map.ofEntries(
+                    Map.entry(CommandConstants.MOVEMENT_TARGET_POSITION, target.add(subPos)),
+                    Map.entry(CommandConstants.MOVEMENT_TARGET_UNIT, unit.component2().uuid())
+            )));
         }
     }
 
