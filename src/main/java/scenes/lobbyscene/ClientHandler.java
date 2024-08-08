@@ -40,7 +40,7 @@ class ClientHandler {
 
     public IoClient getClient() { return client; }
 
-    public void init() {
+    public void init() throws IOException {
         client = new IoClient();
         subscriptions.addAll(Arrays.asList(
                 client.bindConnect(x -> connection.onNext(null)),
@@ -61,19 +61,19 @@ class ClientHandler {
         ));
 
 
-        try {
-            var addressParts = hostAddress.split(":");
-            client.connect(
-                    addressParts[0],
-                    Integer.parseInt(addressParts[1])
-            );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        var addressParts = hostAddress.split(":");
+        client.connect(
+                addressParts[0],
+                Integer.parseInt(addressParts[1])
+        );
     }
 
     public void dispose() {
         subscriptions.forEach(Subscription::unsubscribe);
+    }
+
+    public void stop() throws IOException {
+        client.disconnect();
     }
 
     public void registerUser(String username) {

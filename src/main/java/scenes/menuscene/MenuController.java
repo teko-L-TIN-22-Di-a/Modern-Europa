@@ -7,6 +7,8 @@ import core.Parameters;
 import core.graphics.WindowProvider;
 import core.loading.AssetManager;
 import core.loading.Settings;
+import scenes.SetupGameController;
+import scenes.lib.PlayerInfo;
 import scenes.lib.rendering.DialogRenderer;
 import scenes.lobbyscene.LobbyController;
 import scenes.gamescene.MainController;
@@ -17,6 +19,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Map.entry;
@@ -109,7 +112,11 @@ public class MenuController extends Controller {
     }
 
     private void onFreeModeButtonClick() {
-        switcher.queue(new MainController());
+        switcher.queue(new SetupGameController(), new Parameters(Map.ofEntries(
+            entry(SetupGameController.PLAYERS, List.of(
+                    new PlayerInfo("FreeModePlayer", false, "", 1)
+            ))
+        )));
     }
 
     @Override

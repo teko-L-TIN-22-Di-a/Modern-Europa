@@ -45,6 +45,9 @@ public class IoServer {
 
     public void StopListening() throws IOException {
         serverSocket.close();
+        for (IoSocket ioSocket : clients.values()) {
+            ioSocket.close();
+        }
         listenThreads.forEach(Thread::interrupt);
         listenThreads.clear();
     }

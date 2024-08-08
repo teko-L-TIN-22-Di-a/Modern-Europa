@@ -9,6 +9,7 @@ import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
 import java.util.Vector;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Engine implements ControllerSwitcher, EngineEventHooks {
     protected static final Logger logger = LogManager.getLogger(Engine.class);
@@ -17,8 +18,7 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
     private final PublishSubject<Void> beforeUpdate = PublishSubject.create();
     private final PublishSubject<Void> afterUpdate = PublishSubject.create();
 
-    private Controller queuedController = null;
-    private Parameters queuedParameters = null;
+    private final ConcurrentLinkedQueue<QueuedController> queuedControllers = new ConcurrentLinkedQueue<>();
 
     private Controller currentController;
     private EngineContext context;
@@ -48,10 +48,9 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
 
             beforeUpdate.onNext(null);
 
-            if(queuedController != null) {
-                switchTo(queuedController, queuedParameters);
-                queuedController = null;
-                queuedParameters = null;
+            if(!queuedControllers.isEmpty()) {
+                var entry = queuedControllers.poll();
+                switchTo(entry.controller(), entry.parameters());
             }
 
             currentController.update();
@@ -70,14 +69,12 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
 
     @Override
     public void queue(Controller controller) {
-        queuedController = controller;
-        queuedParameters = Parameters.EMPTY;
+        queue(controller, Parameters.EMPTY);
     }
 
     @Override
     public void queue(Controller controller, Parameters parameters) {
-        queuedController = controller;
-        queuedParameters = parameters;
+        queuedControllers.add(new QueuedController(controller, parameters));
     }
 
     @Override

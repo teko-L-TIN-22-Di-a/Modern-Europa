@@ -33,7 +33,7 @@ public class SetupGameController extends Controller {
 
     private Ecs ecs;
     private ControllerSwitcher switcher;
-    private IoServer server;
+    private IoServer server = null;
     private EcsSnapshot ecsSnapshot;
     private List<PlayerInfo> newPlayerList;
 
@@ -65,6 +65,9 @@ public class SetupGameController extends Controller {
             var mainBase = EntityHelper.createMainBase(ecs, playerId);
             mainBase.setComponent(new Position(slot.add(0.5f, 0.5f).toVector3fy(0)));
 
+            var miner = EntityHelper.createMiner(ecs, playerId);
+            miner.setComponent(new Position(slot.toVector3fy(0).add(1.5f, 0, -0.5f)));
+
             var generator = EntityHelper.createGenerator(ecs, playerId);
             generator.setComponent(new Position(slot.toVector3fy(0).add(1.5f, 0, 0.5f)));
 
@@ -78,6 +81,16 @@ public class SetupGameController extends Controller {
         }
 
         ecsSnapshot = ecs.getSnapshot();
+
+        if(server == null) {
+            // FreeMode hack
+            switcher.switchTo(new MainController(), new Parameters(Map.ofEntries(
+                    entry(MainController.PLAYER_ID, 1),
+                    entry(MainController.ECS_SNAPSHOT, ecsSnapshot),
+                    entry(MainController.PLAYERS, newPlayerList)
+            )));
+            return;
+        }
 
         var playerUpdateMessage = SocketMessage.of(new LobbyUpdateMessage(newPlayerList));
         try {

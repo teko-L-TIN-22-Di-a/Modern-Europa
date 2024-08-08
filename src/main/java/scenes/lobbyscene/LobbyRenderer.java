@@ -13,6 +13,7 @@ import java.util.ArrayList;
 public class LobbyRenderer extends JPanel {
 
     private final PublishSubject<Void> startButtonClick = PublishSubject.create();
+    private final PublishSubject<Void> backButtonClick = PublishSubject.create();
 
     private JPanel menuPanel;
     private JPanel playersContainer;
@@ -22,7 +23,15 @@ public class LobbyRenderer extends JPanel {
         menuPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         var constraints = new GridBagConstraints();
 
+        // Back Button
+        constraints.insets = new Insets(0, 0, 0, 100);
+        constraints.anchor = GridBagConstraints.WEST;
+        var backButton = new JButton("Leave");
+        backButton.addActionListener(e -> backButtonClick.onNext(null));
+        menuPanel.add(backButton, constraints);
+
         // Title
+        constraints.gridy = 1;
         constraints.anchor = GridBagConstraints.NORTH;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         var title = new JLabel("Lobby");
@@ -36,12 +45,18 @@ public class LobbyRenderer extends JPanel {
         constraints.fill = GridBagConstraints.HORIZONTAL;
 
         constraints.weighty = 1;
+        constraints.gridy = 2;
         menuPanel.add(playersContainer, constraints);
 
         if(startButtonVisible) {
+
+            constraints.gridy = 3;
+            constraints.anchor = GridBagConstraints.EAST;
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.insets = new Insets(10, 0, 10, 0);
             var startButton = new JButton("Start");
             startButton.addActionListener(e -> startButtonClick.onNext(null));
-            menuPanel.add(startButton);
+            menuPanel.add(startButton, constraints);
         }
 
         add(menuPanel);
@@ -61,6 +76,9 @@ public class LobbyRenderer extends JPanel {
 
     public Subscription bindStartButtonClick(Action1<Void> action) {
         return startButtonClick.subscribe(action);
+    }
+    public Subscription bindBackButtonClick(Action1<Void> action) {
+        return backButtonClick.subscribe(action);
     }
 
 }

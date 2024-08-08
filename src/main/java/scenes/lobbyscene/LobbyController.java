@@ -17,6 +17,7 @@ import scenes.lib.settings.UserSettings;
 import scenes.menuscene.MenuController;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import static java.util.Map.entry;
@@ -28,8 +29,6 @@ public class LobbyController extends Controller {
     public static final String LOBBY_CONTROLLER_TYPE = "lobbyControllerType";
     public static final String HOST_ON_PORT = "hostOnPort";
     public static final String HOST_ADDRESS = "hostAddress";
-
-    private static final Gson gson = JsonConverter.getInstance();
 
     private WindowProvider windowProvider;
     private ControllerSwitcher switcher;
@@ -61,6 +60,8 @@ public class LobbyController extends Controller {
         lobbyRenderer.setCursor(cursor);
         windowProvider.addComponent(lobbyRenderer);
 
+        lobbyRenderer.bindBackButtonClick(e -> onBackButtonClick());
+
         switch(controllerType) {
             case HOST_LOBBY:
                 lobbyRenderer.bindStartButtonClick(e -> onStartButtonClick());
@@ -90,7 +91,14 @@ public class LobbyController extends Controller {
             server.updatePlayerList(players);
             lobbyRenderer.UpdatePlayerList(players);
         });
-        server.init();
+
+        try {
+            server.init();
+        } catch (IOException e) {
+            switcher.switchTo(new MenuController(), new Parameters(Map.ofEntries(
+                    entry(MenuController.DISPLAY_ERROR, "Couldn't start server.")
+            )));
+        }
 
         return server;
     }
@@ -105,7 +113,6 @@ public class LobbyController extends Controller {
             lobbyRenderer.UpdatePlayerList(players);
         });
         client.bindDisconnection(username -> {
-            // TODO reconnect logic?
             switcher.queue(new MenuController(), new Parameters(Map.ofEntries(
                     entry(MenuController.DISPLAY_ERROR, "Disconnect from host")
             )));
@@ -126,8 +133,30 @@ public class LobbyController extends Controller {
                     entry(MainController.PLAYER_ID, player.get().id())
             )));
         });
-        client.init();
+        try {
+            client.init();
+        } catch (IOException e) {
+            switcher.switchTo(new MenuController(), new Parameters(Map.ofEntries(
+                    entry(MenuController.DISPLAY_ERROR, "Couldn't join server.")
+            )));
+        }
         return client;
+    }
+
+    public void onBackButtonClick() {
+
+        try {
+            if(server != null) {
+                server.stop();
+            }
+            if(client != null) {
+                client.stop();
+            }
+        }catch (IOException e) {
+            // Do nothing
+        }
+
+        switcher.queue(new MenuController());
     }
 
     public void onStartButtonClick() {

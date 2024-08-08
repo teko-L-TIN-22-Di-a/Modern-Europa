@@ -27,7 +27,7 @@ public class EntityHelper {
         var originOffset = Vector2f.of(13,28);
 
         newEntity.setComponent(new Sprite(TextureConstants.SMALL_UNIT + playerId, originOffset, true));
-        newEntity.setComponent(new UnitInfo(playerId, 4, 100, UnitInfo.BALL_UNIT, uuid));
+        newEntity.setComponent(new UnitInfo(playerId, 10, 100, UnitInfo.BALL_UNIT, uuid));
         newEntity.setComponent(new Selection(new Bounds(originOffset.mul(-1), Vector2f.of(26, 28)), false));
         newEntity.setComponent(new NetSynch(uuid));
         return newEntity;
@@ -41,7 +41,7 @@ public class EntityHelper {
         var originOffset = Vector2f.of(13,28);
 
         newEntity.setComponent(new Sprite(TextureConstants.UNIT + playerId, originOffset, true));
-        newEntity.setComponent(new UnitInfo(playerId, 4, 10, UnitInfo.MECH_UNIT, uuid));
+        newEntity.setComponent(new UnitInfo(playerId, 16, 10, UnitInfo.MECH_UNIT, uuid));
         newEntity.setComponent(new Selection(new Bounds(originOffset.mul(-1), Vector2f.of(26, 28)), false));
         newEntity.setComponent(new NetSynch(uuid));
         return newEntity;
@@ -70,6 +70,20 @@ public class EntityHelper {
 
         newEntity.setComponent(new Sprite(TextureConstants.GENERATOR + playerId, originOffset, true));
         newEntity.setComponent(new UnitInfo(playerId, 8, 0, UnitInfo.GENERATOR, uuid));
+        newEntity.setComponent(new Selection(new Bounds(originOffset.mul(-1).add(10, 8), Vector2f.of(102, 62)), false));
+        newEntity.setComponent(new NetSynch(uuid));
+        return newEntity;
+    }
+
+    public static Entity createMiner(Ecs ecs, int playerId) {
+        return createMiner(ecs, playerId, UUID.randomUUID().toString());
+    }
+    public static Entity createMiner(Ecs ecs, int playerId, String uuid) {
+        var newEntity = ecs.newEntity();
+        var originOffset = Vector2f.of(63,48);
+
+        newEntity.setComponent(new Sprite(TextureConstants.MINER + playerId, originOffset, true));
+        newEntity.setComponent(new UnitInfo(playerId, 8, 0, UnitInfo.Miner, uuid));
         newEntity.setComponent(new Selection(new Bounds(originOffset.mul(-1).add(10, 8), Vector2f.of(102, 62)), false));
         newEntity.setComponent(new NetSynch(uuid));
         return newEntity;

@@ -37,17 +37,17 @@ class ServerHandler {
 
     public IoServer getServer() { return server; }
 
-    public void init() {
+    public void init() throws IOException {
         server = new IoServer();
         subscriptions.add(
                 server.bindConnect(this::onConnect)
         );
 
-        try {
-            server.StartListening(port);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        server.StartListening(port);
+    }
+
+    public void stop() throws IOException {
+        server.StopListening();
     }
 
     public void dispose() {

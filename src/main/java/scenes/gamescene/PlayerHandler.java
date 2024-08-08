@@ -1,6 +1,7 @@
 package scenes.gamescene;
 
 import core.EngineContext;
+import core.Parameters;
 import core.ecs.Ecs;
 import core.ecs.EcsView3;
 import core.ecs.Entity;
@@ -14,10 +15,15 @@ import scenes.lib.components.Selection;
 import scenes.lib.components.UnitInfo;
 import scenes.lib.rendering.IsometricHelper;
 
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class PlayerHandler {
+
+    private final Queue<String> queuedBuildingEvents = new ConcurrentLinkedQueue<>();
 
     private Ecs ecs;
     private final StateMachine state;
@@ -29,12 +35,13 @@ public class PlayerHandler {
         this.playerId = playerId;
         state = new StateMachine(List.of(
                 new MainState(context, renderingContext, playerId),
-                new PlaceState(context, renderingContext)
+                new PlaceState(context, renderingContext, playerId)
         ), MainState.class);
 
         renderingContext.mainGui().createNewTab("Main", Map.of("Buildings", Map.ofEntries(
-                Map.entry("Base", x -> prepareBuildCommand()),
-                Map.entry("Generator", x -> prepareBuildCommand())
+                Map.entry("Base", x -> queuedBuildingEvents.add(UnitInfo.BASE)),
+                Map.entry("Generator", x -> queuedBuildingEvents.add(UnitInfo.GENERATOR)),
+                Map.entry("Miner", x -> queuedBuildingEvents.add(UnitInfo.Miner))
         )));
 
         renderingContext.selectionRenderer().bindBoundsSelection(this::onBoundsSelection);
@@ -43,10 +50,16 @@ public class PlayerHandler {
 
     public void update() {
         state.update();
+
+        if(!queuedBuildingEvents.isEmpty()) {
+            prepareBuildCommand(queuedBuildingEvents.poll());
+        }
     }
 
-    private void prepareBuildCommand() {
-        state.transitionTo(PlaceState.class);
+    private void prepareBuildCommand(String buildingType) {
+        state.transitionTo(PlaceState.class, new Parameters(Map.of(
+                PlaceState.BUILDING_TYPE, buildingType
+        )));
     }
 
     private void onBoundsSelection(Bounds bounds) {

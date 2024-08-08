@@ -37,7 +37,9 @@ public class ParameterSerializer implements JsonSerializer<Map<String, Object>>,
 
             // TODO Very hacky find a better solution
             var parameterMap = Map.ofEntries(
-                    Map.entry(CommandConstants.MOVEMENT_TARGET_POSITION, Vector2f.class)
+                    Map.entry(CommandConstants.MOVEMENT_TARGET_POSITION, Vector2f.class),
+                    Map.entry(CommandConstants.BUILDING_CREATION_POSITION, Vector2f.class),
+                    Map.entry(CommandConstants.BUILDING_CREATION_PLAYER_ID, Integer.class)
             );
 
             var mappedType = parameterMap.getOrDefault(entry.getKey(), null);
