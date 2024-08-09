@@ -1,6 +1,8 @@
 package scenes.lib.components;
 
 import core.util.Vector2f;
+import scenes.lib.MapInfo;
+import scenes.lib.TextureConstants;
 
 public record TerrainChunk(Tile[][] tiles, boolean isDirty) {
 
@@ -9,8 +11,28 @@ public record TerrainChunk(Tile[][] tiles, boolean isDirty) {
 
         for (int x = 0; x < tiles.length; x++) {
             for (int z = 0; z < tiles[x].length; z++) {
-                tiles[x][z] = new Tile("1",0);
+                tiles[x][z] = new Tile(TextureConstants.DEFAULT_GROUND,0);
             }
+        }
+
+        return new TerrainChunk(tiles, false);
+    }
+
+    public static TerrainChunk generate(Vector2f size, MapInfo mapInfo) {
+        var tiles = new Tile[(int)size.x()][(int)size.y()];
+
+        for (int x = 0; x < tiles.length; x++) {
+            for (int z = 0; z < tiles[x].length; z++) {
+                tiles[x][z] = new Tile(TextureConstants.DEFAULT_GROUND,0);
+            }
+        }
+
+        for(var spot : mapInfo.mineSpots()) {
+            if(spot.x() >= tiles.length || spot.y() >=  tiles[0].length ) {
+                continue;
+            }
+
+            tiles[(int) spot.x()][(int) spot.y()] = new Tile(TextureConstants.MINEABLE_GROUND,0);
         }
 
         return new TerrainChunk(tiles, false);

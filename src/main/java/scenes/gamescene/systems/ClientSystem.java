@@ -20,7 +20,6 @@ public class ClientSystem implements RunnableSystem {
 
         this.clientHandler.bindReceivedCommands(msg -> {
            receivedCommands.addAll(msg.commands());
-           System.out.println("Received commands: " + msg.commands().size());
         });
 
     }

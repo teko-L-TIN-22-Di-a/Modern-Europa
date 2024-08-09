@@ -25,6 +25,10 @@ public class StateMachine {
         }
     }
 
+    public State getCurrentState() {
+        return currentState;
+    }
+
     public void update() {
         if (currentState != null) {
             currentState.update();

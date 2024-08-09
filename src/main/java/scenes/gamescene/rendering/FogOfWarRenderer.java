@@ -111,7 +111,7 @@ public class FogOfWarRenderer implements Renderer {
             return bufferedFogOfWarBrushes.get(strength);
         }
 
-        var viewSize = Vector2f.of(1, 0.55f).mul(32 * strength);
+        var viewSize = TileConfig.TileSize.mul(strength);
         var newBrushImage = ImageHelper.newImage(viewSize);
         ImageHelper.cleanup(newBrushImage);
         var brushGraphics = (Graphics2D) newBrushImage.getGraphics();

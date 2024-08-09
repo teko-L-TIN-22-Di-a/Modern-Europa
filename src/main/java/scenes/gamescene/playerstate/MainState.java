@@ -16,6 +16,7 @@ import scenes.lib.components.Selection;
 import scenes.lib.components.UnitInfo;
 import scenes.lib.entities.EntityHelper;
 
+import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -32,6 +33,8 @@ public class MainState extends State {
 
     private final int playerId;
 
+    private JPanel temporaryTab = null;
+
     public MainState(EngineContext context, RenderingContext renderingContext, int playerId) {
         this.renderingContext = renderingContext;
         ecs = context.getService(Ecs.class);
@@ -41,6 +44,22 @@ public class MainState extends State {
 
     @Override
     public void update() {
+        var selectedBases = getSelectedBases();
+
+        if(selectedBases.isEmpty() && temporaryTab != null) {
+            renderingContext.mainGui().removeTab(temporaryTab);
+            temporaryTab = null;
+        }
+
+        if(!selectedBases.isEmpty() && temporaryTab == null) {
+            temporaryTab = renderingContext.mainGui().createNewTab("Base", Map.ofEntries(
+                    Map.entry("Units", Map.ofEntries(
+                            Map.entry("Mech Unit [25]", x -> System.out.println("")),
+                            Map.entry("Ball Unit [5]", x -> System.out.println(""))
+                    ))
+            ));
+        }
+
         while(!queuedMouseEvents.isEmpty()) {
             handleMouseEvent(queuedMouseEvents.poll());
         }
@@ -70,6 +89,7 @@ public class MainState extends State {
     private void setPathFindingTarget(Vector2f target) {
         var selectedUnits = getMovableSelectedUnits();
 
+        // Very simple poisson disk distribution.
         var rnd = new Random();
         var maxTries = 10;
         var tries = 0;
@@ -105,6 +125,17 @@ public class MainState extends State {
                         unit.component2().playerId() == playerId
                                 && unit.component2().movementSpeed() > 0
                                 && unit.component3().selected()
+                ).toList();
+    }
+
+    private List<EcsView3<Position, UnitInfo, Selection>> getSelectedBases() {
+        var units = ecs.view(Position.class, UnitInfo.class, Selection.class);
+
+        return units.stream()
+                .filter(unit ->
+                        unit.component2().playerId() == playerId
+                                && unit.component3().selected()
+                                && unit.component2().type().equals(UnitInfo.BASE)
                 ).toList();
     }
 

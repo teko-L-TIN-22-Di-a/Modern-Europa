@@ -1,6 +1,9 @@
 package scenes.lib;
 
 public class TextureConstants {
+    public static final String DEFAULT_GROUND = "defaultGround";
+    public static final String MINEABLE_GROUND = "mineableGround";
+
     public static final String SMALL_UNIT = "smallUnit";
     public static final String UNIT = "unit";
 

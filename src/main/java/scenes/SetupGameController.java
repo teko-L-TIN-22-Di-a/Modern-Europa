@@ -15,6 +15,7 @@ import scenes.gamescene.MainController;
 import scenes.lib.MapInfo;
 import scenes.lib.PlayerInfo;
 import scenes.lib.entities.EntityHelper;
+import scenes.lib.entities.MapHelper;
 import scenes.lib.networking.messages.InitGameMessage;
 import scenes.lib.networking.messages.LobbyUpdateMessage;
 import scenes.lib.networking.messages.SocketMessage;
@@ -46,16 +47,11 @@ public class SetupGameController extends Controller {
         var players = parameters.<List<PlayerInfo>>get(PLAYERS);
 
         // TODO properly configure map
-        var mapInfo = new MapInfo(Arrays.asList(
-                Vector2f.of(1, 1),
-                Vector2f.of(23, 23),
-                Vector2f.of(23, 1),
-                Vector2f.of(1, 23)
-        ));
+        var mapInfo = MapHelper.getDefaultMap();
 
-        var playerSlot = new LinkedList<Vector2f>(mapInfo.startPoints());
+        var playerSlot = new LinkedList<>(mapInfo.startPoints());
         var playerId = 1;
-        newPlayerList = new ArrayList<PlayerInfo>();
+        newPlayerList = new ArrayList<>();
         for(var player : players) {
             var slot = playerSlot.remove();
             if(slot == null) {

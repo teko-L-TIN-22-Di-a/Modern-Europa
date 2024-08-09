@@ -26,6 +26,7 @@ import scenes.lib.AssetConstants;
 import scenes.lib.PlayerInfo;
 import scenes.lib.components.TerrainChunk;
 import scenes.lib.components.UnitInfo;
+import scenes.lib.entities.MapHelper;
 import scenes.lib.rendering.*;
 
 import java.awt.*;
@@ -135,7 +136,10 @@ public class MainController extends Controller {
     private void setupTerrain() {
         // TODO implement proper maps.
         var terrain = ecs.newEntity();
-        terrain.setComponent(TerrainChunk.generate(Vector2f.of(25, 25)));
+        terrain.setComponent(TerrainChunk.generate(
+                Vector2f.of(25, 25),
+                MapHelper.getDefaultMap())
+        );
     }
 
     private void setupCamera(EngineContext context, int playerId) {

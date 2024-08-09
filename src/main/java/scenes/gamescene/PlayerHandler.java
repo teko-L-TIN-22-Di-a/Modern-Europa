@@ -16,6 +16,7 @@ import scenes.lib.components.Selection;
 import scenes.lib.components.UnitInfo;
 import scenes.gamescene.rendering.IsometricHelper;
 
+import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Map;
@@ -44,9 +45,9 @@ public class PlayerHandler {
         ), MainState.class);
 
         renderingContext.mainGui().createNewTab("Main", Map.of("Buildings", Map.ofEntries(
-                Map.entry("<html>Base<br>[50]</html>", x -> queuedBuildingEvents.add(UnitInfo.BASE)),
-                Map.entry("Generator", x -> queuedBuildingEvents.add(UnitInfo.GENERATOR)),
-                Map.entry("Miner", x -> queuedBuildingEvents.add(UnitInfo.MINER))
+                Map.entry("Base [100]", x -> queuedBuildingEvents.add(UnitInfo.BASE)),
+                Map.entry("Generator [25]", x -> queuedBuildingEvents.add(UnitInfo.GENERATOR)),
+                Map.entry("Miner [50]", x -> queuedBuildingEvents.add(UnitInfo.MINER))
         )));
 
         renderingContext.selectionRenderer().bindBoundsSelection(this::onBoundsSelection);
@@ -54,11 +55,12 @@ public class PlayerHandler {
     }
 
     public void update() {
-        state.update();
-
-        if(inputBuffer.isKeyReleased(KeyEvent.VK_ESCAPE)) {
+        var isPlaceState = state.getCurrentState() instanceof PlaceState;
+        if(!isPlaceState && inputBuffer.isKeyReleased(KeyEvent.VK_ESCAPE)) {
             this.renderingContext.mainGui().setEscapeMenuVisible(true);
         }
+
+        state.update();
 
         if(!queuedBuildingEvents.isEmpty()) {
             prepareBuildCommand(queuedBuildingEvents.poll());

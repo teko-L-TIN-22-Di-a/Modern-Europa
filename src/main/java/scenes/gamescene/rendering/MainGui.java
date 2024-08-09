@@ -74,6 +74,11 @@ public class MainGui extends JPanel {
         return escapeMenu;
     }
 
+    public void removeTab(JPanel panel) {
+        tabContainer.remove(panel);
+        tabContainer.revalidate();
+    }
+
     public JPanel createNewTab(String title, Map<String, Map<String, Action1<Void>>> groups) {
         var container = new JPanel(new GridBagLayout());
 
@@ -93,6 +98,7 @@ public class MainGui extends JPanel {
         }
 
         tabContainer.addTab(title, container);
+        tabContainer.setSelectedComponent(container);
 
         return container;
     }

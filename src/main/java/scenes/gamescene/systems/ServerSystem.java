@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ServerSystem implements RunnableSystem {
 
-    private List<EcsView<Command>> receivedCommands = new ArrayList<>();
+    private final List<EcsView<Command>> receivedCommands = new ArrayList<>();
 
     private static final int SLEEP_TIMEOUT = 8;
     private final ServerHandler serverHandler;
@@ -26,7 +26,6 @@ public class ServerSystem implements RunnableSystem {
 
         this.serverHandler.bindReceivedCommands(msg -> {
             receivedCommands.addAll(msg.commands());
-            System.out.println("Received commands: " + msg.commands().size());
         });
     }
 
@@ -50,7 +49,7 @@ public class ServerSystem implements RunnableSystem {
             return;
         }
 
-        serverHandler.sendCommandList(commands.stream().map(command -> new EcsView<Command>(command.entityId(), command.component().setProcessed(false))).toList());
+        serverHandler.sendCommandList(commands.stream().map(command -> new EcsView<>(command.entityId(), command.component().setProcessed(false))).toList());
 
         for(var command : commands) {
             ecs.setComponent(command.entityId(), command.component().setSent());
