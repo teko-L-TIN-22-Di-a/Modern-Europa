@@ -11,7 +11,6 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 import scenes.lib.components.Selection;
-import scenes.lib.rendering.IsometricHelper;
 import scenes.lib.rendering.Renderer;
 
 import java.awt.Graphics2D;

@@ -2,18 +2,14 @@ package scenes.gamescene;
 
 import com.google.gson.Gson;
 import core.ecs.EcsView;
-import core.ecs.EcsView2;
 import core.networking.IoServer;
-import core.networking.IoSocket;
 import core.util.JsonConverter;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 import scenes.lib.PlayerInfo;
 import scenes.lib.components.Command;
-import scenes.lib.components.NetSynch;
 import scenes.lib.networking.messages.CommandMessage;
-import scenes.lib.networking.messages.LobbyUpdateMessage;
 import scenes.lib.networking.messages.SocketMessage;
 
 import java.io.IOException;

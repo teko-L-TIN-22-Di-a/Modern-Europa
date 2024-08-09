@@ -24,7 +24,7 @@ public class CommandSystem implements RunnableSystem {
         ecs = context.getService(Ecs.class);
     }
 
-    public void update() {
+    public void update(double delta) {
         var commands = ecs
                 .view(Command.class)
                 .stream()
@@ -69,20 +69,7 @@ public class CommandSystem implements RunnableSystem {
 
         Entity entity;
 
-        switch(buildingType) {
-            case UnitInfo.BASE:
-                entity = EntityHelper.createMainBase(ecs, playerId, unitId);
-                break;
-            case UnitInfo.GENERATOR:
-                entity = EntityHelper.createGenerator(ecs, playerId, unitId);
-                break;
-            case UnitInfo.Miner:
-                entity = EntityHelper.createMiner(ecs, playerId, unitId);
-                break;
-            default:
-                return;
-        }
-
+        entity = EntityHelper.createConstructionSite(ecs, playerId, buildingType, unitId);
         entity.setComponent(new Position(targetPos.toVector3fy(0)));
 
     }

@@ -3,11 +3,9 @@ package scenes.gamescene.systems;
 import core.EngineContext;
 import core.ecs.Ecs;
 import core.ecs.EcsView;
-import core.ecs.EcsView2;
 import core.ecs.RunnableSystem;
 import scenes.gamescene.ServerHandler;
 import scenes.lib.components.Command;
-import scenes.lib.components.NetSynch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +30,7 @@ public class ServerSystem implements RunnableSystem {
         });
     }
 
-    public void update() {
+    public void update(double delta) {
 
         synchroniseCommands();
 

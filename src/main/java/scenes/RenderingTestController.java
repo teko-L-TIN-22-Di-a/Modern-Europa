@@ -18,6 +18,8 @@ import core.loading.*;
 import core.util.InterpolateHelper;
 import core.util.Vector2f;
 import core.util.Vector3f;
+import scenes.gamescene.rendering.IsometricHelper;
+import scenes.gamescene.rendering.IsometricTerrainRenderer;
 import scenes.lib.components.Tile;
 import scenes.lib.components.TerrainChunk;
 import scenes.lib.rendering.*;
@@ -151,7 +153,7 @@ public class RenderingTestController extends Controller {
     }
 
     @Override
-    public void update() {
+    public void update(double delta) {
 
         var movement = Vector2f.ZERO;
 

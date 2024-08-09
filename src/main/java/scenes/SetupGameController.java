@@ -72,7 +72,7 @@ public class SetupGameController extends Controller {
             generator.setComponent(new Position(slot.toVector3fy(0).add(1.5f, 0, 0.5f)));
 
             for(var i = 0; i < 1; i++) {
-                var mainUnit = EntityHelper.createUnit(ecs, playerId);
+                var mainUnit = EntityHelper.createSmallUnit(ecs, playerId);
                 mainUnit.setComponent(new Position(slot.toVector3fy(0).add(0.5f, 0, 1.5f)));
             }
 
@@ -111,7 +111,7 @@ public class SetupGameController extends Controller {
     }
 
     @Override
-    public void update() {
+    public void update(double delta) {
         switcher.switchTo(new MainController(), new Parameters(Map.ofEntries(
                 entry(MainController.PLAYER_ID, 1),
                 entry(MainController.ECS_SNAPSHOT, ecsSnapshot),

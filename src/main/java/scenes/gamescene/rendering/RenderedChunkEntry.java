@@ -1,4 +1,4 @@
-package scenes.lib.rendering;
+package scenes.gamescene.rendering;
 
 import core.util.Bounds;
 import core.util.Vector2f;

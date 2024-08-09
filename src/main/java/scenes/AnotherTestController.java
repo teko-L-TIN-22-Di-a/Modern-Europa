@@ -53,7 +53,7 @@ public class AnotherTestController extends Controller {
     }
 
     @Override
-    public void update() {
+    public void update(double delta) {
         canvas.render();
     }
 

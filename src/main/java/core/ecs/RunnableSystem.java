@@ -2,6 +2,6 @@ package core.ecs;
 
 public interface RunnableSystem {
 
-    void update();
+    void update(double delta);
 
 }

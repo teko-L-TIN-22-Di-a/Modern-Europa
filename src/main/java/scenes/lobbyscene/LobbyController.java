@@ -172,7 +172,7 @@ public class LobbyController extends Controller {
     }
 
     @Override
-    public void update() {
+    public void update(double delta) {
         // Do nothing
     }
 

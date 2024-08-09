@@ -1,18 +1,14 @@
 package scenes.lib.rendering;
 
-import config.TileConfig;
 import core.EngineContext;
 import core.ecs.Ecs;
-import core.ecs.EcsView2;
-import core.ecs.components.Camera;
 import core.ecs.components.Position;
 import core.ecs.helper.CameraHelper;
-import core.util.Vector2f;
+import scenes.gamescene.rendering.IsometricHelper;
 import scenes.lib.components.Sprite;
 
 import java.awt.*;
 import java.util.Comparator;
-import java.util.List;
 
 public class SpriteRenderer implements Renderer {
 

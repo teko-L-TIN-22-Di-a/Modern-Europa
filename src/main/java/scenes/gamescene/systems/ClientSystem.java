@@ -4,9 +4,6 @@ import core.EngineContext;
 import core.ecs.*;
 import scenes.gamescene.ClientHandler;
 import scenes.lib.components.Command;
-import scenes.lib.components.NetSynch;
-import scenes.lib.entities.EntityHelper;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +25,7 @@ public class ClientSystem implements RunnableSystem {
 
     }
 
-    public void update() {
+    public void update(double delta) {
 
         synchroniseCommands();
 

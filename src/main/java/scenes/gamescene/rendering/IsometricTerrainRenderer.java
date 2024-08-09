@@ -1,10 +1,9 @@
-package scenes.lib.rendering;
+package scenes.gamescene.rendering;
 
 import config.TileConfig;
 import core.EngineContext;
 import core.ecs.Ecs;
 import core.ecs.EcsView2;
-import core.ecs.components.Camera;
 import core.ecs.components.Position;
 import core.ecs.helper.CameraHelper;
 import core.graphics.ImageHelper;
@@ -12,11 +11,12 @@ import core.util.Bounds;
 import core.util.Vector2f;
 import scenes.lib.components.Tile;
 import scenes.lib.components.TerrainChunk;
+import scenes.lib.rendering.Renderer;
+import scenes.lib.rendering.TextureAtlas;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
-import java.util.List;
 
 public class IsometricTerrainRenderer implements Renderer {
 

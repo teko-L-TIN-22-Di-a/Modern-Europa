@@ -47,7 +47,7 @@ public class StartupController extends Controller {
     }
 
     @Override
-    public void update() {
+    public void update(double delta) {
         switcher.switchTo(nextController);
     }
 
@@ -99,9 +99,12 @@ public class StartupController extends Controller {
         var entries = new HashMap<>(Map.ofEntries(
                 entry(TextureConstants.SMALL_UNIT, new TextureAtlasEntry(infantryTextures, Vector2f.of(0, 28), Vector2f.of(26, 28))),
                 entry(TextureConstants.UNIT, new TextureAtlasEntry(infantryTextures, Vector2f.of(0, 0), Vector2f.of(26, 28))),
+
                 entry(TextureConstants.BASE, new TextureAtlasEntry(buildingsTexture, Vector2f.of(0, 0), Vector2f.of(132, 82))),
                 entry(TextureConstants.GENERATOR, new TextureAtlasEntry(buildingsTexture, Vector2f.of(132, 0), Vector2f.of(132, 82))),
-                entry(TextureConstants.MINER, new TextureAtlasEntry(buildingsTexture, Vector2f.of(132*2, 0), Vector2f.of(132, 82)))
+                entry(TextureConstants.MINER, new TextureAtlasEntry(buildingsTexture, Vector2f.of(132*2, 0), Vector2f.of(132, 82))),
+
+                entry(TextureConstants.CONSTRUCTION_SITE, new TextureAtlasEntry(buildingsTexture, Vector2f.of(132*3, 0), Vector2f.of(132, 82)))
         ));
 
         var colors = Arrays.asList(Color.cyan, Color.red, Color.green, Color.blue);
@@ -117,9 +120,12 @@ public class StartupController extends Controller {
             entries.putAll(Map.ofEntries(
                     entry(TextureConstants.SMALL_UNIT + i, new TextureAtlasEntry(coloredInfantryTextures, Vector2f.of(0,28), Vector2f.of(26, 28))),
                     entry(TextureConstants.UNIT + i, new TextureAtlasEntry(coloredInfantryTextures, Vector2f.of(0,0), Vector2f.of(26, 28))),
+
                     entry(TextureConstants.BASE + i, new TextureAtlasEntry(coloredBuildingsTexture, Vector2f.of(0,0), Vector2f.of(132, 82))),
                     entry(TextureConstants.GENERATOR + i, new TextureAtlasEntry(coloredBuildingsTexture, Vector2f.of(132,0), Vector2f.of(132, 82))),
-                    entry(TextureConstants.MINER + i, new TextureAtlasEntry(coloredBuildingsTexture, Vector2f.of(132*2,0), Vector2f.of(132, 82)))
+                    entry(TextureConstants.MINER + i, new TextureAtlasEntry(coloredBuildingsTexture, Vector2f.of(132*2,0), Vector2f.of(132, 82))),
+
+                    entry(TextureConstants.CONSTRUCTION_SITE + i, new TextureAtlasEntry(coloredBuildingsTexture, Vector2f.of(132*3,0), Vector2f.of(132, 82)))
             ));
             i++;
         }

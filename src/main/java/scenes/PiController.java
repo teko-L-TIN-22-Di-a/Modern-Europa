@@ -76,7 +76,7 @@ public class PiController extends Controller {
     }
 
     @Override
-    public void update() {
+    public void update(double delta) {
 
         newPoint();
         canvas.render();

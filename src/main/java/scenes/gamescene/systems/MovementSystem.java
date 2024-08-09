@@ -16,7 +16,7 @@ public class MovementSystem implements RunnableSystem {
         ecs = context.getService(Ecs.class);
     }
 
-    public void update() {
+    public void update(double delta) {
         var units = ecs.view(Position.class, UnitInfo.class, PathFindingTarget.class);
 
         for(var unit : units) {

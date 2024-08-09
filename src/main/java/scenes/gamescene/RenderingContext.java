@@ -3,7 +3,7 @@ package scenes.gamescene;
 import core.util.Vector2f;
 import scenes.gamescene.rendering.MainGui;
 import scenes.gamescene.rendering.SelectionRenderer;
-import scenes.lib.rendering.IsometricTerrainRenderer;
+import scenes.gamescene.rendering.IsometricTerrainRenderer;
 
 public record RenderingContext(
         Vector2f scale,

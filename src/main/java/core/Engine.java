@@ -43,6 +43,7 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
         logger.debug("Starting main game loop.");
 
         long now;
+        double delta = 1;
         while(isRunning) {
             now = System.nanoTime();
 
@@ -53,13 +54,13 @@ public class Engine implements ControllerSwitcher, EngineEventHooks {
                 switchTo(entry.controller(), entry.parameters());
             }
 
-            currentController.update();
+            currentController.update(delta);
             afterUpdate.onNext(null);
 
             SleepHelper.SleepPrecise(fps,System.nanoTime() - now);
-
-            // TODO remove debug
             var frameTime = (System.nanoTime() - now)/1000000;
+            delta = frameTime / (1000d / fps);
+
             if(frameTime > 16.5) {
                 logger.debug("Game loop slowdown to {}ms", frameTime);
             }

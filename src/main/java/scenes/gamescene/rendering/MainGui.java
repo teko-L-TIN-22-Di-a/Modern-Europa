@@ -1,21 +1,32 @@
 package scenes.gamescene.rendering;
 
 import rx.functions.Action1;
+import scenes.lib.rendering.DialogRenderer;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicInternalFrameUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseMotionListener;
+import java.util.Arrays;
 import java.util.Map;
 
 public class MainGui extends JPanel {
 
+    private JInternalFrame escapeMenu;
     private JTabbedPane tabContainer;
 
     public MainGui(Canvas canvasComponent) {
         super(new GridBagLayout());
 
         var constraints = new GridBagConstraints();
+
+        // Escape Menu
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        escapeMenu = createEscapeMenu();
+        add(escapeMenu, constraints);
 
         // Add Canvas
         constraints.gridx = 0;
@@ -33,6 +44,34 @@ public class MainGui extends JPanel {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.ipady = 100;
         add(tabContainer, constraints);
+    }
+
+    public void setEscapeMenuVisible(boolean visible) {
+        escapeMenu.setVisible(visible);
+        validate();
+    }
+
+    public JInternalFrame createEscapeMenu() {
+        var escapeMenu = new JInternalFrame("Menu", false, true);
+        escapeMenu.setLayout(new GridBagLayout());
+        var constraints = new GridBagConstraints();
+        escapeMenu.setFrameIcon(null);
+
+        // Remove mouse listener to disable dragging functionality.
+        // https://stackoverflow.com/questions/13783753/trying-to-disable-dragging-of-a-jinternalframe
+        var ui = (BasicInternalFrameUI) escapeMenu.getUI();
+        var northPane = ui.getNorthPane();
+        var motionListeners = northPane.getListeners(MouseMotionListener.class);
+
+        for (var listener: motionListeners) {
+            northPane.removeMouseMotionListener(listener);
+        }
+
+        constraints.insets = new Insets(10, 10, 10, 10);
+        escapeMenu.add(new JButton("Leave"), constraints);
+        escapeMenu.setVisible(false);
+
+        return escapeMenu;
     }
 
     public JPanel createNewTab(String title, Map<String, Map<String, Action1<Void>>> groups) {

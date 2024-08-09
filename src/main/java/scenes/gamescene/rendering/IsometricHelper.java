@@ -1,4 +1,4 @@
-package scenes.lib.rendering;
+package scenes.gamescene.rendering;
 
 import config.TileConfig;
 import core.util.Vector2f;

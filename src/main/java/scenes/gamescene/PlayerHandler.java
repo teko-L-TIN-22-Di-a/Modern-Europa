@@ -6,6 +6,7 @@ import core.ecs.Ecs;
 import core.ecs.EcsView3;
 import core.ecs.Entity;
 import core.ecs.components.Position;
+import core.input.InputBuffer;
 import core.util.Bounds;
 import core.util.StateMachine;
 import core.util.Vector2f;
@@ -13,9 +14,9 @@ import scenes.gamescene.playerstate.MainState;
 import scenes.gamescene.playerstate.PlaceState;
 import scenes.lib.components.Selection;
 import scenes.lib.components.UnitInfo;
-import scenes.lib.rendering.IsometricHelper;
+import scenes.gamescene.rendering.IsometricHelper;
 
-import java.awt.event.MouseEvent;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -25,13 +26,17 @@ public class PlayerHandler {
 
     private final Queue<String> queuedBuildingEvents = new ConcurrentLinkedQueue<>();
 
-    private Ecs ecs;
+    private final Ecs ecs;
+    private final InputBuffer inputBuffer;
     private final StateMachine state;
+    private final RenderingContext renderingContext;
     private final int playerId;
     private Entity camera;
 
     public PlayerHandler(EngineContext context, RenderingContext renderingContext, int playerId) {
         ecs = context.getService(Ecs.class);
+        inputBuffer = context.getService(InputBuffer.class);
+        this.renderingContext = renderingContext;
         this.playerId = playerId;
         state = new StateMachine(List.of(
                 new MainState(context, renderingContext, playerId),
@@ -39,9 +44,9 @@ public class PlayerHandler {
         ), MainState.class);
 
         renderingContext.mainGui().createNewTab("Main", Map.of("Buildings", Map.ofEntries(
-                Map.entry("Base", x -> queuedBuildingEvents.add(UnitInfo.BASE)),
+                Map.entry("<html>Base<br>[50]</html>", x -> queuedBuildingEvents.add(UnitInfo.BASE)),
                 Map.entry("Generator", x -> queuedBuildingEvents.add(UnitInfo.GENERATOR)),
-                Map.entry("Miner", x -> queuedBuildingEvents.add(UnitInfo.Miner))
+                Map.entry("Miner", x -> queuedBuildingEvents.add(UnitInfo.MINER))
         )));
 
         renderingContext.selectionRenderer().bindBoundsSelection(this::onBoundsSelection);
@@ -50,6 +55,10 @@ public class PlayerHandler {
 
     public void update() {
         state.update();
+
+        if(inputBuffer.isKeyReleased(KeyEvent.VK_ESCAPE)) {
+            this.renderingContext.mainGui().setEscapeMenuVisible(true);
+        }
 
         if(!queuedBuildingEvents.isEmpty()) {
             prepareBuildCommand(queuedBuildingEvents.poll());

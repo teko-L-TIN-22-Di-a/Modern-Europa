@@ -1,4 +1,4 @@
-package scenes.lib.rendering;
+package scenes.gamescene.rendering;
 
 import config.TileConfig;
 import core.EngineContext;
@@ -10,6 +10,7 @@ import core.graphics.ImageHelper;
 import core.util.Vector2f;
 import scenes.lib.components.TerrainChunk;
 import scenes.lib.components.UnitInfo;
+import scenes.lib.rendering.Renderer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

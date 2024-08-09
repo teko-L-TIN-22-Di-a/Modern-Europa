@@ -17,12 +17,11 @@ import core.networking.IoClient;
 import core.networking.IoServer;
 import core.util.Vector2f;
 import core.util.Vector3f;
+import scenes.gamescene.rendering.FogOfWarRenderer;
+import scenes.gamescene.rendering.IsometricTerrainRenderer;
 import scenes.gamescene.rendering.MainGui;
 import scenes.gamescene.rendering.SelectionRenderer;
-import scenes.gamescene.systems.ClientSystem;
-import scenes.gamescene.systems.CommandSystem;
-import scenes.gamescene.systems.MovementSystem;
-import scenes.gamescene.systems.ServerSystem;
+import scenes.gamescene.systems.*;
 import scenes.lib.AssetConstants;
 import scenes.lib.PlayerInfo;
 import scenes.lib.components.TerrainChunk;
@@ -75,7 +74,8 @@ public class MainController extends Controller {
 
         systems.addAll(List.of(
                 new CommandSystem(context),
-                new MovementSystem(context)
+                new MovementSystem(context),
+                new ConstructionSystem(context)
         ));
 
         ecs.loadSnapshot(snapshot);
@@ -88,11 +88,11 @@ public class MainController extends Controller {
     }
 
     @Override
-    public void update() {
+    public void update(double delta) {
         playerHandler.update();
         cameraHandler.update();
 
-        systems.forEach(RunnableSystem::update);
+        systems.forEach(system -> system.update(delta));
 
         canvas.render();
     }

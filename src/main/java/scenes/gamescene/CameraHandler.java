@@ -5,9 +5,7 @@ import core.ecs.Entity;
 import core.ecs.components.Position;
 import core.input.InputBuffer;
 import core.util.Vector2f;
-import core.util.Vector3f;
-import scenes.lib.components.UnitInfo;
-import scenes.lib.rendering.IsometricHelper;
+import scenes.gamescene.rendering.IsometricHelper;
 
 import java.awt.event.KeyEvent;
 
