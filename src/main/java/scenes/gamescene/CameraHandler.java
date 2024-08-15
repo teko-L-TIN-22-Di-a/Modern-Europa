@@ -4,6 +4,7 @@ import config.ScreenConfig;
 import config.WindowConfig;
 import core.EngineContext;
 import core.ecs.Entity;
+import core.ecs.components.Camera;
 import core.ecs.components.Position;
 import core.input.InputBuffer;
 import core.input.MouseListener;
@@ -19,13 +20,15 @@ public class CameraHandler {
     private final Queue<Double> queuedMouseWheelEvents = new ConcurrentLinkedQueue<>();
 
     private static float MIN_ZOOM = 0.6f;
-    private static float MAX_ZOOM = 1.6f;
+    private static float MAX_ZOOM = 2f;
+
+    private static float CAMERA_SPEED = 10;
 
     private RenderingContext renderingContext;
     private Entity camera;
     private InputBuffer inputBuffer;
     private MouseListener mouseListener;
-    private float currentZoom;
+    private float currentZoom = 1;
 
     public CameraHandler(EngineContext context, RenderingContext renderingContext, Entity cameraEntity) {
         this.renderingContext = renderingContext;
@@ -44,28 +47,29 @@ public class CameraHandler {
         var movement = Vector2f.ZERO;
 
         if(inputBuffer.isKeyDown(KeyEvent.VK_W)) {
-            movement = movement.add(0, 10);
+            movement = movement.add(0, CAMERA_SPEED);
         }
         if(inputBuffer.isKeyDown(KeyEvent.VK_S)) {
-            movement = movement.add(0, -10);
+            movement = movement.add(0, -CAMERA_SPEED);
         }
         if(inputBuffer.isKeyDown(KeyEvent.VK_A)) {
-            movement = movement.add(10, 0);
+            movement = movement.add(CAMERA_SPEED, 0);
         }
         if(inputBuffer.isKeyDown(KeyEvent.VK_D)) {
-            movement = movement.add(-10, 0);
+            movement = movement.add(-CAMERA_SPEED, 0);
         }
         var position = camera.getComponent(Position.class);
-        camera.setComponent(position.move(movement));
+        camera.setComponent(position.move(movement.mul(currentZoom)));
 
         while (!queuedMouseWheelEvents.isEmpty()) {
             var nextMovement = queuedMouseWheelEvents.poll();
 
             currentZoom = Math.min(Math.max(currentZoom + (nextMovement.floatValue() * 0.1f), MIN_ZOOM), MAX_ZOOM);
 
-            var newScale = ScreenConfig.ViewportSize.mul(currentZoom);
+            var newSize = ScreenConfig.ViewportSize.mul(currentZoom);
 
-            renderingContext.bufferedRenderer().resize(newScale);
+            camera.setComponent(new Camera(newSize, true));
+            renderingContext.bufferedRenderer().resize(newSize);
         }
 
     }

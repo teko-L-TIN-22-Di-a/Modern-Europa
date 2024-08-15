@@ -5,7 +5,7 @@ import core.EngineContext;
 import core.ecs.Ecs;
 import core.ecs.EcsView2;
 import core.ecs.components.Position;
-import core.ecs.helper.CameraHelper;
+import scenes.lib.helper.CameraHelper;
 import core.graphics.ImageHelper;
 import core.util.Vector2f;
 import scenes.lib.components.TerrainChunk;
@@ -27,12 +27,11 @@ public class FogOfWarRenderer implements Renderer {
     private BufferedImage visibleFogOfWar;
     private final Map<Integer, FogOfWarChunkEntry> bufferedChunks = new HashMap<>();
     private final int playerIdFilter;
-    private Vector2f viewPort;
+    private Vector2f viewPort = Vector2f.ZERO;
 
-    public FogOfWarRenderer(EngineContext context, Vector2f viewPort, int playerIdFilter) {
+    public FogOfWarRenderer(EngineContext context, int playerIdFilter) {
         ecs = context.getService(Ecs.class);
 
-        this.viewPort = viewPort;
         this.playerIdFilter = playerIdFilter;
         initBuffers(Vector2f.of(1));
     }
@@ -77,13 +76,19 @@ public class FogOfWarRenderer implements Renderer {
     }
 
     @Override
-    public void setScale(Vector2f scale) {
-        initBuffers(scale);
+    public void setSize(Vector2f size) {
+        this.viewPort = size;
+        initBuffers(size);
     }
 
-    private void initBuffers(Vector2f scale) {
-        noiseTexture = ImageHelper.newImage(viewPort.mul(scale));
-        visibleFogOfWar = ImageHelper.newImage(viewPort.mul(scale));
+    @Override
+    public void setScale(Vector2f scale) {
+        // Do nothing.
+    }
+
+    private void initBuffers(Vector2f size) {
+        noiseTexture = ImageHelper.newImage(size);
+        visibleFogOfWar = ImageHelper.newImage(size);
     }
 
     private void updateBuffer(EcsView2<TerrainChunk, Position> terrain

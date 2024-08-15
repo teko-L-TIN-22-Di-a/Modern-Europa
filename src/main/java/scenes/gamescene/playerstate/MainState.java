@@ -14,7 +14,7 @@ import scenes.gamescene.RenderingContext;
 import scenes.gamescene.commands.CommandConstants;
 import scenes.lib.components.Selection;
 import scenes.lib.components.UnitInfo;
-import scenes.lib.entities.EntityHelper;
+import scenes.lib.helper.EntityHelper;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;

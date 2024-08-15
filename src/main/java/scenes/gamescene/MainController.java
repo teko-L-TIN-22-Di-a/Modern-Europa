@@ -26,7 +26,7 @@ import scenes.lib.AssetConstants;
 import scenes.lib.PlayerInfo;
 import scenes.lib.components.TerrainChunk;
 import scenes.lib.components.UnitInfo;
-import scenes.lib.entities.MapHelper;
+import scenes.lib.helper.MapHelper;
 import scenes.lib.rendering.*;
 
 import java.awt.*;
@@ -159,16 +159,16 @@ public class MainController extends Controller {
 
         var terrainRenderer = new IsometricTerrainRenderer(context, tileSet,true);
         var spriteRenderer = new SpriteRenderer(context, tileSet);
-        var fogOfWarRenderer = new FogOfWarRenderer(context, ScreenConfig.ViewportSize, playerId);
+        var fogOfWarRenderer = new FogOfWarRenderer(context, playerId);
         var selectionRenderer = new SelectionRenderer(context);
 
         var bufferedRenderer = new BufferedRenderer(context, ScreenConfig.ViewportSize, List.of(
-                new SimpleRenderer((g2d, scale) -> {
+                new SimpleRenderer((g2d, scale, size) -> {
                     g2d.setColor(CLEAR_COLOR);
                     g2d.fillRect(
                             0,0,
-                            (int) (ScreenConfig.ViewportSize.x() * scale.x()),
-                            (int) (ScreenConfig.ViewportSize.y() * scale.y()));
+                            (int) (size.x()),
+                            (int) (size.y()));
                 }),
                 terrainRenderer,
                 spriteRenderer,

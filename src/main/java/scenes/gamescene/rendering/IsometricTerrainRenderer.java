@@ -5,7 +5,7 @@ import core.EngineContext;
 import core.ecs.Ecs;
 import core.ecs.EcsView2;
 import core.ecs.components.Position;
-import core.ecs.helper.CameraHelper;
+import scenes.lib.helper.CameraHelper;
 import core.graphics.ImageHelper;
 import core.util.Bounds;
 import core.util.Vector2f;
@@ -86,6 +86,11 @@ public class IsometricTerrainRenderer implements Renderer {
                     (int) renderOffset.y(),
                     null);
         }
+    }
+
+    @Override
+    public void setSize(Vector2f size) {
+        // Do nothing
     }
 
     @Override

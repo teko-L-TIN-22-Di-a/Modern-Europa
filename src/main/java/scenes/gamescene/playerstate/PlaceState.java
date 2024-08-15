@@ -15,14 +15,11 @@ import scenes.gamescene.RenderingContext;
 import scenes.gamescene.commands.CommandConstants;
 import scenes.lib.TextureConstants;
 import scenes.lib.components.Sprite;
-import scenes.lib.components.TerrainChunk;
 import scenes.lib.components.UnitInfo;
-import scenes.lib.entities.EntityHelper;
+import scenes.lib.helper.EntityHelper;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.sql.Array;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;

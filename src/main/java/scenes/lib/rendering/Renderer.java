@@ -8,6 +8,8 @@ public interface Renderer {
 
     void render(Graphics2D g2d);
 
+    void setSize(Vector2f size);
+
     void setScale(Vector2f scale);
 
 }

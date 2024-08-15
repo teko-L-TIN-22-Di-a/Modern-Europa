@@ -3,7 +3,7 @@ package scenes.gamescene.rendering;
 import core.EngineContext;
 import core.ecs.Ecs;
 import core.ecs.components.Position;
-import core.ecs.helper.CameraHelper;
+import scenes.lib.helper.CameraHelper;
 import core.input.MouseListener;
 import core.util.Bounds;
 import core.util.Vector2f;
@@ -16,8 +16,12 @@ import scenes.lib.rendering.Renderer;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SelectionRenderer implements Renderer {
+
+    private final Queue<MouseEvent> queuedMouseEvents = new ConcurrentLinkedQueue<>();
 
     private Vector2f cameraOffset = Vector2f.ZERO;
     private boolean enabled = true;
@@ -36,10 +40,10 @@ public class SelectionRenderer implements Renderer {
         ecs = context.getService(Ecs.class);
         mouseListener = context.getService(MouseListener.class);
 
-        mouseListener.bindMouseClicked(this::onMouseClicked);
-        mouseListener.bindMousePressed(this::onMousePressed);
-        mouseListener.bindMouseReleased(this::onMouseReleased);
-        mouseListener.bindMouseDragged(this::onMouseDragged);
+        mouseListener.bindMouseClicked(queuedMouseEvents::add);
+        mouseListener.bindMousePressed(queuedMouseEvents::add);
+        mouseListener.bindMouseReleased(queuedMouseEvents::add);
+        mouseListener.bindMouseDragged(queuedMouseEvents::add);
     }
 
     public void setEnabled(boolean enabled) {
@@ -51,6 +55,24 @@ public class SelectionRenderer implements Renderer {
         if(!enabled) return;
 
         cameraOffset = CameraHelper.getCameraOffset(ecs);
+
+        while(!queuedMouseEvents.isEmpty()) {
+            var event = queuedMouseEvents.poll();
+            switch (event.getID()) {
+                case MouseEvent.MOUSE_PRESSED:
+                    onMousePressed(event);
+                    break;
+                case MouseEvent.MOUSE_RELEASED:
+                    onMouseReleased(event);
+                    break;
+                case MouseEvent.MOUSE_DRAGGED:
+                    onMouseDragged(event);
+                    break;
+                case MouseEvent.MOUSE_CLICKED:
+                    onMouseClicked(event);
+                    break;
+            }
+        }
 
         var selectableUnits = ecs.view(Position.class, Selection.class);
 
@@ -80,6 +102,11 @@ public class SelectionRenderer implements Renderer {
         g2d.fillRect(
                 (int) selectionBounds.position().x(), (int) selectionBounds.position().y(),
                 (int) selectionBounds.size().x(), (int) selectionBounds.size().y());
+    }
+
+    @Override
+    public void setSize(Vector2f size) {
+        // Do nothing
     }
 
     @Override

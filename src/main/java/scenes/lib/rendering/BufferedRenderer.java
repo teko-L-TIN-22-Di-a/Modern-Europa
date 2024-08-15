@@ -1,6 +1,7 @@
 package scenes.lib.rendering;
 
 import core.EngineContext;
+import core.graphics.ImageHelper;
 import core.graphics.WindowProvider;
 import core.util.Vector2f;
 import org.apache.logging.log4j.LogManager;
@@ -8,9 +9,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
@@ -25,21 +25,16 @@ public class BufferedRenderer implements Renderer {
     private List<Renderer> renderSteps = new ArrayList<>();
 
     public BufferedRenderer(EngineContext context, Vector2f viewSize, List<Renderer> renderSteps) {
-        this(context, viewSize);
-
-        setRenderSteps(renderSteps);
-    }
-
-    public BufferedRenderer(EngineContext context, Vector2f viewSize) {
         var windowProvider = context.<WindowProvider>getService(WindowProvider.class);
         windowSize = windowProvider.getWindowSize();
         windowProvider.bindWindowResize(queuedResizeEvent::add);
-        resizeBuffer(viewSize);
+
+        setRenderSteps(renderSteps);
+        initBuffer(viewSize);
     }
 
     public void setRenderSteps(List<Renderer> renderSteps) {
         this.renderSteps = renderSteps;
-        this.renderSteps.forEach(x -> x.setScale(getScale()));
         logger.debug(
                 "Initialised render steps: {}",
                 renderSteps
@@ -72,8 +67,13 @@ public class BufferedRenderer implements Renderer {
     }
 
     @Override
+    public void setSize(Vector2f size) {
+        // Do nothing
+    }
+
+    @Override
     public void setScale(Vector2f scale) {
-        // TODO
+        // Do nothing
     }
 
     public Vector2f getScale() {
@@ -81,11 +81,15 @@ public class BufferedRenderer implements Renderer {
     }
 
     public void resize(Vector2f viewSize) {
-        resizeBuffer(viewSize);
+        initBuffer(viewSize);
     }
 
-    private void resizeBuffer(Vector2f size) {
-        image = new BufferedImage((int)size.x(), (int)size.y(), BufferedImage.TYPE_INT_RGB);
+    private void initBuffer(Vector2f size) {
+        image = ImageHelper.newImage((int)size.x(), (int)size.y());
+        this.renderSteps.forEach(renderer -> {
+            renderer.setSize(size);
+            renderer.setScale(getScale());
+        });
     }
 
 }

@@ -1,4 +1,4 @@
-package scenes.lib.entities;
+package scenes.lib.helper;
 
 import core.Parameters;
 import core.ecs.Ecs;
