@@ -1,6 +1,5 @@
-package scenes;
+package scenes.startupscene;
 
-import config.TileConfig;
 import core.Controller;
 import core.ControllerSwitcher;
 import core.EngineContext;

@@ -12,8 +12,9 @@ import rx.subjects.PublishSubject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
-public class JFrameWindowProvider implements WindowProvider {
+public class JFrameWindowProvider implements WindowProvider, ComponentListener {
     protected static final Logger logger = LogManager.getLogger(JFrameWindowProvider.class);
 
     private PublishSubject<Vector2f> onResize = PublishSubject.create();
@@ -25,8 +26,9 @@ public class JFrameWindowProvider implements WindowProvider {
     private void init(Action1<JFrame> configuration) {
         window = new JFrame("Window");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setResizable(false);
+        window.setResizable(true);
         window.setSize(800, 600);
+        window.addComponentListener(this);
         configuration.call(window);
 
         window.setVisible(true);
@@ -105,5 +107,25 @@ public class JFrameWindowProvider implements WindowProvider {
         }
 
         return context;
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        resize(getWindowSize());
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+        // Do nothing
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+        // Do nothing
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+        // Do nothing
     }
 }

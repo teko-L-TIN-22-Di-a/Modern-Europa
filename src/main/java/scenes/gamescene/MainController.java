@@ -85,7 +85,7 @@ public class MainController extends Controller {
         var renderingContext = setupRendering(context, playerId);
 
         playerHandler = new PlayerHandler(context, renderingContext, playerId);
-        setupCamera(context, playerId);
+        setupCamera(context, renderingContext, playerId);
     }
 
     @Override
@@ -142,10 +142,10 @@ public class MainController extends Controller {
         );
     }
 
-    private void setupCamera(EngineContext context, int playerId) {
+    private void setupCamera(EngineContext context, RenderingContext renderingContext, int playerId) {
         var camera = ecs.newEntity();
         camera.setComponent(new Camera(ScreenConfig.ViewportSize, true));
-        cameraHandler = new CameraHandler(context, camera);
+        cameraHandler = new CameraHandler(context, renderingContext, camera);
         cameraHandler.centerCameraOnMainBase(getMainBasePosition(playerId));
     }
 
@@ -156,25 +156,26 @@ public class MainController extends Controller {
         var tileSet = assetManager.<TextureAtlas>getAsset(AssetConstants.TEXTURE_ATLAS);
 
         var windowProvider = context.<WindowProvider>getService(WindowProvider.class);
-        var scale = windowProvider.getWindowSize().div(ScreenConfig.ViewportSize.x(), ScreenConfig.ViewportSize.y());
 
         var terrainRenderer = new IsometricTerrainRenderer(context, tileSet,true);
         var spriteRenderer = new SpriteRenderer(context, tileSet);
         var fogOfWarRenderer = new FogOfWarRenderer(context, ScreenConfig.ViewportSize, playerId);
-        var selectionRenderer = new SelectionRenderer(context, scale);
+        var selectionRenderer = new SelectionRenderer(context);
 
-        canvas = new NewRenderCanvas(List.of(
-                new BufferedRenderer(context, ScreenConfig.ViewportSize, List.of(
-                        g2d -> {
-                            g2d.setColor(CLEAR_COLOR);
-                            g2d.fillRect(0,0, (int) ScreenConfig.ViewportSize.x(), (int) ScreenConfig.ViewportSize.y());
-                        },
-                        terrainRenderer,
-                        spriteRenderer,
-                        fogOfWarRenderer,
-                        selectionRenderer
-                ))
+        var bufferedRenderer = new BufferedRenderer(context, ScreenConfig.ViewportSize, List.of(
+                new SimpleRenderer((g2d, scale) -> {
+                    g2d.setColor(CLEAR_COLOR);
+                    g2d.fillRect(
+                            0,0,
+                            (int) (ScreenConfig.ViewportSize.x() * scale.x()),
+                            (int) (ScreenConfig.ViewportSize.y() * scale.y()));
+                }),
+                terrainRenderer,
+                spriteRenderer,
+                fogOfWarRenderer,
+                selectionRenderer
         ));
+        canvas = new NewRenderCanvas(List.of(bufferedRenderer));
         // Fixing canvas having weird mouse listener support.
         if(mouseListener instanceof JFrameMouseListener instance) {
             canvas.addMouseMotionListener(instance);
@@ -187,7 +188,12 @@ public class MainController extends Controller {
         windowProvider.addComponent(container);
         canvas.init();
 
-        return new RenderingContext(scale, terrainRenderer, selectionRenderer, container);
+        return new RenderingContext(
+                bufferedRenderer,
+                terrainRenderer,
+                selectionRenderer,
+                container
+        );
     }
 
 }

@@ -1,14 +1,7 @@
 package scenes.lib.rendering;
 
-import core.Parameters;
-import scenes.lobbyscene.LobbyController;
-
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.Map;
-
-import static java.util.Map.entry;
 
 public class DialogRenderer extends JOptionPane {
 

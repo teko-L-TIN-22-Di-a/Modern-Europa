@@ -4,6 +4,7 @@ import core.EngineContext;
 import core.ecs.Ecs;
 import core.ecs.components.Position;
 import core.ecs.helper.CameraHelper;
+import core.util.Vector2f;
 import scenes.gamescene.rendering.IsometricHelper;
 import scenes.lib.components.Sprite;
 
@@ -54,6 +55,11 @@ public class SpriteRenderer implements Renderer {
             //g2d.fillRect((int) drawingPos.x(), (int) drawingPos.y(), 8, 8);
         }
 
+    }
+
+    @Override
+    public void setScale(Vector2f scale) {
+        // Do nothing
     }
 
 }

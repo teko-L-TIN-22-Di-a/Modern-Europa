@@ -80,7 +80,7 @@ public class MainState extends State {
         if(event.getButton() != MouseEvent.BUTTON3) return;
 
         var pos = Vector2f.of(event.getX(), event.getY());
-        var tilePos = renderingContext.terrainRenderer().getTilePosition(pos.div(renderingContext.scale()));
+        var tilePos = renderingContext.terrainRenderer().getTilePosition(pos.div(renderingContext.getScale()));
         if(tilePos != null) {
             setPathFindingTarget(tilePos);
         }

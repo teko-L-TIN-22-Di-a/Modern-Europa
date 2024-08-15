@@ -21,7 +21,7 @@ public class SelectionRenderer implements Renderer {
 
     private Vector2f cameraOffset = Vector2f.ZERO;
     private boolean enabled = true;
-    private Vector2f scale;
+    private Vector2f scale = Vector2f.of(1,1);
     private boolean selecting = false;
     private Vector2f selectionAnchor = null;
     private Vector2f currentPosition = null;
@@ -32,8 +32,7 @@ public class SelectionRenderer implements Renderer {
     private final PublishSubject<Bounds> boundsSelection = PublishSubject.create();
     private final PublishSubject<Vector2f> pointSelection = PublishSubject.create();
 
-    public SelectionRenderer(EngineContext context, Vector2f scale) {
-        this.scale = scale;
+    public SelectionRenderer(EngineContext context) {
         ecs = context.getService(Ecs.class);
         mouseListener = context.getService(MouseListener.class);
 
@@ -81,6 +80,11 @@ public class SelectionRenderer implements Renderer {
         g2d.fillRect(
                 (int) selectionBounds.position().x(), (int) selectionBounds.position().y(),
                 (int) selectionBounds.size().x(), (int) selectionBounds.size().y());
+    }
+
+    @Override
+    public void setScale(Vector2f scale) {
+        this.scale = scale;
     }
 
     public Subscription bindBoundsSelection(Action1<Bounds> action) {
@@ -144,8 +148,14 @@ public class SelectionRenderer implements Renderer {
             return new Bounds(Vector2f.ZERO, Vector2f.ZERO);
         }
 
-        var minPos = Vector2f.of(Math.min(currentPosition.x(), selectionAnchor.x()), Math.min(currentPosition.y(), selectionAnchor.y()));
-        var size = Vector2f.of(Math.abs(currentPosition.x() - selectionAnchor.x()), Math.abs(currentPosition.y() - selectionAnchor.y()));
+        var minPos = Vector2f.of(
+                Math.min(currentPosition.x(), selectionAnchor.x()),
+                Math.min(currentPosition.y(), selectionAnchor.y())
+        );
+        var size = Vector2f.of(
+                Math.abs(currentPosition.x() - selectionAnchor.x()),
+                Math.abs(currentPosition.y() - selectionAnchor.y())
+        );
 
         return new Bounds(minPos, size);
     }

@@ -23,17 +23,18 @@ public class FogOfWarRenderer implements Renderer {
     private final Map<Integer, BufferedImage> bufferedFogOfWarBrushes = new HashMap<>();
 
     private final Ecs ecs;
-    private final BufferedImage noiseTexture;
-    private final BufferedImage visibleFogOfWar;
+    private BufferedImage noiseTexture;
+    private BufferedImage visibleFogOfWar;
     private final Map<Integer, FogOfWarChunkEntry> bufferedChunks = new HashMap<>();
     private final int playerIdFilter;
+    private Vector2f viewPort;
 
     public FogOfWarRenderer(EngineContext context, Vector2f viewPort, int playerIdFilter) {
         ecs = context.getService(Ecs.class);
 
-        noiseTexture = ImageHelper.newImage(viewPort);
-        visibleFogOfWar = ImageHelper.newImage(viewPort);
+        this.viewPort = viewPort;
         this.playerIdFilter = playerIdFilter;
+        initBuffers(Vector2f.of(1));
     }
 
     @Override
@@ -73,6 +74,16 @@ public class FogOfWarRenderer implements Renderer {
         fowGraphics.drawImage(noiseTexture, 0, 0, null);
         g2d.drawImage(visibleFogOfWar, 0, 0, null);
 
+    }
+
+    @Override
+    public void setScale(Vector2f scale) {
+        initBuffers(scale);
+    }
+
+    private void initBuffers(Vector2f scale) {
+        noiseTexture = ImageHelper.newImage(viewPort.mul(scale));
+        visibleFogOfWar = ImageHelper.newImage(viewPort.mul(scale));
     }
 
     private void updateBuffer(EcsView2<TerrainChunk, Position> terrain

@@ -2,7 +2,6 @@ package main;
 
 
 import config.WindowConfig;
-import scenes.PiController;
 import scenes.menuscene.MenuController;
 import core.Engine;
 import core.ecs.Ecs;
@@ -13,7 +12,7 @@ import core.input.JFrameMouseListener;
 import core.loading.DefaultAssetManager;
 import core.loading.FileAssetLoader;
 import core.loading.JsonSettings;
-import scenes.StartupController;
+import scenes.startupscene.StartupController;
 
 public class Main {
     public static void main(String[] args) {

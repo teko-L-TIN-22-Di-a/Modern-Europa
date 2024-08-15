@@ -88,6 +88,11 @@ public class IsometricTerrainRenderer implements Renderer {
         }
     }
 
+    @Override
+    public void setScale(Vector2f scale) {
+        // Do nothing
+    }
+
     private void regenerateBuffer(EcsView2<TerrainChunk, Position> terrain) {
         var renderedChunk = bufferedChunks.get(terrain.entityId());
 

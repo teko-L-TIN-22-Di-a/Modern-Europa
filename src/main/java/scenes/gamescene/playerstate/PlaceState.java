@@ -75,9 +75,8 @@ public class PlaceState extends State {
 
         subscriptions.addAll(List.of(
                 mouseListener.bindMouseMoved(mouseEvent -> {
-                    // TODO add check if position is viable.
                     var pos = Vector2f.of(mouseEvent.getX(), mouseEvent.getY());
-                    var tilePos = renderingContext.terrainRenderer().getTilePosition(pos.div(renderingContext.scale()));
+                    var tilePos = renderingContext.terrainRenderer().getTilePosition(pos.div(renderingContext.getScale()));
                     if(tilePos != null) {
                         targetPos = tilePos.add(0.5f, 0.5f);
                     }
