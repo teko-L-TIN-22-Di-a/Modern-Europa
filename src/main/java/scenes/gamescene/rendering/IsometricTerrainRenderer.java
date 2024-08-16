@@ -1,6 +1,6 @@
 package scenes.gamescene.rendering;
 
-import config.TileConfig;
+import scenes.lib.config.RenderingConfig;
 import core.EngineContext;
 import core.ecs.Ecs;
 import core.ecs.EcsView2;
@@ -135,7 +135,7 @@ public class IsometricTerrainRenderer implements Renderer {
                 var drawingPos = bufferedChunk.originOffset()
                         .add(isometricPosition)
                         // 0,0 is in center of image offset with half the tile size.
-                        .add(Vector2f.of(-TileConfig.HalfTileSize.x(), 0));
+                        .add(Vector2f.of(-RenderingConfig.HALF_TILE_SIZE.x(), 0));
 
                 var tileConfiguration = textureAtlas.get(tile.resourcePath());
 
@@ -143,8 +143,8 @@ public class IsometricTerrainRenderer implements Renderer {
                         tileConfiguration.image(),
                         (int) drawingPos.x(),
                         (int) drawingPos.y(),
-                        (int) (drawingPos.x() + TileConfig.TileSize.x()),
-                        (int) (drawingPos.y() + TileConfig.TileSize.y()),
+                        (int) (drawingPos.x() + RenderingConfig.TILE_SIZE.x()),
+                        (int) (drawingPos.y() + RenderingConfig.TILE_SIZE.y()),
                         (int) tileConfiguration.offset().x(), (int) tileConfiguration.offset().y(),
                         (int) (tileConfiguration.offset().x() + tileConfiguration.size().x()),
                         (int) (tileConfiguration.offset().y() + tileConfiguration.size().y()),
@@ -169,7 +169,7 @@ public class IsometricTerrainRenderer implements Renderer {
         g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
         g2d.setComposite(AlphaComposite.SrcOver);
 
-        var tileMouseMap = ImageHelper.newImage((int) TileConfig.TileSize.x(), (int) TileConfig.TileSize.y());
+        var tileMouseMap = ImageHelper.newImage((int) RenderingConfig.TILE_SIZE.x(), (int) RenderingConfig.TILE_SIZE.y());
         var mouseMapGraphics = (Graphics2D) tileMouseMap.getGraphics();
 
         var currentId = new Color(0, 0, 0, 255).getRGB() + 1;
@@ -195,7 +195,7 @@ public class IsometricTerrainRenderer implements Renderer {
                 mouseMapGraphics.drawImage(
                         tileConfiguration.image(),
                         0,0,
-                        (int) TileConfig.TileSize.x(), (int) TileConfig.TileSize.y(),
+                        (int) RenderingConfig.TILE_SIZE.x(), (int) RenderingConfig.TILE_SIZE.y(),
                         (int) tileConfiguration.offset().x(), (int) tileConfiguration.offset().y(),
                         (int) (tileConfiguration.offset().x() + tileConfiguration.size().x()),
                         (int) (tileConfiguration.offset().y() + tileConfiguration.size().y()),
@@ -206,7 +206,7 @@ public class IsometricTerrainRenderer implements Renderer {
                 var drawingPos = bufferedChunk.originOffset()
                         .add(isometricPosition)
                         // 0,0 is in center of image offset with half the tile size.
-                        .add(Vector2f.of(-TileConfig.HalfTileSize.x(), 0));
+                        .add(Vector2f.of(-RenderingConfig.HALF_TILE_SIZE.x(), 0));
 
                 g2d.drawImage(
                         tileMouseMap,
@@ -222,12 +222,12 @@ public class IsometricTerrainRenderer implements Renderer {
 
     private RenderedChunkEntry createChunkEntry(EcsView2<TerrainChunk, Position> terrain) {
         var terrainSize = terrain.component1().getSize();
-        int xWidth = (int) (terrainSize.x() * TileConfig.HalfTileSize.x());
-        int zWidth = (int) (terrainSize.y() * TileConfig.HalfTileSize.x());
+        int xWidth = (int) (terrainSize.x() * RenderingConfig.HALF_TILE_SIZE.x());
+        int zWidth = (int) (terrainSize.y() * RenderingConfig.HALF_TILE_SIZE.x());
 
         var imageSize = Vector2f.of(
                 xWidth + zWidth,
-                (terrainSize.x() + terrainSize.y()) * TileConfig.HalfTileSize.y()
+                (terrainSize.x() + terrainSize.y()) * RenderingConfig.HALF_TILE_SIZE.y()
         );
 
         var image = ImageHelper.newImage((int) imageSize.x(), (int) imageSize.y());
@@ -237,7 +237,7 @@ public class IsometricTerrainRenderer implements Renderer {
             mouseMap = ImageHelper.newImage((int) imageSize.x(), (int) imageSize.y());
         }
 
-        var xOrigin = terrainSize.y() * TileConfig.HalfTileSize.x();
+        var xOrigin = terrainSize.y() * RenderingConfig.HALF_TILE_SIZE.x();
 
         return new RenderedChunkEntry(
                 image,

@@ -1,6 +1,6 @@
 package scenes.gamescene.rendering;
 
-import config.TileConfig;
+import scenes.lib.config.RenderingConfig;
 import core.EngineContext;
 import core.ecs.Ecs;
 import core.ecs.EcsView2;
@@ -127,7 +127,7 @@ public class FogOfWarRenderer implements Renderer {
             return bufferedFogOfWarBrushes.get(strength);
         }
 
-        var viewSize = TileConfig.TileSize.mul(strength);
+        var viewSize = RenderingConfig.TILE_SIZE.mul(strength);
         var newBrushImage = ImageHelper.newImage(viewSize);
         ImageHelper.cleanup(newBrushImage);
         var brushGraphics = (Graphics2D) newBrushImage.getGraphics();
@@ -139,12 +139,12 @@ public class FogOfWarRenderer implements Renderer {
 
     private FogOfWarChunkEntry createChunkEntry(EcsView2<TerrainChunk, Position> terrain) {
         var terrainSize = terrain.component1().getSize();
-        int xWidth = (int) (terrainSize.x() * TileConfig.HalfTileSize.x());
-        int zWidth = (int) (terrainSize.y() * TileConfig.HalfTileSize.x());
+        int xWidth = (int) (terrainSize.x() * RenderingConfig.HALF_TILE_SIZE.x());
+        int zWidth = (int) (terrainSize.y() * RenderingConfig.HALF_TILE_SIZE.x());
 
         var imageSize = Vector2f.of(
                 xWidth + zWidth,
-                (terrainSize.x() + terrainSize.y()) * TileConfig.HalfTileSize.y()
+                (terrainSize.x() + terrainSize.y()) * RenderingConfig.HALF_TILE_SIZE.y()
         );
 
         var image = ImageHelper.newImage((int) imageSize.x(), (int) imageSize.y());
@@ -152,7 +152,7 @@ public class FogOfWarRenderer implements Renderer {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, image.getWidth(), image.getHeight());
 
-        var xOrigin = terrainSize.y() * TileConfig.HalfTileSize.x();
+        var xOrigin = terrainSize.y() * RenderingConfig.HALF_TILE_SIZE.x();
 
         return new FogOfWarChunkEntry(
                 image,

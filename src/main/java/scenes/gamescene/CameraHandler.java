@@ -1,7 +1,6 @@
 package scenes.gamescene;
 
-import config.ScreenConfig;
-import config.WindowConfig;
+import scenes.lib.config.ScreenConfig;
 import core.EngineContext;
 import core.ecs.Entity;
 import core.ecs.components.Camera;
@@ -66,7 +65,7 @@ public class CameraHandler {
 
             currentZoom = Math.min(Math.max(currentZoom + (nextMovement.floatValue() * 0.1f), MIN_ZOOM), MAX_ZOOM);
 
-            var newSize = ScreenConfig.ViewportSize.mul(currentZoom);
+            var newSize = ScreenConfig.VIEWPORT_SIZE.mul(currentZoom);
 
             camera.setComponent(new Camera(newSize, true));
             renderingContext.bufferedRenderer().resize(newSize);

@@ -1,6 +1,6 @@
 package scenes.gamescene;
 
-import config.ScreenConfig;
+import scenes.lib.config.ScreenConfig;
 import core.Controller;
 import core.EngineContext;
 import core.Parameters;
@@ -144,7 +144,7 @@ public class MainController extends Controller {
 
     private void setupCamera(EngineContext context, RenderingContext renderingContext, int playerId) {
         var camera = ecs.newEntity();
-        camera.setComponent(new Camera(ScreenConfig.ViewportSize, true));
+        camera.setComponent(new Camera(ScreenConfig.VIEWPORT_SIZE, true));
         cameraHandler = new CameraHandler(context, renderingContext, camera);
         cameraHandler.centerCameraOnMainBase(getMainBasePosition(playerId));
     }
@@ -162,7 +162,7 @@ public class MainController extends Controller {
         var fogOfWarRenderer = new FogOfWarRenderer(context, playerId);
         var selectionRenderer = new SelectionRenderer(context);
 
-        var bufferedRenderer = new BufferedRenderer(context, ScreenConfig.ViewportSize, List.of(
+        var bufferedRenderer = new BufferedRenderer(context, ScreenConfig.VIEWPORT_SIZE, List.of(
                 new SimpleRenderer((g2d, scale, size) -> {
                     g2d.setColor(CLEAR_COLOR);
                     g2d.fillRect(

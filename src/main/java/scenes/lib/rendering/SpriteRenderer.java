@@ -40,6 +40,10 @@ public class SpriteRenderer implements Renderer {
 
             var texture = textureAtlas.get(spriteEntry.component1().resourcePath());
 
+            if(texture == null || texture.image() == null) {
+                System.out.println(texture);
+            }
+
             g2d.drawImage(
                     texture.image(),
                     (int) drawingPos.x(),

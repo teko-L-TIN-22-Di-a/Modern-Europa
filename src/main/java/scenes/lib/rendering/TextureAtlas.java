@@ -24,7 +24,7 @@ public class TextureAtlas {
         var frameKey = getId(sheetKey, id);
 
         if(textures.containsKey(frameKey)) {
-            textures.put(alias, textures.get(sheetKey));
+            textures.put(alias, textures.get(frameKey));
         }
 
         return this;
@@ -40,7 +40,7 @@ public class TextureAtlas {
                 var id = (int) (y*xCount + x);
                 textures.put(
                         getId(sheetKey, id),
-                        new TextureAtlasEntry(image, size.add(x, y), size)
+                        new TextureAtlasEntry(image, size.mul(Vector2f.of(x, y)), size)
                 );
 
             }

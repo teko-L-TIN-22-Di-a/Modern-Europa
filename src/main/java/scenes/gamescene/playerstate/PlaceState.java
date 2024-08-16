@@ -1,6 +1,6 @@
 package scenes.gamescene.playerstate;
 
-import config.TileConfig;
+import scenes.lib.config.RenderingConfig;
 import core.EngineContext;
 import core.Parameters;
 import core.ecs.Ecs;
@@ -54,7 +54,7 @@ public class PlaceState extends State {
         inputBuffer = context.getService(InputBuffer.class);
         this.playerId = playerId;
 
-        var spriteOffset = TileConfig.HalfTileSize;
+        var spriteOffset = RenderingConfig.HALF_TILE_SIZE;
         highlightSprite = new Sprite(TextureConstants.HIGHLIGHT, spriteOffset, true);
         errorSprite = new Sprite(TextureConstants.HIGHLIGHT_ERROR, spriteOffset, true);
 

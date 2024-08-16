@@ -1,6 +1,13 @@
 package scenes.lib;
 
+import core.util.Vector2f;
+
 public class TextureConstants {
+    public static final String BUILDINGS_SHEET = "buildingsSheet";
+    public static final Vector2f BUILDINGS_SIZE = Vector2f.of(132, 82);
+    public static final String COMBAT_UNIT_SHEET = "combatUnitSheet";
+    public static final String TILE_SHEET = "tileSheet";
+
     public static final String DEFAULT_GROUND = "defaultGround";
     public static final String MINEABLE_GROUND = "mineableGround";
 

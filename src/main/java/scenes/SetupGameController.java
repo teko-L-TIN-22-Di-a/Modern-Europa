@@ -116,6 +116,6 @@ public class SetupGameController extends Controller {
 
     @Override
     public void cleanup() {
-
+        // Do nothing
     }
 }

@@ -1,7 +1,7 @@
 package main;
 
 
-import config.WindowConfig;
+import scenes.lib.config.WindowConfig;
 import scenes.menuscene.MenuController;
 import core.Engine;
 import core.ecs.Ecs;
@@ -44,7 +44,7 @@ public class Main {
                         // Init JFrame
                         FlatLightLafExtension.init();
                         JFrameWindowProvider.initWindow(context, window -> {
-                            window.setTitle(WindowConfig.Title);
+                            window.setTitle(WindowConfig.TITLE);
                         });
                         JFrameInputBuffer.init(context);
                         JFrameMouseListener.init(context);

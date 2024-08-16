@@ -8,19 +8,16 @@ import core.graphics.ImageHelper;
 import core.loading.AssetLoader;
 import core.loading.AssetManager;
 import core.loading.LoadConfiguration;
-import core.util.Vector2f;
 import scenes.lib.AssetConstants;
 import scenes.lib.TextureConstants;
 import scenes.lib.rendering.TextureAtlas;
-import scenes.lib.rendering.TextureAtlasEntry;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
-import static config.TileConfig.TileSize;
+import static scenes.lib.config.RenderingConfig.*;
 import static java.util.Map.entry;
 
 public class StartupController extends Controller {
@@ -57,10 +54,10 @@ public class StartupController extends Controller {
 
     private void Load() {
         assetLoader.load(Map.ofEntries(
-                entry("ground.png", LoadConfiguration.DefaultImage),
+                entry("tile-sheet.png", LoadConfiguration.DefaultImage),
                 entry("cursor.png", LoadConfiguration.DefaultImage),
-                entry("infantry.png", LoadConfiguration.DefaultImage),
-                entry("building.png", LoadConfiguration.DefaultImage)
+                entry("combat-units.png", LoadConfiguration.DefaultImage),
+                entry("buildings.png", LoadConfiguration.DefaultImage)
         ));
     }
 
@@ -74,63 +71,55 @@ public class StartupController extends Controller {
         assetManager.registerAsset(AssetConstants.CURSOR, cursor);
 
         // Texture atlas
-        var groundTexture = assetManager.<BufferedImage>getAsset("ground.png");
-        ImageHelper.keyOut(groundTexture, Color.WHITE);
+        var tileSheet = assetManager.<BufferedImage>getAsset("tile-sheet.png");
+        var buildingsSheet = assetManager.<BufferedImage>getAsset("buildings.png");
+        var combatUnitSheet = assetManager.<BufferedImage>getAsset("combat-units.png");
+
+        ImageHelper.keyOut(tileSheet, Color.WHITE);
+        ImageHelper.keyOut(buildingsSheet, Color.WHITE);
+        ImageHelper.keyOut(combatUnitSheet, Color.WHITE);
 
         var tileSet = new TextureAtlas();
-        tileSet.add(Map.ofEntries(
-                entry(TextureConstants.DEFAULT_GROUND, new TextureAtlasEntry(groundTexture, Vector2f.of(0,0), TileSize)),
-                entry(TextureConstants.MINEABLE_GROUND, new TextureAtlasEntry(groundTexture, Vector2f.of(TileSize.x(),0), TileSize)),
-                entry(TextureConstants.HIGHLIGHT, new TextureAtlasEntry(groundTexture, Vector2f.of(0, TileSize.y()), TileSize)),
-                entry(TextureConstants.HIGHLIGHT_ERROR, new TextureAtlasEntry(groundTexture, TileSize, TileSize))
-        ));
-        tileSet.add(ProcessPlayerAssets());
-        assetManager.registerAsset(AssetConstants.TEXTURE_ATLAS, tileSet);
-    }
+        tileSet.addSplit(TextureConstants.TILE_SHEET, tileSheet, TILE_SIZE);
+        tileSet.addSingleFrame(TextureConstants.DEFAULT_GROUND, TextureConstants.TILE_SHEET, 0);
+        tileSet.addSingleFrame(TextureConstants.MINEABLE_GROUND, TextureConstants.TILE_SHEET, 1);
+        tileSet.addSingleFrame(TextureConstants.HIGHLIGHT, TextureConstants.TILE_SHEET, 2);
+        tileSet.addSingleFrame(TextureConstants.HIGHLIGHT_ERROR, TextureConstants.TILE_SHEET, 3);
 
-    private Map<String, TextureAtlasEntry> ProcessPlayerAssets() {
+        tileSet.addSplit(TextureConstants.BUILDINGS_SHEET, buildingsSheet, BUILDING_SIZE);
+        tileSet.addSingleFrame(TextureConstants.BASE, TextureConstants.BUILDINGS_SHEET, 0);
+        tileSet.addSingleFrame(TextureConstants.GENERATOR, TextureConstants.BUILDINGS_SHEET, 1);
+        tileSet.addSingleFrame(TextureConstants.MINER, TextureConstants.BUILDINGS_SHEET, 2);
+        tileSet.addSingleFrame(TextureConstants.CONSTRUCTION_SITE, TextureConstants.BUILDINGS_SHEET, 3);
 
-        var buildingsTexture = assetManager.<BufferedImage>getAsset("building.png");
-        ImageHelper.keyOut(buildingsTexture, Color.WHITE);
-        var infantryTextures = assetManager.<BufferedImage>getAsset("infantry.png");
-        ImageHelper.keyOut(infantryTextures, Color.WHITE);
-
-        // Base colors
-        var entries = new HashMap<>(Map.ofEntries(
-                entry(TextureConstants.SMALL_UNIT, new TextureAtlasEntry(infantryTextures, Vector2f.of(0, 28), Vector2f.of(26, 28))),
-                entry(TextureConstants.UNIT, new TextureAtlasEntry(infantryTextures, Vector2f.of(0, 0), Vector2f.of(26, 28))),
-
-                entry(TextureConstants.BASE, new TextureAtlasEntry(buildingsTexture, Vector2f.of(0, 0), Vector2f.of(132, 82))),
-                entry(TextureConstants.GENERATOR, new TextureAtlasEntry(buildingsTexture, Vector2f.of(132, 0), Vector2f.of(132, 82))),
-                entry(TextureConstants.MINER, new TextureAtlasEntry(buildingsTexture, Vector2f.of(132*2, 0), Vector2f.of(132, 82))),
-
-                entry(TextureConstants.CONSTRUCTION_SITE, new TextureAtlasEntry(buildingsTexture, Vector2f.of(132*3, 0), Vector2f.of(132, 82)))
-        ));
+        tileSet.addSplit(TextureConstants.COMBAT_UNIT_SHEET, combatUnitSheet, COMBAT_UNIT_SIZE);
+        tileSet.addSingleFrame(TextureConstants.UNIT, TextureConstants.COMBAT_UNIT_SHEET, 0);
+        tileSet.addSingleFrame(TextureConstants.SMALL_UNIT, TextureConstants.COMBAT_UNIT_SHEET, 4);
 
         var colors = Arrays.asList(Color.cyan, Color.red, Color.green, Color.blue);
 
-        // Clean this up.
         var i = 0;
         for(var color : colors) {
-            var coloredBuildingsTexture = ImageHelper.clone(buildingsTexture);
-            ImageHelper.keyOut(coloredBuildingsTexture, Color.MAGENTA, color.getRGB());
-            var coloredInfantryTextures = ImageHelper.clone(infantryTextures);
-            ImageHelper.keyOut(coloredInfantryTextures, Color.MAGENTA, color.getRGB());
+            var coloredBuildingsSheet = ImageHelper.clone(buildingsSheet);
+            var coloredCombatUnitSheet = ImageHelper.clone(combatUnitSheet);
 
-            entries.putAll(Map.ofEntries(
-                    entry(TextureConstants.SMALL_UNIT + i, new TextureAtlasEntry(coloredInfantryTextures, Vector2f.of(0,28), Vector2f.of(26, 28))),
-                    entry(TextureConstants.UNIT + i, new TextureAtlasEntry(coloredInfantryTextures, Vector2f.of(0,0), Vector2f.of(26, 28))),
+            ImageHelper.keyOut(coloredBuildingsSheet, Color.MAGENTA, color.getRGB());
+            ImageHelper.keyOut(coloredCombatUnitSheet, Color.MAGENTA, color.getRGB());
 
-                    entry(TextureConstants.BASE + i, new TextureAtlasEntry(coloredBuildingsTexture, Vector2f.of(0,0), Vector2f.of(132, 82))),
-                    entry(TextureConstants.GENERATOR + i, new TextureAtlasEntry(coloredBuildingsTexture, Vector2f.of(132,0), Vector2f.of(132, 82))),
-                    entry(TextureConstants.MINER + i, new TextureAtlasEntry(coloredBuildingsTexture, Vector2f.of(132*2,0), Vector2f.of(132, 82))),
+            tileSet.addSplit(TextureConstants.BUILDINGS_SHEET + i, coloredBuildingsSheet, BUILDING_SIZE);
+            tileSet.addSingleFrame(TextureConstants.BASE+i, TextureConstants.BUILDINGS_SHEET+i, 0);
+            tileSet.addSingleFrame(TextureConstants.GENERATOR+i, TextureConstants.BUILDINGS_SHEET+i, 1);
+            tileSet.addSingleFrame(TextureConstants.MINER+i, TextureConstants.BUILDINGS_SHEET+i, 2);
+            tileSet.addSingleFrame(TextureConstants.CONSTRUCTION_SITE+i, TextureConstants.BUILDINGS_SHEET+i, 3);
 
-                    entry(TextureConstants.CONSTRUCTION_SITE + i, new TextureAtlasEntry(coloredBuildingsTexture, Vector2f.of(132*3,0), Vector2f.of(132, 82)))
-            ));
+            tileSet.addSplit(TextureConstants.COMBAT_UNIT_SHEET + i, coloredCombatUnitSheet, COMBAT_UNIT_SIZE);
+            tileSet.addSingleFrame(TextureConstants.UNIT+i, TextureConstants.COMBAT_UNIT_SHEET + i, 0);
+            tileSet.addSingleFrame(TextureConstants.SMALL_UNIT+i, TextureConstants.COMBAT_UNIT_SHEET + i, 4);
+
             i++;
         }
 
-        return entries;
+        assetManager.registerAsset(AssetConstants.TEXTURE_ATLAS, tileSet);
     }
 
 }

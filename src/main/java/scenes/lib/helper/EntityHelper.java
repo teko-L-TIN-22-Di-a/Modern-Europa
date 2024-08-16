@@ -1,5 +1,6 @@
 package scenes.lib.helper;
 
+import scenes.lib.config.RenderingConfig;
 import core.Parameters;
 import core.ecs.Ecs;
 import core.ecs.Entity;
@@ -24,7 +25,7 @@ public class EntityHelper {
     }
     public static Entity createSmallUnit(Ecs ecs, int playerId, String uuid) {
         var newEntity = ecs.newEntity();
-        var originOffset = Vector2f.of(13,28);
+        var originOffset = RenderingConfig.COMBAT_UNIT_SIZE.mul(Vector2f.of(0.5f, 1));
 
         newEntity.setComponent(new Sprite(TextureConstants.SMALL_UNIT + playerId, originOffset, true));
         newEntity.setComponent(new UnitInfo(playerId, 2, 100, UnitInfo.BALL_UNIT, uuid));
@@ -37,7 +38,7 @@ public class EntityHelper {
     }
     public static Entity createUnit(Ecs ecs, int playerId, String uuid) {
         var newEntity = ecs.newEntity();
-        var originOffset = Vector2f.of(13,28);
+        var originOffset = RenderingConfig.COMBAT_UNIT_SIZE.mul(Vector2f.of(0.5f, 1));
 
         newEntity.setComponent(new Sprite(TextureConstants.UNIT + playerId, originOffset, true));
         newEntity.setComponent(new UnitInfo(playerId, 2, 10, UnitInfo.MECH_UNIT, uuid));
@@ -50,7 +51,7 @@ public class EntityHelper {
     }
     public static Entity createMainBase(Ecs ecs, int playerId, String uuid) {
         var newEntity = ecs.newEntity();
-        var originOffset = Vector2f.of(65,48);
+        var originOffset = Vector2f.of(66,48);
 
         newEntity.setComponent(new Sprite(TextureConstants.BASE + playerId, originOffset, true));
         newEntity.setComponent(new UnitInfo(playerId, 3, 0, UnitInfo.BASE, uuid));
@@ -63,7 +64,7 @@ public class EntityHelper {
     }
     public static Entity createGenerator(Ecs ecs, int playerId, String uuid) {
         var newEntity = ecs.newEntity();
-        var originOffset = Vector2f.of(65,48);
+        var originOffset = Vector2f.of(66,48);
 
         newEntity.setComponent(new Sprite(TextureConstants.GENERATOR + playerId, originOffset, true));
         newEntity.setComponent(new UnitInfo(playerId, 2, 0, UnitInfo.GENERATOR, uuid));
@@ -76,7 +77,7 @@ public class EntityHelper {
     }
     public static Entity createMiner(Ecs ecs, int playerId, String uuid) {
         var newEntity = ecs.newEntity();
-        var originOffset = Vector2f.of(63,48);
+        var originOffset = Vector2f.of(66,48);
 
         newEntity.setComponent(new Sprite(TextureConstants.MINER + playerId, originOffset, true));
         newEntity.setComponent(new UnitInfo(playerId, 2, 0, UnitInfo.MINER, uuid));
@@ -89,7 +90,7 @@ public class EntityHelper {
     }
     public static Entity createConstructionSite(Ecs ecs, int playerId, String buildingType, String uuid) {
         var newEntity = ecs.newEntity();
-        var originOffset = Vector2f.of(63,48);
+        var originOffset = Vector2f.of(66,48);
 
         newEntity.setComponent(new Sprite(TextureConstants.CONSTRUCTION_SITE + playerId, originOffset, true));
         newEntity.setComponent(new UnitInfo(playerId, 2, 0, UnitInfo.CONSTRUCTION_SITE, uuid));
