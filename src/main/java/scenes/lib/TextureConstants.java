@@ -11,8 +11,8 @@ public class TextureConstants {
     public static final String DEFAULT_GROUND = "defaultGround";
     public static final String MINEABLE_GROUND = "mineableGround";
 
-    public static final String SMALL_UNIT = "smallUnit";
-    public static final String UNIT = "unit";
+    public static final String BALL_UNIT = "ballUnit";
+    public static final String MECH_UNIT = "mechUnit";
 
     public static final String CONSTRUCTION_SITE = "constructionSite";
 

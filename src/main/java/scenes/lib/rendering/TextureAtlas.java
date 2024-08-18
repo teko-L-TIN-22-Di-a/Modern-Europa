@@ -31,8 +31,8 @@ public class TextureAtlas {
     }
 
     public TextureAtlas addSplit(String sheetKey, BufferedImage image, Vector2f size) {
-        var xCount = Math.floor(image.getWidth() / size.x());
-        var yCount = Math.floor(image.getHeight() / size.y());
+        var xCount = Math.ceil(image.getWidth() / size.x());
+        var yCount = Math.ceil(image.getHeight() / size.y());
 
         for(int y = 0; y < yCount; y++) {
             for(int x = 0; x < xCount; x++) {
@@ -53,7 +53,7 @@ public class TextureAtlas {
         return textures.get(key);
     }
 
-    public String getId(String sheetKey, int id) {
+    public static String getId(String sheetKey, int id) {
         return sheetKey + "_" + id;
     }
 

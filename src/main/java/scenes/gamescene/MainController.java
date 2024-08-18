@@ -28,6 +28,7 @@ import scenes.lib.components.TerrainChunk;
 import scenes.lib.components.UnitInfo;
 import scenes.lib.helper.MapHelper;
 import scenes.lib.rendering.*;
+import scenes.lib.systems.AnimationSystem;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -76,7 +77,8 @@ public class MainController extends Controller {
         systems.addAll(List.of(
                 new CommandSystem(context),
                 new MovementSystem(context),
-                new ConstructionSystem(context)
+                new ConstructionSystem(context),
+                new AnimationSystem(context)
         ));
 
         ecs.loadSnapshot(snapshot);

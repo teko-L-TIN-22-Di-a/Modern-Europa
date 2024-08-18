@@ -1,23 +1,37 @@
 package scenes.lib.rendering;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class AnimationBuilder {
 
-    private Map<String, Animation> animations;
+    private Map<String, Animation> animations = new HashMap<String, Animation>();
 
     public static AnimationBuilder createAnimationAtlasEntry() {
         return new AnimationBuilder();
     }
 
-    public AnimationBuilder addAnimation(String animationKey, String texture, List<Integer> frames) {
+    public AnimationBuilder addAnimation(String animationKey, String sheet, List<Integer> frames) {
 
         addAnimation(
                 animationKey,
-                frames.stream().map(frame -> new AnimationFrame(texture + "_" + frame, 1)).toList(),
+                frames.stream().map(frame -> new AnimationFrame(TextureAtlas.getId(sheet, frame), 1)).toList(),
                 null,
                 false,
+                1
+        );
+
+        return this;
+    }
+
+    public AnimationBuilder addLoopingAnimation(String animationKey, String sheet, List<Integer> frames) {
+
+        addAnimation(
+                animationKey,
+                frames.stream().map(frame -> new AnimationFrame(TextureAtlas.getId(sheet, frame), 1)).toList(),
+                null,
+                true,
                 1
         );
 

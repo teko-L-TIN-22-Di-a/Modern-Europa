@@ -1,5 +1,6 @@
 package scenes.lib.helper;
 
+import scenes.lib.AnimationConstants;
 import scenes.lib.config.RenderingConfig;
 import core.Parameters;
 import core.ecs.Ecs;
@@ -20,29 +21,31 @@ public class EntityHelper {
         return newEntity;
     }
 
-    public static Entity createSmallUnit(Ecs ecs, int playerId) {
-        return createSmallUnit(ecs, playerId, UUID.randomUUID().toString());
+    public static Entity createBallUnit(Ecs ecs, int playerId) {
+        return createBallUnit(ecs, playerId, UUID.randomUUID().toString());
     }
-    public static Entity createSmallUnit(Ecs ecs, int playerId, String uuid) {
+    public static Entity createBallUnit(Ecs ecs, int playerId, String uuid) {
         var newEntity = ecs.newEntity();
         var originOffset = RenderingConfig.COMBAT_UNIT_SIZE.mul(Vector2f.of(0.5f, 1));
 
-        newEntity.setComponent(new Sprite(TextureConstants.SMALL_UNIT + playerId, originOffset, true));
+        newEntity.setComponent(new Sprite(TextureConstants.BALL_UNIT + playerId, originOffset, true));
         newEntity.setComponent(new UnitInfo(playerId, 2, 100, UnitInfo.BALL_UNIT, uuid));
         newEntity.setComponent(new Selection(new Bounds(originOffset.mul(-1), Vector2f.of(26, 28)), false));
+        newEntity.setComponent(SpriteAnimation.of(AnimationConstants.BALL_UNIT_ANIMATIONS + playerId));
         return newEntity;
     }
 
-    public static Entity createUnit(Ecs ecs, int playerId) {
-        return createUnit(ecs, playerId, UUID.randomUUID().toString());
+    public static Entity createMechUnit(Ecs ecs, int playerId) {
+        return createMechUnit(ecs, playerId, UUID.randomUUID().toString());
     }
-    public static Entity createUnit(Ecs ecs, int playerId, String uuid) {
+    public static Entity createMechUnit(Ecs ecs, int playerId, String uuid) {
         var newEntity = ecs.newEntity();
         var originOffset = RenderingConfig.COMBAT_UNIT_SIZE.mul(Vector2f.of(0.5f, 1));
 
-        newEntity.setComponent(new Sprite(TextureConstants.UNIT + playerId, originOffset, true));
+        newEntity.setComponent(new Sprite(TextureConstants.MECH_UNIT + playerId, originOffset, true));
         newEntity.setComponent(new UnitInfo(playerId, 2, 10, UnitInfo.MECH_UNIT, uuid));
         newEntity.setComponent(new Selection(new Bounds(originOffset.mul(-1), Vector2f.of(26, 28)), false));
+        newEntity.setComponent(SpriteAnimation.of(AnimationConstants.MECH_UNIT_ANIMATIONS + playerId));
         return newEntity;
     }
 

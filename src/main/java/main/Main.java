@@ -1,6 +1,8 @@
 package main;
 
 
+import scenes.gamescene.RenderingContext;
+import scenes.lib.config.RenderingConfig;
 import scenes.lib.config.WindowConfig;
 import scenes.menuscene.MenuController;
 import core.Engine;
@@ -21,7 +23,7 @@ public class Main {
             new Engine.Builder()
                     //.bootstrapController(new PiController())
                     .bootstrapController(new StartupController(new MenuController()))
-                    .setFramerate(60)
+                    .setFramerate(RenderingConfig.FRAME_RATE)
                     .configureServices(builder -> {
                         Ecs.addToServices(builder);
 
