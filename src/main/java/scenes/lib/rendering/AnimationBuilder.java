@@ -25,6 +25,32 @@ public class AnimationBuilder {
         return this;
     }
 
+    public AnimationBuilder addAnimation(String animationKey, String sheet, List<Integer> frames, float speed, String leadingAnimation) {
+
+        addAnimation(
+                animationKey,
+                frames.stream().map(frame -> new AnimationFrame(TextureAtlas.getId(sheet, frame), 1)).toList(),
+                leadingAnimation,
+                false,
+                speed
+        );
+
+        return this;
+    }
+
+    public AnimationBuilder addAnimation(String animationKey, String sheet, List<Integer> frames, float speed, boolean looping) {
+
+        addAnimation(
+                animationKey,
+                frames.stream().map(frame -> new AnimationFrame(TextureAtlas.getId(sheet, frame), 1)).toList(),
+                null,
+                looping,
+                speed
+        );
+
+        return this;
+    }
+
     public AnimationBuilder addLoopingAnimation(String animationKey, String sheet, List<Integer> frames) {
 
         addAnimation(

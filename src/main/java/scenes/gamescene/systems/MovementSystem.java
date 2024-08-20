@@ -11,7 +11,6 @@ import scenes.lib.components.PathFindingTarget;
 import scenes.lib.components.SpriteAnimation;
 import scenes.lib.components.UnitInfo;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -57,9 +56,7 @@ public class MovementSystem implements RunnableSystem {
 
         var generalDirection = directions.stream().max(Map.Entry.comparingByKey());
 
-        if(generalDirection.isPresent()) {
-            ecs.setComponent(entityId, spriteAnimation.play(generalDirection.get().getValue()));
-        }
+        ecs.setComponent(entityId, spriteAnimation.play(generalDirection.get().getValue()));
     }
 
 }

@@ -50,6 +50,7 @@ public class StartupController extends Controller {
 
     private void Load() {
         assetLoader.load(Map.ofEntries(
+                entry("attack.png", LoadConfiguration.DefaultImage),
                 entry("tile-sheet.png", LoadConfiguration.DefaultImage),
                 entry("cursor.png", LoadConfiguration.DefaultImage),
                 entry("combat-units.png", LoadConfiguration.DefaultImage),
@@ -68,11 +69,13 @@ public class StartupController extends Controller {
 
         // Texture atlas
         var tileSheet = assetManager.<BufferedImage>getAsset("tile-sheet.png");
+        var attackSheet = assetManager.<BufferedImage>getAsset("attack.png");
         var buildingsSheet = assetManager.<BufferedImage>getAsset("buildings.png");
         var combatUnitSheet = assetManager.<BufferedImage>getAsset("combat-units.png");
 
         var assetLoader = new scenes.startupscene.AssetLoader()
                 .loadTileSheet(tileSheet)
+                .loadAttackSheet(attackSheet)
                 .loadBuildingSheet(buildingsSheet)
                 .loadCombatUnitSheet(combatUnitSheet);
 

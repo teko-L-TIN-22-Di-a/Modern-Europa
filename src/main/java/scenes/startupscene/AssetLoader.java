@@ -45,6 +45,26 @@ public class AssetLoader {
         return this;
     }
 
+    public AssetLoader loadAttackSheet(BufferedImage attackSheet) {
+
+        textureAtlas.addSplit(TextureConstants.ATTACK_SHEET, attackSheet, ATTACK_SIZE);
+
+        var attackAnimations = new AnimationBuilder()
+                .addAnimation(AnimationConstants.FLYING, TextureConstants.ATTACK_SHEET, List.of(
+                        0, 1, 2, 1, 2, 1, 2
+                ), 20, true)
+                .addAnimation(AnimationConstants.EXPLODE, TextureConstants.ATTACK_SHEET, List.of(
+                       1, 2, 3, 4, 5
+                ), 10, AnimationConstants.EXPLODED)
+                .addLoopingAnimation(AnimationConstants.EXPLODED, TextureConstants.ATTACK_SHEET, List.of(
+                        -1 // Not show anything anymore
+                ))
+                .build(AnimationConstants.FLYING);
+        animationAtlas.addEntry(AnimationConstants.ATTACK_ANIMATIONS, attackAnimations);
+
+        return this;
+    }
+
     public AssetLoader loadBuildingSheet(BufferedImage buildingsSheet) {
         ImageHelper.keyOut(buildingsSheet, Color.WHITE);
 

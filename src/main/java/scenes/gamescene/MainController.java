@@ -1,5 +1,8 @@
 package scenes.gamescene;
 
+import scenes.gamescene.rendering.*;
+import scenes.lib.AnimationConstants;
+import scenes.lib.components.*;
 import scenes.lib.config.ScreenConfig;
 import core.Controller;
 import core.EngineContext;
@@ -17,15 +20,9 @@ import core.networking.IoClient;
 import core.networking.IoServer;
 import core.util.Vector2f;
 import core.util.Vector3f;
-import scenes.gamescene.rendering.FogOfWarRenderer;
-import scenes.gamescene.rendering.IsometricTerrainRenderer;
-import scenes.gamescene.rendering.MainGui;
-import scenes.gamescene.rendering.SelectionRenderer;
 import scenes.gamescene.systems.*;
 import scenes.lib.AssetConstants;
 import scenes.lib.PlayerInfo;
-import scenes.lib.components.TerrainChunk;
-import scenes.lib.components.UnitInfo;
 import scenes.lib.helper.MapHelper;
 import scenes.lib.rendering.*;
 import scenes.lib.systems.AnimationSystem;
@@ -78,6 +75,8 @@ public class MainController extends Controller {
                 new CommandSystem(context),
                 new MovementSystem(context),
                 new ConstructionSystem(context),
+                new CombatSystem(context, playerId), // Execute combat system only for this player.
+                new AttackParticleSystem(context),
                 new AnimationSystem(context)
         ));
 
@@ -88,6 +87,7 @@ public class MainController extends Controller {
 
         playerHandler = new PlayerHandler(context, renderingContext, playerId);
         setupCamera(context, renderingContext, playerId);
+
     }
 
     @Override
@@ -175,9 +175,13 @@ public class MainController extends Controller {
                 terrainRenderer,
                 spriteRenderer,
                 fogOfWarRenderer,
-                selectionRenderer
+                selectionRenderer,
+                new HudRenderer(context, playerId))
+        );
+        canvas = new NewRenderCanvas(List.of(
+                bufferedRenderer
+
         ));
-        canvas = new NewRenderCanvas(List.of(bufferedRenderer));
         // Fixing canvas having weird mouse listener support.
         if(mouseListener instanceof JFrameMouseListener instance) {
             canvas.addMouseMotionListener(instance);

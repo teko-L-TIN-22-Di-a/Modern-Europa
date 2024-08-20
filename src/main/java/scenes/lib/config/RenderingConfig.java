@@ -12,4 +12,6 @@ public class RenderingConfig {
     public final static Vector2f COMBAT_UNIT_SIZE = Vector2f.of(26, 28);
     public final static Vector2f BUILDING_SIZE = Vector2f.of(132, 82);
 
+    public final static Vector2f ATTACK_SIZE = Vector2f.of(4,4);
+
 }

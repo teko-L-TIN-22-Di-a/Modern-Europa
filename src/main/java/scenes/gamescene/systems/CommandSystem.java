@@ -1,16 +1,13 @@
 package scenes.gamescene.systems;
 
 import core.EngineContext;
-import core.ecs.Ecs;
-import core.ecs.EcsView;
-import core.ecs.Entity;
-import core.ecs.RunnableSystem;
+import core.ecs.*;
 import core.ecs.components.Position;
 import core.util.Vector2f;
+import core.util.Vector3f;
 import scenes.gamescene.commands.CommandConstants;
-import scenes.lib.components.Command;
-import scenes.lib.components.PathFindingTarget;
-import scenes.lib.components.UnitInfo;
+import scenes.lib.AnimationConstants;
+import scenes.lib.components.*;
 import scenes.lib.helper.EntityHelper;
 
 import java.util.List;
@@ -30,7 +27,7 @@ public class CommandSystem implements RunnableSystem {
                 .filter(command -> !command.component().processed())
                 .toList();
 
-        var units = ecs.view(UnitInfo.class);
+        var units = ecs.view(Position.class, UnitInfo.class);
 
         for(var command : commands) {
             switch (command.component().commandType()) {
@@ -40,6 +37,9 @@ public class CommandSystem implements RunnableSystem {
                 case CommandConstants.BUILDING_CREATION:
                     resolveBuildingCreation(command.component());
                     break;
+                case CommandConstants.AUTO_ATTACK:
+                    resolveAutoAttack(command.component(), units);
+                    break;
             }
 
             ecs.setComponent(command.entityId(), command.component().setProcessed());
@@ -47,12 +47,12 @@ public class CommandSystem implements RunnableSystem {
 
     }
 
-    private void resolveMovementCommand(Command command, List<EcsView<UnitInfo>> units) {
+    private void resolveMovementCommand(Command command, List<EcsView2<Position, UnitInfo>> units) {
         var parameters = command.parameters();
         var targetPos = parameters.<Vector2f>get(CommandConstants.MOVEMENT_TARGET_POSITION);
         var unitId = parameters.getString(CommandConstants.MOVEMENT_TARGET_UNIT);
 
-        var unit = units.stream().filter(x -> x.component().uuid().equals(unitId)).findFirst();
+        var unit = units.stream().filter(x -> x.component2().uuid().equals(unitId)).findFirst();
 
         if(unit.isPresent()) {
             ecs.setComponent(unit.get().entityId(), new PathFindingTarget(targetPos));
@@ -70,6 +70,28 @@ public class CommandSystem implements RunnableSystem {
 
         entity = EntityHelper.createConstructionSite(ecs, playerId, buildingType, unitId);
         entity.setComponent(new Position(targetPos.toVector3fy(0)));
+
+    }
+
+    private void resolveAutoAttack(Command command, List<EcsView2<Position, UnitInfo>> units) {
+        var parameters = command.parameters();
+        var origin = parameters.<Vector3f>get(CommandConstants.AUTO_ATTACK_ORIGIN);
+        var damage = parameters.getDouble(CommandConstants.AUTO_ATTACK_TARGET_DAMAGE);
+        var targetUnitId = parameters.<String>get(CommandConstants.AUTO_ATTACK_TARGET_ENTITY_ID);
+
+        var targetUnit = units.stream().filter(x -> x.component2().uuid().equals(targetUnitId)).findFirst();
+
+        if(!targetUnit.isPresent()) {
+            return;
+        }
+
+        ecs.setComponent(targetUnit.get().entityId(), targetUnit.get().component2().TakeDamage(damage));
+
+        var exploder = ecs.newEntity();
+        exploder.setComponent(new Position(origin.add(0, 0.2f, 0)));
+        exploder.setComponent(new Sprite(null, Vector2f.of(2, 2), true));
+        exploder.setComponent(SpriteAnimation.of(AnimationConstants.ATTACK_ANIMATIONS));
+        exploder.setComponent(new AttackParticle(targetUnit.get().component1().position()));
 
     }
 

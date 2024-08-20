@@ -5,6 +5,7 @@ import com.google.gson.*;
 import core.ecs.components.Camera;
 import core.ecs.components.Position;
 import core.util.Vector2f;
+import core.util.Vector3f;
 import scenes.gamescene.commands.CommandConstants;
 import scenes.lib.components.*;
 
@@ -37,6 +38,7 @@ public class ParameterSerializer implements JsonSerializer<Map<String, Object>>,
 
             // TODO Very hacky find a better solution
             var parameterMap = Map.ofEntries(
+                    Map.entry(CommandConstants.AUTO_ATTACK_ORIGIN, Vector3f.class),
                     Map.entry(CommandConstants.MOVEMENT_TARGET_POSITION, Vector2f.class),
                     Map.entry(CommandConstants.BUILDING_CREATION_POSITION, Vector2f.class),
                     Map.entry(CommandConstants.BUILDING_CREATION_PLAYER_ID, Integer.class)
