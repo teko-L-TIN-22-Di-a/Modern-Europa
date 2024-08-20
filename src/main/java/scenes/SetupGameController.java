@@ -12,6 +12,7 @@ import core.networking.IoServer;
 import core.util.JsonConverter;
 import scenes.gamescene.MainController;
 import scenes.lib.PlayerInfo;
+import scenes.lib.components.PlayerResources;
 import scenes.lib.helper.EntityHelper;
 import scenes.lib.helper.MapHelper;
 import scenes.lib.networking.messages.InitGameMessage;
@@ -56,6 +57,9 @@ public class SetupGameController extends Controller {
                 throw new RuntimeException("Too many players for map");
             }
 
+            var resources = ecs.newEntity();
+            resources.setComponent(new PlayerResources(playerId, 0));
+
             var mainBase = EntityHelper.createMainBase(ecs, playerId);
             mainBase.setComponent(new Position(slot.add(0.5f, 0.5f).toVector3fy(0)));
 
@@ -65,8 +69,8 @@ public class SetupGameController extends Controller {
             var generator = EntityHelper.createGenerator(ecs, playerId);
             generator.setComponent(new Position(slot.toVector3fy(0).add(1.5f, 0, 0.5f)));
 
-            for(var i = 0; i < 1; i++) {
-                var mainUnit = EntityHelper.createMechUnit(ecs, playerId);
+            for(var i = 0; i < 50; i++) {
+                var mainUnit = EntityHelper.createBallUnit(ecs, playerId);
                 mainUnit.setComponent(new Position(slot.toVector3fy(0).add(0.5f, 0, 1.5f)));
             }
 

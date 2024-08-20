@@ -4,6 +4,8 @@ import core.util.Vector2f;
 import scenes.lib.MapInfo;
 import scenes.lib.TextureConstants;
 
+import java.util.Optional;
+
 public record TerrainChunk(Tile[][] tiles, boolean isDirty) {
 
     public static TerrainChunk generate(Vector2f size) {
@@ -48,6 +50,14 @@ public record TerrainChunk(Tile[][] tiles, boolean isDirty) {
 
     public Vector2f getSize() {
         return new Vector2f(tiles.length, tiles[0].length);
+    }
+
+    public Optional<Tile> getTile(int x, int z) {
+        if(x >= tiles.length || z >= tiles[0].length) {
+            return Optional.empty();
+        }
+
+        return Optional.of(tiles[x][z]);
     }
 
     public Tile[][] getTiles() {

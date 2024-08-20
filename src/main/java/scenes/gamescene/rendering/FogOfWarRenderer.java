@@ -46,6 +46,7 @@ public class FogOfWarRenderer implements Renderer {
 
         ImageHelper.drawWhiteNoise(noiseTexture, 20, 100);
         ImageHelper.cleanup(visibleFogOfWar);
+
         var fowGraphics = (Graphics2D) visibleFogOfWar.getGraphics();
 
         for (var terrainEntry : terrainEntries) {
@@ -162,6 +163,8 @@ public class FogOfWarRenderer implements Renderer {
     private void resetFogOfWarEntry(FogOfWarChunkEntry entry) {
         var g = (Graphics2D) entry.image().getGraphics();
         g.setColor(Color.BLACK);
+        // This is really cool but also makes everything slower.
+        //g.setColor(new Color(0,0,0, 0.1f));
         g.fillRect(0, 0, entry.image().getWidth(), entry.image().getHeight());
     }
 

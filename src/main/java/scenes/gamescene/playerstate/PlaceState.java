@@ -1,5 +1,6 @@
 package scenes.gamescene.playerstate;
 
+import scenes.lib.components.TerrainChunk;
 import scenes.lib.config.RenderingConfig;
 import core.EngineContext;
 import core.Parameters;
@@ -88,8 +89,9 @@ public class PlaceState extends State {
 
         var posFree = isTargetPosFree(units);
         var posNearUnit = isPosNearAlliedUnit(units);
+        var isPlacingValid = isPlacingValid();
 
-        placingEnabled = posFree && posNearUnit;
+        placingEnabled = posFree && posNearUnit && isPlacingValid;
         if(placingEnabled) {
             highlightEffectSprite.setComponent(highlightSprite);
         } else {
@@ -169,6 +171,28 @@ public class PlaceState extends State {
             if(bounds.intersects(targetPos)) {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    private boolean isPlacingValid() {
+
+        if(!buildingType.equals(UnitInfo.MINER)) {
+            return true;
+        }
+
+        var terrainChunks = ecs.view(TerrainChunk.class);
+        for(var terrainChunk : terrainChunks) {
+            var tile = terrainChunk.component().getTile(
+                    (int) Math.floor(targetPos.x()),
+                    (int) Math.floor(targetPos.y())
+            );
+
+            if(tile.isPresent()) {
+                return tile.get().resourcePath().equals(TextureConstants.MINEABLE_GROUND);
+            }
+
         }
 
         return false;
