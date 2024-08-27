@@ -47,11 +47,30 @@ public class CommandSystem implements RunnableSystem {
                 case CommandConstants.AUTO_ATTACK:
                     resolveAutoAttack(command.component(), units);
                     break;
+                case CommandConstants.MINING_AMOUNT:
+                    resolveMiningCommand(command.component());
+                    break;
             }
 
             ecs.setComponent(command.entityId(), command.component().setProcessed());
         }
 
+    }
+
+    private void resolveMiningCommand(Command command) {
+        var parameters = command.parameters();
+        var amount = parameters.getDouble(CommandConstants.MINING_AMOUNT);
+        var playerId = parameters.getInt(CommandConstants.MINING_PLAYER_ID);
+
+        var currentInfo = ecs.view(PlayerResources.class)
+                .stream().filter(info -> info.component().playerId() == playerId)
+                .findFirst();
+
+        if(currentInfo.isEmpty()) {
+            return;
+        }
+
+        ecs.setComponent(currentInfo.get().entityId(), currentInfo.get().component().addResources((int)amount));
     }
 
     private void resolveMovementCommand(Command command, List<EcsView2<Position, UnitInfo>> units) {
@@ -77,7 +96,6 @@ public class CommandSystem implements RunnableSystem {
 
         entity = EntityHelper.createConstructionSite(ecs, playerId, buildingType, unitId);
         entity.setComponent(new Position(targetPos.toVector3fy(0)));
-
     }
 
     private void resolveAutoAttack(Command command, List<EcsView2<Position, UnitInfo>> units) {
@@ -99,7 +117,6 @@ public class CommandSystem implements RunnableSystem {
         exploder.setComponent(new Sprite(null, Vector2f.of(2, 2), true));
         exploder.setComponent(SpriteAnimation.of(AnimationConstants.ATTACK_ANIMATIONS));
         exploder.setComponent(new AttackParticle(targetUnit.get().component1().position()));
-
     }
 
 }

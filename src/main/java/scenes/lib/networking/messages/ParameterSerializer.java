@@ -41,7 +41,8 @@ public class ParameterSerializer implements JsonSerializer<Map<String, Object>>,
                     Map.entry(CommandConstants.AUTO_ATTACK_ORIGIN, Vector3f.class),
                     Map.entry(CommandConstants.MOVEMENT_TARGET_POSITION, Vector2f.class),
                     Map.entry(CommandConstants.BUILDING_CREATION_POSITION, Vector2f.class),
-                    Map.entry(CommandConstants.BUILDING_CREATION_PLAYER_ID, Integer.class)
+                    Map.entry(CommandConstants.BUILDING_CREATION_PLAYER_ID, Integer.class),
+                    Map.entry(CommandConstants.MINING_PLAYER_ID, Integer.class)
             );
 
             var mappedType = parameterMap.getOrDefault(entry.getKey(), null);

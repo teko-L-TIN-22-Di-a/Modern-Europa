@@ -1,7 +1,7 @@
 package scenes.gamescene;
 
 import scenes.gamescene.rendering.*;
-import scenes.lib.AnimationConstants;
+import scenes.gamescene.rendering.gui.MainGui;
 import scenes.lib.components.*;
 import scenes.lib.config.ScreenConfig;
 import core.Controller;
@@ -76,6 +76,7 @@ public class MainController extends Controller {
                 new MovementSystem(context),
                 new ConstructionSystem(context),
                 new CombatSystem(context, playerId), // Execute combat system only for this player.
+                new MiningSystem(context, playerId),
                 new PowerSystem(context, playerId),
                 new AttackParticleSystem(context),
                 new AnimationSystem(context)

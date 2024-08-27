@@ -33,7 +33,7 @@ public class MainState extends State {
 
     private final int playerId;
 
-    private JPanel temporaryTab = null;
+    //private JPanel temporaryTab = null;
 
     public MainState(EngineContext context, RenderingContext renderingContext, int playerId) {
         this.renderingContext = renderingContext;
@@ -44,6 +44,7 @@ public class MainState extends State {
 
     @Override
     public void update() {
+        /*
         var selectedBases = getSelectedBases();
 
         if(selectedBases.isEmpty() && temporaryTab != null) {
@@ -59,6 +60,7 @@ public class MainState extends State {
                     ))
             ));
         }
+         */
 
         while(!queuedMouseEvents.isEmpty()) {
             handleMouseEvent(queuedMouseEvents.poll());
@@ -128,6 +130,7 @@ public class MainState extends State {
                 ).toList();
     }
 
+    /*
     private List<EcsView3<Position, UnitInfo, Selection>> getSelectedBases() {
         var units = ecs.view(Position.class, UnitInfo.class, Selection.class);
 
@@ -138,5 +141,6 @@ public class MainState extends State {
                                 && unit.component2().type().equals(UnitInfo.BASE)
                 ).toList();
     }
+    */
 
 }

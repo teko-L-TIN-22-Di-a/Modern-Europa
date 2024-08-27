@@ -1,7 +1,7 @@
 package scenes.gamescene;
 
 import core.util.Vector2f;
-import scenes.gamescene.rendering.MainGui;
+import scenes.gamescene.rendering.gui.MainGui;
 import scenes.gamescene.rendering.SelectionRenderer;
 import scenes.gamescene.rendering.IsometricTerrainRenderer;
 import scenes.lib.rendering.BufferedRenderer;

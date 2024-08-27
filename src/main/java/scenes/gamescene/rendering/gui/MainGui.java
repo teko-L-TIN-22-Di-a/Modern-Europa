@@ -1,15 +1,11 @@
-package scenes.gamescene.rendering;
+package scenes.gamescene.rendering.gui;
 
 import rx.functions.Action1;
-import scenes.lib.rendering.DialogRenderer;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseMotionListener;
-import java.util.Arrays;
 import java.util.Map;
 
 public class MainGui extends JPanel {
@@ -74,9 +70,21 @@ public class MainGui extends JPanel {
         return escapeMenu;
     }
 
+    public void removeTab(GuiTab tab) {
+        tabContainer.remove(tab.getPanel());
+        tabContainer.revalidate();
+    }
+
     public void removeTab(JPanel panel) {
         tabContainer.remove(panel);
         tabContainer.revalidate();
+    }
+
+    public GuiTab createNewTab(String title, GuiTab tab) {
+        tabContainer.addTab(title, tab.getPanel());
+        tabContainer.setSelectedComponent(tab.getPanel());
+
+        return tab;
     }
 
     public JPanel createNewTab(String title, Map<String, Map<String, Action1<Void>>> groups) {

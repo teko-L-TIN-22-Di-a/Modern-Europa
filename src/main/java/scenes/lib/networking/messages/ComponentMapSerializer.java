@@ -49,7 +49,7 @@ public class ComponentMapSerializer implements JsonSerializer<Map<String, Map<In
                         PlayerResources.class,
                         Combat.class,
                         SpriteAnimation.class,
-                        Mine.class,
+                        Mining.class,
                         Powered.class,
                         Generator.class
                 );
