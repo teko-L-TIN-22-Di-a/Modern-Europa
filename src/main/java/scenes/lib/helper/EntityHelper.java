@@ -62,6 +62,7 @@ public class EntityHelper {
         newEntity.setComponent(new Sprite(TextureConstants.BASE + playerId, originOffset, true));
         newEntity.setComponent(new UnitInfo(playerId, 3, 0, UnitInfo.BASE, 100, uuid));
         newEntity.setComponent(new Selection(new Bounds(originOffset.mul(-1).add(10, 8), Vector2f.of(102, 62)), false));
+        newEntity.setComponent(Powered.off());
         return newEntity;
     }
 
@@ -75,6 +76,7 @@ public class EntityHelper {
         newEntity.setComponent(new Sprite(TextureConstants.GENERATOR + playerId, originOffset, true));
         newEntity.setComponent(new UnitInfo(playerId, 2, 0, UnitInfo.GENERATOR,100, uuid));
         newEntity.setComponent(new Selection(new Bounds(originOffset.mul(-1).add(10, 8), Vector2f.of(102, 62)), false));
+        newEntity.setComponent(new Generator(3));
         return newEntity;
     }
 
@@ -88,6 +90,7 @@ public class EntityHelper {
         newEntity.setComponent(new Sprite(TextureConstants.MINER + playerId, originOffset, true));
         newEntity.setComponent(new UnitInfo(playerId, 2, 0, UnitInfo.MINER,100, uuid));
         newEntity.setComponent(new Selection(new Bounds(originOffset.mul(-1).add(10, 8), Vector2f.of(102, 62)), false));
+        newEntity.setComponent(Powered.off());
         return newEntity;
     }
 

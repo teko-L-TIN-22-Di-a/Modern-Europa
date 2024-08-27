@@ -21,15 +21,22 @@ public class CommandSystem implements RunnableSystem {
     }
 
     public void update(double delta) {
-        var commands = ecs
-                .view(Command.class)
-                .stream()
-                .filter(command -> !command.component().processed())
-                .toList();
+        var commands = ecs.view(Command.class);
 
         var units = ecs.view(Position.class, UnitInfo.class);
 
         for(var command : commands) {
+
+            if(command.component().processed()) {
+
+                if(command.component().isAlive()) {
+                    ecs.delete(command.entityId());
+                }
+
+                ecs.setComponent(command.entityId(), command.component().tick());
+                continue;
+            }
+
             switch (command.component().commandType()) {
                 case CommandConstants.MOVEMENT_TARGET:
                     resolveMovementCommand(command.component(), units);

@@ -76,6 +76,7 @@ public class MainController extends Controller {
                 new MovementSystem(context),
                 new ConstructionSystem(context),
                 new CombatSystem(context, playerId), // Execute combat system only for this player.
+                new PowerSystem(context, playerId),
                 new AttackParticleSystem(context),
                 new AnimationSystem(context)
         ));

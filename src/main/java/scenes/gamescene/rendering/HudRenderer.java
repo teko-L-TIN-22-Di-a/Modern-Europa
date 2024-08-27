@@ -9,8 +9,7 @@ import core.util.Vector2f;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
-import scenes.lib.components.PlayerResources;
-import scenes.lib.components.Selection;
+import scenes.lib.components.*;
 import scenes.lib.helper.CameraHelper;
 import scenes.lib.rendering.Renderer;
 
@@ -22,8 +21,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class HudRenderer implements Renderer {
 
     private final Ecs ecs;
-
-    private int playerId;
+    private final int playerId;
 
     public HudRenderer(EngineContext context, int playerId) {
         ecs = context.getService(Ecs.class);
@@ -32,15 +30,43 @@ public class HudRenderer implements Renderer {
 
     @Override
     public void render(Graphics2D g2d) {
-        var resourceInfos = ecs.view(PlayerResources.class);
-        var currentInfo = resourceInfos.stream().filter(info -> info.component().playerId() == playerId).findFirst();
+        var currentInfo = ecs.view(PlayerResources.class)
+                .stream().filter(info -> info.component().playerId() == playerId)
+                .findFirst();
+        var entities = ecs
+                .view(Powered.class, UnitInfo.class)
+                .stream().filter(entity -> entity.component2().playerId() == playerId)
+                .toList();
+        var generators = ecs
+                .view(Generator.class, UnitInfo.class)
+                .stream().filter(entry -> entry.component2().playerId() == playerId)
+                .toList();
 
-        if(!currentInfo.isPresent()) {
-            return;
+        var availablePower = 0f;
+        for (var generator : generators) {
+            availablePower += generator.component1().energy();
         }
 
+        g2d.setColor(new Color(50,50,50, 200));
+        g2d.fillRect(0, 0, 164, 64);
+
+        var drawY = 24;
+
         g2d.setColor(Color.WHITE);
-        g2d.drawString("[ Minerals: " + currentInfo.get().component().minerals() + " ]", 24, 24);
+
+        if(currentInfo.isPresent()) {
+
+            g2d.drawString("[ Minerals: " + currentInfo.get().component().minerals() + " ]", 24, drawY);
+            drawY += 24;
+
+        }
+
+        if(!entities.isEmpty()) {
+
+            g2d.drawString("[ Power: " + availablePower + " | " + entities.size() + " ]", 24, drawY);
+
+        }
+
     }
 
     @Override

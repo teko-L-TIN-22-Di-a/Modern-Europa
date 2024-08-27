@@ -22,6 +22,14 @@ public record Command(String commandType, String commandId, Parameters parameter
         return new Command(commandType, commandId, parameters, sent, processed, TimeToLive);
     }
 
+    public boolean isAlive() {
+        return ttl <= 0;
+    }
+
+    public Command tick() {
+        return new Command(commandType, commandId, parameters, sent, processed, ttl-1);
+    }
+
     public Command setProcessed() {
         return new Command(commandType, commandId, parameters, sent, true, TimeToLive);
     }
