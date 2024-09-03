@@ -177,12 +177,11 @@ public class MainController extends Controller {
                 terrainRenderer,
                 spriteRenderer,
                 fogOfWarRenderer,
-                selectionRenderer,
-                new HudRenderer(context, playerId))
-        );
+                selectionRenderer
+        ));
         canvas = new NewRenderCanvas(List.of(
-                bufferedRenderer
-
+                bufferedRenderer,
+                new HudRenderer(context, playerId)
         ));
         // Fixing canvas having weird mouse listener support.
         if(mouseListener instanceof JFrameMouseListener instance) {

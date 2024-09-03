@@ -47,7 +47,7 @@ public class CommandSystem implements RunnableSystem {
                 case CommandConstants.AUTO_ATTACK:
                     resolveAutoAttack(command.component(), units);
                     break;
-                case CommandConstants.MINING_AMOUNT:
+                case CommandConstants.MINING:
                     resolveMiningCommand(command.component());
                     break;
             }

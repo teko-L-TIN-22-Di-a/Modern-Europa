@@ -4,6 +4,7 @@ import core.EngineContext;
 import core.ecs.Ecs;
 import core.ecs.EcsView;
 import core.ecs.EcsView2;
+import scenes.lib.components.PlayerResources;
 import scenes.lib.components.Powered;
 import scenes.lib.components.Selection;
 import scenes.lib.components.UnitInfo;
@@ -23,6 +24,7 @@ public class UnitTab extends GuiTab {
 
         var groupPanel = new JPanel();
         groupPanel.setBorder(BorderFactory.createTitledBorder("State"));
+        groupPanel.setLayout(new BoxLayout(groupPanel, BoxLayout.Y_AXIS));
 
         lifeLabel = new JLabel();
         groupPanel.add(lifeLabel);
@@ -51,6 +53,7 @@ public class UnitTab extends GuiTab {
         if(hasPoweredComponent(unit)) {
             poweredLabel.setText(getPoweredString(ecs.getComponent(unit.entityId(), Powered.class)));
         }
+
     }
 
     private boolean hasPoweredComponent(EcsView<UnitInfo> unit) {

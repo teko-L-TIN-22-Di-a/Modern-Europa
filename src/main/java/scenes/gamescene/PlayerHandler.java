@@ -143,7 +143,7 @@ public class PlayerHandler {
             var unit = units.get(0);
 
             if(unit.component1().type().equals(UnitInfo.BASE)) {
-                return new BaseTab();
+                return new BaseTab(ecs, playerId);
             }
 
             return new UnitTab(ecs);
