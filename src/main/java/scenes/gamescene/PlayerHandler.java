@@ -11,10 +11,7 @@ import core.util.StateMachine;
 import core.util.Vector2f;
 import scenes.gamescene.playerstate.MainState;
 import scenes.gamescene.playerstate.PlaceState;
-import scenes.gamescene.rendering.gui.BaseTab;
-import scenes.gamescene.rendering.gui.GuiTab;
-import scenes.gamescene.rendering.gui.MultiSelectionTab;
-import scenes.gamescene.rendering.gui.UnitTab;
+import scenes.gamescene.rendering.gui.*;
 import scenes.lib.components.Selection;
 import scenes.lib.components.UnitInfo;
 import scenes.gamescene.rendering.IsometricHelper;
@@ -36,6 +33,7 @@ public class PlayerHandler {
     private final RenderingContext renderingContext;
     private final int playerId;
 
+    private final MainTab mainTab;
     private GuiTab selectionTab = null;
 
     public PlayerHandler(EngineContext context, RenderingContext renderingContext, int playerId) {
@@ -48,11 +46,11 @@ public class PlayerHandler {
                 new PlaceState(context, renderingContext, playerId)
         ), MainState.class);
 
-        renderingContext.mainGui().createNewTab("Main", Map.of("Buildings", Map.ofEntries(
-                Map.entry("Base [100]", x -> queuedBuildingEvents.add(UnitInfo.BASE)),
-                Map.entry("Generator [25]", x -> queuedBuildingEvents.add(UnitInfo.GENERATOR)),
-                Map.entry("Miner [50]", x -> queuedBuildingEvents.add(UnitInfo.MINER))
-        )));
+        mainTab = new MainTab(ecs, playerId);
+        mainTab.bindBaseButtonClick(x -> queuedBuildingEvents.add(UnitInfo.BASE));
+        mainTab.bindGeneratorButtonClick(x -> queuedBuildingEvents.add(UnitInfo.GENERATOR));
+        mainTab.bindMinerButtonClick(x -> queuedBuildingEvents.add(UnitInfo.MINER));
+        renderingContext.mainGui().createNewTab("Main", mainTab);
 
         renderingContext.selectionRenderer().bindBoundsSelection(this::onBoundsSelection);
         renderingContext.selectionRenderer().bindPointSelection(this::onPointSelection);
@@ -72,6 +70,7 @@ public class PlayerHandler {
 
         updateMainGui();
 
+        mainTab.update();
         if(selectionTab != null) {
             selectionTab.update();
         }

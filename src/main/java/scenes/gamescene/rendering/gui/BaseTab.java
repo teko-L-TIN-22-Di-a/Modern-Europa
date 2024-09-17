@@ -2,6 +2,9 @@ package scenes.gamescene.rendering.gui;
 
 import core.ecs.Ecs;
 import core.ecs.EcsView;
+import rx.Subscription;
+import rx.functions.Action1;
+import rx.subjects.PublishSubject;
 import scenes.lib.components.PlayerResources;
 import scenes.lib.components.Powered;
 import scenes.lib.components.Selection;
@@ -19,6 +22,9 @@ public class BaseTab extends GuiTab {
 
     private final JButton mechButton;
     private final JButton ballButton;
+
+    private final PublishSubject<Void> mechButtonClick = PublishSubject.create();
+    private final PublishSubject<Void> ballButtonClick = PublishSubject.create();
 
     public BaseTab(Ecs ecs, int playerId) {
         this.ecs = ecs;
@@ -47,8 +53,10 @@ public class BaseTab extends GuiTab {
         unitsPanel.setBorder(BorderFactory.createTitledBorder("Units"));
 
         mechButton = new JButton("Mech [50]");
+        mechButton.addActionListener(x -> mechButtonClick.onNext(null));
         unitsPanel.add(mechButton);
         ballButton = new JButton("Ball [25]");
+        ballButton.addActionListener(x -> ballButtonClick.onNext(null));
         unitsPanel.add(ballButton);
 
         panel.add(unitsPanel);
@@ -74,6 +82,13 @@ public class BaseTab extends GuiTab {
         ballButton.setEnabled(playerResources.get().component().minerals() >= 25);
         mechButton.setEnabled(playerResources.get().component().minerals() >= 50);
 
+    }
+
+    public Subscription bindMechButtonClick(Action1<Void> action) {
+        return mechButtonClick.subscribe(action);
+    }
+    public Subscription bindBallButtonClick(Action1<Void> action) {
+        return ballButtonClick.subscribe(action);
     }
 
     private boolean hasPoweredComponent(EcsView<UnitInfo> unit) {
